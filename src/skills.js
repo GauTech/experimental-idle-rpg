@@ -1320,6 +1320,16 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
                                         }
                                     }
                                 }});
+    skills["Salvaging"] = new Skill({skill_id: "Salvaging", 
+                                names: {0: "Salvaging"}, 
+                                description: "Salvaging",
+                                base_xp_cost: 40,
+                                category: "Activity",
+                                max_level: 10,
+                                xp_scaling: 1.6,
+                                max_level_coefficient: 2,
+	});							
+								
 })();
 
 //non-work activity related
@@ -1557,7 +1567,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
                                 });
     skills["Weightlifting"] = new Skill({skill_id: "Weightlifting",
     description: "No better way to get stronger than by lifting heavy things",
-    names: {0: "Stength Training"},
+    names: {0: "Strength Training"},
     max_level: 50,
     category: "Activity",
     max_level_coefficient: 4,
@@ -1983,7 +1993,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     skills["Gluttony"] = new Skill({
         skill_id: "Gluttony",
         names: {0: "Gluttony"},
-        description: "Gluttony",
+        description: "You are HUGE. That means you have HUGE GUTS",
         category: "Character",
         base_xp_cost: 100,
         max_level: 25,
@@ -2179,6 +2189,91 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
                                 get_effect_description: ()=> {
                                     return `Multiplies magic by ${Math.round(skills["Magic Potency"].get_coefficient("multiplicative")*1000)/1000}`;
                                 }});
+})();
+
+(function(){
+    skills["Precision"] = new Skill({skill_id: "Precision",
+    description: "Precision",
+    names: {0: "Precision"},
+    max_level: 50,
+    category: "Combat",
+    max_level_coefficient: 4,
+    base_xp_cost: 50,
+    rewards: {
+      milestones: {
+          1: {
+              stats: {
+                strength: {
+                    flat: 1
+                },
+              },
+          },
+          3: {
+              stats: {
+                strength: {
+                    flat: 1
+                },
+              },
+              xp_multipliers: {
+                "Unarmed": 1.05,
+              }
+          },
+          5: {
+              stats: {
+                strength: {
+                    flat: 1,
+                    multiplier: 1.05,
+                },
+                max_stamina: {
+                    multiplier: 1.05,
+                }
+              },
+          },
+          7: {
+              stats: {
+                strength: {
+                    flat: 1
+                },
+              },
+              xp_multipliers: {
+                "Unarmed": 1.1,
+              }
+          },
+          10: {
+              stats: {
+                  strength: {
+                    flat: 1, 
+                    multiplier: 1.05
+                },
+                max_stamina: {
+                    multiplier: 1.05,
+                }
+              },
+          },
+          12: {
+            stats: {
+                strength: {
+                    flat: 2
+                },
+                max_stamina: {
+                    flat: 5
+                }
+            }
+          }
+      }
+    },
+    get_effect_description: ()=> {
+      let value = skills["Precision"].get_coefficient("multiplicative");
+      if(value >= 100) {
+          value = Math.round(value);
+      } else if(value >= 10 && value < 100) {
+          value = Math.round(value*10)/10; 
+      } else {
+          value = Math.round(value*100)/100;
+      }
+      return `Multiplies dexterity by ${value}`;
+    },
+});
 })();
                    
 

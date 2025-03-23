@@ -351,6 +351,7 @@ character.stats.add_all_skill_level_bonus = function() {
         character.stats.multiplier.skills.strength = skills["Weightlifting"].get_coefficient("multiplicative");
         character.stats.multiplier.skills.block_strength = 1 + 5*skills["Shield blocking"].get_level_bonus();
         character.stats.multiplier.skills.agility = skills["Equilibrium"].get_coefficient("multiplicative");
+		character.stats.multiplier.skills.dexterity = skills["Precision"].get_coefficient("multiplicative");
 		character.stats.multiplier.skills.max_health = skills["Undying"].get_coefficient("multiplicative");
         
         character.stats.add_weapon_type_bonuses();

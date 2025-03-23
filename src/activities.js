@@ -78,6 +78,13 @@ class Gathering extends Training {
         description: "Nothing ever happens",
         base_skills_names: ["Spatial awareness"],
         is_unlocked: true,
+    });
+    activities["salvaging"] = new Job({
+        name: "salvaging",
+        action_text: "Salvaging",
+        description: "Salvaging",
+        base_skills_names: ["Salvaging"],
+        is_unlocked: true,
     })
 })();
 
@@ -102,6 +109,13 @@ class Gathering extends Training {
         action_text: "Trying to keep your balance",
         description: "One of the most basic exercises",
         base_skills_names: ["Equilibrium"],
+        is_unlocked: true,
+    });
+    activities["practice"] = new Training({
+        name: "practice",
+        action_text: "Practice attacks",
+        description: "Practice attacks",
+        base_skills_names: ["Precision"],
         is_unlocked: true,
     });
     activities["meditating"] = new Training({

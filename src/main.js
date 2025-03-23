@@ -2,6 +2,7 @@
 
 import { current_game_time } from "./game_time.js";
 import { item_templates, getItem, book_stats, setLootSoldCount, loot_sold_count, recoverItemPrices, rarity_multipliers, getArmorSlot} from "./items.js";
+//import { magic_templates } from "./magic.js";
 import { locations } from "./locations.js";
 import { skills, weapon_type_to_skill, which_skills_affect_skill, enemy_tag_to_skill } from "./skills.js";
 import { dialogues } from "./dialogues.js";
@@ -1345,7 +1346,7 @@ if (stances[current_stance].stance_type === "Physical") {
         }	
         if(target.tags.includes("arthropod")) {
 			add_xp_to_skill({skill: skills["Exterminator"], xp_to_add: target.xp_value});
-        }	
+        } 
 
 
 

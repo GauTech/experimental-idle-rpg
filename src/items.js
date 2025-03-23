@@ -1110,10 +1110,75 @@ item_templates["TRUE ULTIMATE POWER"] = new Book({
     item_templates["Bones"] = new Material({
         name: "Bones", 
         description: "Skeleton bone",
-        value: 50,
+        value: 5,
         price_recovers: true,
         material_type: "bone",
     });
+	
+    item_templates["Rotten Flesh"] = new Material({
+        name: "Rotten Flesh", 
+        description: "Rotten Flesh",
+        value: 1,
+        price_recovers: true,
+        material_type: "material",
+    });
+
+    item_templates["Ectoplasm"] = new Material({
+        name: "Ectoplasm", 
+        description: "Ectoplasm",
+        value: 8,
+        price_recovers: true,
+        material_type: "material",
+    });
+	
+    item_templates["Congealed Blood"] = new Material({
+        name: "Congealed Blood", 
+        description: "Congealed Blood",
+        value: 10,
+        price_recovers: true,
+        material_type: "material",
+    });
+	
+	    item_templates["Magic Stone"] = new Material({
+        name: "Magic Stone", 
+        description: "Magic Stone",
+        value: 30,
+        price_recovers: true,
+        material_type: "material",
+    });
+
+	    item_templates["Chimera Spine"] = new Material({
+        name: "Chimera Spine", 
+        description: "Chimera Spine",
+        value: 50,
+        price_recovers: true,
+        material_type: "material",
+    });
+	
+	    item_templates["Bat Wings"] = new Material({
+        name: "Bat Wings", 
+        description: "Bat Wings",
+        value: 2,
+        price_recovers: true,
+        material_type: "material",
+    });
+	
+		item_templates["Regenerating Flesh"] = new Material({
+        name: "Regenerating Flesh", 
+        description: "Regenerating Flesh",
+        value: 100,
+        price_recovers: true,
+        material_type: "material",
+    });
+	
+		item_templates["Dragon Bone"] = new Material({
+        name: "Dragon Bone", 
+        description: "Dragon Bone",
+        value: 100,
+        price_recovers: true,
+        material_type: "material",
+    });
+
 
 })();
 

@@ -308,7 +308,7 @@ class Challenge_zone extends Combat_zone {
                 is_challenge: true,
                 otherUnlocks,
                 is_finished,
-                unlock_text
+                unlock_text,
             }
         )
     }
@@ -1103,7 +1103,7 @@ locations["Burial Chamber"].connected_locations.push({location: locations["Catac
     locations["Wandering Undead"] = new Combat_zone({
         description: "Deal with undead stragglers.", 
         enemy_count: 15, 
-        enemies_list: ["OmniPinata"],
+        enemies_list: ["Shambling Corpse"],
         types: [{type: "dark", stage: 1, xp_gain: 3}],
         enemy_stat_variation: 0.1,
         is_unlocked: true, 
@@ -1114,7 +1114,8 @@ locations["Burial Chamber"].connected_locations.push({location: locations["Catac
         },
         repeatable_reward: {
             xp: 5,
-        }
+            locations: [{location: "Catacomb Beasts"}],
+        },
     });
 locations["Catacombs"].connected_locations.push({location: locations["Wandering Undead"]});
 	
@@ -1144,20 +1145,41 @@ locations["Sewer"].connected_locations.push({location: locations["Deathwater Bog
 	
 locations["Sewer"].connected_locations.push({location: locations["Sewer Depths"]});
 
-    locations["Sewer Beasts"] = new Combat_zone({
-        description: "Deal with sewer beasts.", 
+    locations["Catacomb Beasts"] = new Combat_zone({
+        description: "Deal with catacomb beasts.", 
         enemy_count: 20, 
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie Rat", "Bat"],
         types: [{type: "dark", stage: 1, xp_gain: 3}],
         enemy_stat_variation: 0.1,
-        is_unlocked: true, 
-        name: "Sewer Beasts", 
-        parent_location: locations["Sewer"],
+        is_unlocked: false, 
+        name: "Catacomb Beasts", 
+        parent_location: locations["Catacombs"],
         first_reward: {
             xp: 10,
         },
         repeatable_reward: {
             xp: 5,
+        },
+        unlock_text: "After vanquishing the Shambling Corpse you push further into Catacombs, home to a different set of critters"
+    });
+    locations["Catacombs"].connected_locations.push({location: locations["Catacomb Beasts"]});
+
+
+    locations["Sewer Beasts"] = new Combat_zone({
+        description: "Deal with sewer beasts.", 
+        enemy_count: 20, 
+        enemies_list: ["Plague Rat"],
+        types: [{type: "dark", stage: 1, xp_gain: 3}, {type: "narrow", stage: 1, xp_gain: 3}],
+        enemy_stat_variation: 0.1,
+		enemy_group_size: [2,3],
+        is_unlocked: true, 
+        name: "Sewer Beasts", 
+        parent_location: locations["Sewer"],
+        first_reward: {
+            xp: 20,
+        },
+        repeatable_reward: {
+            xp: 10,
 			locations: [{location:"Deathwater Bog"}, {location:"Sewer Depths"}],
         }
     });
@@ -1573,12 +1595,53 @@ locations["Mine Dwellers"] = new Combat_zone({
     });
 locations["Mines"].connected_locations.push({location: locations["Mine Dwellers"]});
 
-locations["Strange Knight"] = new Combat_zone({
+
+locations["Massed Undead"] = new Combat_zone({
         description: "Strange Knight", 
         enemy_count: 25, 
         types: [],
-        enemies_list: ["Speedy Pinata"],
+        enemies_list: ["Skeleton", "Zombie"],
         enemy_group_size: [3,4],
+        enemy_stat_variation: 0.2,
+        is_unlocked: true, 
+        name: "Massed Undead",
+        parent_location: locations["Catacomb Depths"],
+        first_reward: {
+            xp: 80,
+        },
+        repeatable_reward: {
+            xp: 40,
+		locations: [{location:"Undead Horde"}],
+        }
+    });
+locations["Catacomb Depths"].connected_locations.push({location: locations["Massed Undead"]});
+
+locations["Undead Horde"] = new Combat_zone({
+        description: "Undead Horde", 
+        enemy_count: 25, 
+        types: [],
+        enemies_list: ["Blighted One", "Skeleton Archer"],
+        enemy_group_size: [5,6],
+        enemy_stat_variation: 0.2,
+        is_unlocked: false, 
+        name: "Undead Horde",
+        parent_location: locations["Catacomb Depths"],
+        first_reward: {
+            xp: 160,
+        },
+        repeatable_reward: {
+            xp: 80,
+        }
+    });
+locations["Catacomb Depths"].connected_locations.push({location: locations["Undead Horde"]});
+
+
+locations["Strange Knight"] = new Challenge_zone({
+        description: "Strange Knight", 
+        enemy_count: 1, 
+        types: [],
+        enemies_list: ["Village guard (heavy)"],
+        enemy_group_size: [1,1],
         enemy_stat_variation: 0.2,
         is_unlocked: true, 
         name: "Strange Knight",
@@ -1591,6 +1654,25 @@ locations["Strange Knight"] = new Combat_zone({
         }
     });
 locations["Catacomb Depths"].connected_locations.push({location: locations["Strange Knight"]});
+
+locations["Restless Dead"] = new Combat_zone({
+        description: "Restless Dead", 
+        enemy_count: 30, 
+        types: [{type: "dark", stage: 2,  xp_gain: 3}],
+        enemies_list: ["Ghoul", "Skeleton Elite", "Spectre"],
+        enemy_group_size: [5,6],
+        enemy_stat_variation: 0.2,
+        is_unlocked: true, 
+        name: "Restless Dead",
+        parent_location: locations["Grave of Heroes"],
+        first_reward: {
+            xp: 320,
+        },
+        repeatable_reward: {
+            xp: 160,
+        }
+    });
+locations["Grave of Heroes"].connected_locations.push({location: locations["Restless Dead"]});
 
 locations["Forest Beasts"] = new Combat_zone({
         description: "Forest Beasts", 
@@ -1792,7 +1874,7 @@ locations["The Frozen Flame"].connected_locations.push({location: locations["Cha
 locations["Bridge Crossing"] = new Combat_zone({
         description: "Bridge Crossing", 
 		types: [{type: "unstable", stage: 1,  xp_gain: 3}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Skeleton Champion", "Wraith"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -1800,10 +1882,10 @@ locations["Bridge Crossing"] = new Combat_zone({
         name: "Bridge Crossing", 
         parent_location: locations["Ancient Bridge"],
         first_reward: {
-            xp: 70,
+            xp: 640,
         },
         repeatable_reward: {
-            xp: 35,
+            xp: 1280,
 			locations: [{location:"Ruined Kingdom"}],
         }
     });
@@ -1847,6 +1929,45 @@ locations["Palace Menagerie"] = new Combat_zone({
         }
     });
 locations["Royal Gardens"].connected_locations.push({location: locations["Palace Menagerie"], custom_text: "Palace Menagerie"});
+
+locations["Loose Specimens"] = new Combat_zone({
+        description: "Loose Specimens", 
+		types: [{type: "dark", stage: 2,  xp_gain: 10}],
+        enemies_list: ["Undead Abomination", "Lesser Chimera", "Baby Wyvern", "Decrepit Construct"],
+        enemy_count: 30, 
+        enemy_group_size: [2,3],
+        enemy_stat_variation: 0.2,
+        is_unlocked: true,
+        name: "Loose Specimens", 
+        parent_location: locations["Laboratory"],
+        first_reward: {
+            xp: 3500,
+        },
+        repeatable_reward: {
+            xp: 1750,
+        }
+    });
+locations["Laboratory"].connected_locations.push({location: locations["Loose Specimens"]});
+
+
+locations["Wild Dragons"] = new Combat_zone({
+        description: "Wild Dragons", 
+		types: [{type: "open", stage: 2,  xp_gain: 10}],
+        enemies_list: ["Sea Dragon", "Ice Dragon", "Black Dragon", "Fire Dragon", "Thunder Dragon", "Earth Dragon"],
+        enemy_count: 20, 
+        enemy_group_size: [1,1],
+        enemy_stat_variation: 0.2,
+        is_unlocked: true,
+        name: "Wild Dragons", 
+        parent_location: locations["The Roost"],
+        first_reward: {
+            xp: 7000,
+        },
+        repeatable_reward: {
+            xp: 3500,
+        }
+    });
+locations["The Roost"].connected_locations.push({location: locations["Wild Dragons"]});
 
 locations["Royal Rat's Court"] = new Combat_zone({
         description: "Royal Rat's Court", 
@@ -2045,6 +2166,36 @@ locations["The Maelstrom"].connected_locations.push({location: locations["Storm 
             is_unlocked: true,
         }), 
     };
+	
+	    locations["Sanctuary"].activities = {
+        "fieldwork": new LocationActivity({
+            activity_name: "fieldwork",
+            starting_text: "Work on the fields",
+            get_payment: () => {
+                return 10 + Math.round(15 * skills["Farming"].current_level/skills["Farming"].max_level);
+            },
+            is_unlocked: true,
+            working_period: 60*2,
+            availability_time: {start: 6, end: 20},
+            skill_xp_per_tick: 1, 
+        }),
+	};
+		    locations["The Midden"].activities = {
+        "salvaging": new LocationActivity({
+            activity_name: "salvaging",
+            starting_text: "Salvage scrap",
+			infinite: true,
+            get_payment: () => {
+                return 10 + Math.round(30 * skills["Salvaging"].current_level/skills["Salvaging"].max_level);
+            },
+            is_unlocked: true,
+            working_period: 60*2,
+            skill_xp_per_tick: 2, 
+        }),
+	};
+	
+	
+	
     locations["Village"].activities = {
         "fieldwork": new LocationActivity({
             activity_name: "fieldwork",
@@ -2304,6 +2455,12 @@ locations["Castle Barracks"].activities = {
             skill_xp_per_tick: 5,
             is_unlocked: true,
         }),
+		"practice": new LocationActivity({
+            activity_name: "practice",
+            infinite: true,
+            starting_text: "Practice your attacks",
+            skill_xp_per_tick: 5,
+        }),
     };
 	
 locations["Laboratory"].activities = {
@@ -2315,6 +2472,19 @@ locations["Laboratory"].activities = {
             is_unlocked: true,
         }),
     };
+	
+locations["Ruined Kingdom"].activities = {
+        "patrolling": new LocationActivity({
+            activity_name: "patrolling",
+            starting_text: "Patrol the Ruined Kingdom.",
+            get_payment: () => {return 60},
+            is_unlocked: true,
+            infinite: true,
+            working_period: 60*2,
+            skill_xp_per_tick: 8
+        }),	
+	};
+
 })();
 
 

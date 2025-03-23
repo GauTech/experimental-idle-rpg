@@ -1634,7 +1634,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
                         action.innerHTML = `<i class="material-icons">warning_amber</i> ` + location.connected_locations[i].custom_text;
                     }
                     else {
-                        action.innerHTML = `<i class="material-icons">warning_amber</i>  ` + "Enter the [" + location.connected_locations[i].location.name+"]";
+                        action.innerHTML = `<i class="material-icons">warning_amber</i>  ` + "Face the [" + location.connected_locations[i].location.name+"]";
                     }
                 }
             
@@ -1699,7 +1699,7 @@ function create_location_choices({location, category, add_icons = true, is_comba
                 action.innerHTML = `<i class="material-icons">warning_amber</i>  ` + available_challenges[i].custom_text;
             }
             else {
-                action.innerHTML = `<i class="material-icons">warning_amber</i>  ` + "Enter the " + available_challenges[i].location.name;
+                action.innerHTML = `<i class="material-icons">warning_amber</i>  ` + "Face the " + available_challenges[i].location.name;
             }
             
             action.classList.add("action_travel");
