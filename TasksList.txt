@@ -8,7 +8,7 @@ in locations.js, rework:
 get_total_effect() 
 get_location_type_penalty
 
-so that it also functions with flat effects (i.e. health_regenration_flat: (-2)), rather than just multipliers. 
+so that it also functions with flat effects (i.e. health_regeneration_flat: (-2)), rather than just multipliers. 
 
 Will need some adjustments to effects formatting on:
 location_types 
