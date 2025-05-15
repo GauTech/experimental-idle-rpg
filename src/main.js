@@ -616,6 +616,7 @@ function finish_location_action(selected_action, conditions_status){
             //random loss
 
             result_message = action.failure_texts.random_loss[Math.floor(action.failure_texts.random_loss.length * Math.random())];
+			process_rewards({rewards: action.loss_rewards, source_type: "action"});
         }
 
         Object.keys(action.conditions[0]?.items_by_id || {}).forEach(item_id => {

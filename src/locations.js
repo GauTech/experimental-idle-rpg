@@ -435,6 +435,7 @@ class LocationAction{
         required = {},
         conditions = [],
         rewards = {},
+		loss_rewards = {},
         attempt_duration = 0,
         success_chances = [1,1],
         is_unlocked = true,
@@ -469,7 +470,7 @@ class LocationAction{
         }
         this.conditions = conditions; 
         //things needed to succeed
-        //either single set of values or two sets, one for minimum chance provided and one for maximum
+        //either single set of values or two sets, one for minimum chance provided and one for maximum. Note min value of -1 lets you succeed with 0 skill, but can still have scaling success chance for higher skill.
         //two-set approach does not apply to items, so it only checks them for conditions[0]
         //if applicable, items get removed both on failure and or success - if action requires them, it's better to have guaranteed success
         /* 
@@ -497,6 +498,7 @@ class LocationAction{
         */
         this.check_conditions_on_finish = check_conditions_on_finish; //means an action with duration can be attempted even if conditions are not met
         this.rewards = rewards; //{unlocks, money, items,move_to}?
+		this.loss_rewards = loss_rewards; //consolation prizes on random failure.
         this.attempt_duration = attempt_duration; //0 means instantaneous, otherwise there's a progress bar
         this.success_chances = success_chances; 
         //chances to succeed; to guarantee that multiple attempts will be needed, just make a few consecutive actions with same text
@@ -546,15 +548,18 @@ class LocationAction{
             return met;
         }
         //check skills
-        if(conditions[0].skills) {
-            Object.keys(conditions[0].skills).forEach(skill_id => {
-                if(get_total_skill_level(skill_id) < conditions[0].skills[skill_id]) {
-                    met = 0;
-                } else if(conditions[1]?.skills && conditions[1].skills[skill_id] > conditions[0].skills[skill_id] && get_total_skill_level(skill_id) < conditions[1].skills[skill_id]) {
-                    met *= (get_total_skill_level(skill_id) - conditions[0].skills[skill_id])/(conditions[1].skills[skill_id] - conditions[0].skills[skill_id]);
-                }
-            });
-        }
+			if (conditions[0].skills) {
+				Object.keys(conditions[0].skills).forEach(skill_id => {
+					if (skills[skill_id].current_level < conditions[0].skills[skill_id]) {
+						met = 0;
+					} else if (conditions[1]?.skills && 
+							  conditions[1].skills[skill_id] > conditions[0].skills[skill_id] && 
+							  (skills[skill_id].current_level < conditions[1].skills[skill_id])) {
+						met *= (skills[skill_id].current_level - conditions[0].skills[skill_id]) / 
+							   (conditions[1].skills[skill_id] - conditions[0].skills[skill_id]);
+					}
+				});
+			}
 
         if(!met) {
             return met;
@@ -1279,7 +1284,7 @@ location_types["thundering"] = new LocationType({
     
     locations["Catacombs"] = new Location({ 
         connected_locations: [{location: locations["Burial Chamber"], custom_text: "Return to the Burial Chamber"}],
-        description: "A dismal place, full of restless dead.",
+        description: "A dismal place full of restless dead. A giant stone door blocks one one, a horde of undead bars your way deeper into the catacombs, and a third leads through a sewer",
 		dialogues: ["Kon1","Chain-Saw Demon"],
         name: "Catacombs",
         is_unlocked: true,
@@ -1307,7 +1312,7 @@ locations["Burial Chamber"].connected_locations.push({location: locations["Catac
             xp: 5,
 			skill: 10000,
 			related_skill: "Chronomancy",
-            locations: [{location: "Catacomb Beasts"}],
+            locations: [{location: "Catacomb Beasts"},{location: "Catacomb Depths"}],
         },
     });
 locations["Catacombs"].connected_locations.push({location: locations["Wandering Undead"]});
@@ -1662,16 +1667,16 @@ locations["Catacomb Depths"] = new Location({
         description: "Catacomb Depths",
 		dialogues: ["Slayer1"],
         name: "Catacomb Depths",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Catacombs"].connected_locations.push({location: locations["Catacomb Depths"]});
 
 locations["Cavern"] = new Location({ 
         connected_locations: [{location: locations["Catacombs"]}],
         description: "Cavern",
+		is_unlocked: false,
 		dialogues: ["Fireseeker2"],
         name: "Cavern",
-        is_unlocked: true,
     });
 locations["Catacombs"].connected_locations.push({location: locations["Cavern"]});
 
@@ -3407,55 +3412,75 @@ function get_all_main_locations() {
 }
 
 (function(){
-    locations["Burial Chamber"].actions = {
-        "open the gate": new LocationAction({
-            action_id: "open the gate",
-            starting_text: "Try to push the mysterious gate open",
-            description: "It's an ancient massive gate, but maybe with enough strength and training you could actually manage to push it at least a tiny bit to create enough space to walk through.",
-            action_text: "Huffing and puffing",
-            success_text: "When you are almost ready to give up, you hear the ancient hinges creak, as the gate slowly moves. Finally, you can continue deeper!",
-            failure_texts: {
-                conditional_loss: ["Despite trying your best, you can feel that you are just too weak for it. You should get stronger first."],
-            },
-            conditions: [
-                {
-                    stats: {
-                        strength: 150,
-                    }
-                }
-            ],
-            attempt_duration: 10,
-            success_chances: [1],
-            rewards: {
-             
-			 },
-        }),
-	},
     locations["Catacombs"].actions = {
-        "open the gate2": new LocationAction({
-            action_id: "open the gate2",
-            starting_text: "Try to push the mysterious gate open",
-            description: "It's an ancient massive gate, but maybe with enough strength and training you could actually manage to push it at least a tiny bit to create enough space to walk through.",
+        "stone_door": new LocationAction({
+            action_id: "stone_door",
+            starting_text: "Try to push the imposing door open",
+            description: "It's an ancient massive stone door, but maybe with enough strength and training you could actually manage to push it at least a tiny bit to create enough space to walk through.",
             action_text: "Huffing and puffing",
-            success_text: "When you are almost ready to give up, you hear the ancient hinges creak, as the gate slowly moves. Finally, you can continue deeper!",
+            success_text: "Just when you feel like giving up you hear an awful creak and a the door cracks open slightly. Finally, you can continue deeper!",
             failure_texts: {
                 conditional_loss: ["Despite trying your best, you can feel that you are just too weak for it. You should get stronger first."],
             },
             conditions: [
                 {
                     stats: {
-                        strength: 150,
+                        strength: 70,
                     }
                 }
             ],
             attempt_duration: 10,
             success_chances: [1],
             rewards: {
-             
+				locations: [{location: "Cavern"}],
 			 },
         }),
 	}
 })();
+
+(function(){
+    locations["Sewer"].actions = {
+        "rusty_gate": new LocationAction({
+            action_id: "rusty_gate",
+            starting_text: "Try the rusty gate",
+            description: "An old rusty gate. Locked tight.",
+            action_text: "Picking the lock",
+            success_text: "Finally you get the lock.",
+            failure_texts: {
+                random_loss: ["You didn't quite get it, maybe next time"],
+				conditional_loss: ["You didn't quite get it, maybe with more practice"],
+            },
+          conditions: [
+                {
+                        
+                    skills: {
+                            "Lockpicking": -1,
+                        },
+                },
+                {
+                        skills: {
+                            "Lockpicking": 4,
+                        },
+                }
+            ],
+            attempt_duration: 1,
+            success_chances: [0.2],
+            rewards: {
+								       skill_xp: {
+            "Lockpicking": 100,
+        }
+
+			 },
+			            loss_rewards: {
+								       skill_xp: {
+            "Lockpicking": 10,
+        }
+
+			 },
+        }),
+	}
+})();
+
 
 export {locations, location_types, get_location_type_penalty, get_all_main_locations};
 
