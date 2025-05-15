@@ -1,0 +1,43 @@
+To do:
+
+console bug if you save+reload whilst reading (but not re-reading) a book
+Stance list and magic list tooltips extend beyond bottom of the page. Stance list also can't handle scrolling. (Could trim a stance instead).
+Add allies feature
+Add investigations / found items in area feature
+Reading book then moving to combat zone doesn't remove the book reading display.
+
+
+
+Changes:
+
+Magic System:
+Three types of magic.
+-Target spells deal damage to enemies (can only be cast in combat)
+-Self spells apply a buff to yourself
+-Special spells do unique things (e.g. teleport to any non-combat location).
+All spells have a mana cost and a cooldown.
+Magic has an auto-cast toggle to automatically cast magic when cooldown elapses if possible.
+
+
+Many new skills:
+-Parrying skill allows chance of negating attacks when using a shield.
+-Last Stand and Resilience as low health related skills
+-Obliteration and Criticality as crit related skills
+-Counterattack function and related skill. Different stances can have different counterattack rates.
+-Salvaging skill increases droprates 
+-Swimming skill as another activity
+-Fishing skill new gathering, with fishing rod as new tool
+-Many magic related skills. Each magic has an associated skill, but there are also some special ones like Magic Extension (increases durations), MultiCasting (increases target count), Magic Control (increases mana efficiency), Mana Expansion (increases mana stat).
+
+Completely new world and enemies
+
+Different implementation for gathering tools. (Reduces gathering time required).
+
+Environmental damage for certain locations (even outside of combat).
+Self-damage for Berserk stance. Function may get reused for other things.
+
+Features for rare enemies and boss enemies within the same combat zone.
+
+Re-reading books feature. Re-read books for 1/10th literacy xp gain, and for skill xp rewards each time you hit a multiple of the book's standard required reading time.
+Unlock stances and spells from reading books.
+
