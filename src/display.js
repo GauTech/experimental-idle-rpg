@@ -1584,6 +1584,7 @@ function update_displayed_normal_location(location) {
 
 
     /////////////////////////////
+    /////////////////////////////
     //add button to open crafting
     if(global_flags.is_crafting_unlocked) {
         if(location.crafting?.is_unlocked) {

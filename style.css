@@ -941,8 +941,7 @@ body {
 
 
 .craft_ammount_buttons {
-	display: inline-block;
-	border: 1px solid red;
+	display: inline-block !important;
 	width: 76px;
 	padding-bottom: 2px;
 	font-size: 16px;
@@ -951,7 +950,6 @@ body {
 .craft_ammount_button {
 	display: inline-block;
 	width: fit-content;
-	border: 1px solid red;
 	text-align: center;
 	padding: 3px 6px 3px 6px;
 	outline: 1px solid white;

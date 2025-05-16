@@ -3093,135 +3093,212 @@ function clear_enemies() {
     current_enemies = null;
 }
 
-function use_recipe(target) {
-
+function use_recipe(target, craft_amount = 1) {
     const category = target.parentNode.parentNode.dataset.crafting_category;
     const subcategory = target.parentNode.parentNode.dataset.crafting_subcategory;
     const recipe_id = target.parentNode.dataset.recipe_id;
     const station_tier = current_location.crafting.tiers[category];
 
-    if(!category || !subcategory || !recipe_id) {
-        //shouldn't be possible to reach this
+    if (!category || !subcategory || !recipe_id) {
         throw new Error(`Tried to use a recipe but either category, subcategory, or recipe id was not passed: ${category} - ${subcategory} - ${recipe_id}`);
-    } else if(!recipes[category][subcategory][recipe_id]) {
-        //shouldn't be possible to reach this
+    } else if (!recipes[category][subcategory][recipe_id]) {
         throw new Error(`Tried to use a recipe that doesn't exist: ${category} -> ${subcategory} -> ${recipe_id}`);
     } else {
         const selected_recipe = recipes[category][subcategory][recipe_id];
         const recipe_div = document.querySelector(`[data-crafting_category="${category}"] [data-crafting_subcategory="${subcategory}"] [data-recipe_id="${recipe_id}"]`);
-        let leveled = false;
-        let result;
-        if(subcategory === "items") {
-            if(selected_recipe.get_availability()) {
-                total_crafting_attempts++;
-                const success_chance = selected_recipe.get_success_chance(station_tier);
-                result = selected_recipe.getResult();
-                const {result_id, count} = result;
-                
-                for(let i = 0; i < selected_recipe.materials.length; i++) {
-                    const key = item_templates[selected_recipe.materials[i].material_id].getInventoryKey();
-                    remove_from_character_inventory([{item_key: key, item_count: selected_recipe.materials[i].count}]);
-                } 
-                const exp_value = get_recipe_xp_value({category, subcategory, recipe_id});
-                if(Math.random() < success_chance) {
-                    total_crafting_successes++;
-                    add_to_character_inventory([{item: item_templates[result_id], count: count}]);
-                    
-                    log_message(`Created ${item_templates[result_id].getName()} x${count}`, "crafting");
+        
+if (subcategory === "items") {
+    let attempts = 0;
+    let leveled = false;
+    let success_count = 0;
 
-                    leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value});
-                } else {
-                    log_message(`Failed to create ${item_templates[result_id].getName()}!`, "crafting");
+    const recipe_materials = selected_recipe.materials.map(mat => {
+        const material_id = mat.material_id;
+        const count_required = mat.count;
 
-                    leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value/2});
-                }
+        const item_key = Object.keys(character.inventory).find(inv_key => {
+            const inv_item = character.inventory[inv_key].item;
+            return inv_item && inv_item.id === material_id;
+        });
 
-                update_item_recipe_visibility();
-                update_item_recipe_tooltips();
-                //do those two wheter success or fail since materials get used either way
+        return item_key ? { item_key, item_count: count_required } : null;
+    });
 
-                if(leveled) {
-                    //todo: reload all recipe tooltips of matching category
-                }
-            } else {
-                console.warn(`Tried to use an unavailable recipe!`);
-            }
-            
-        } else if(subcategory === "components" || selected_recipe.recipe_type === "component" ) {
-            //read the selected material, pass it as param
-
-            const material_div = recipe_div.children[1].querySelector(".selected_material");
-            if(!material_div) {
-                return;
-            } else {
-                const material_1_key = material_div.dataset.item_key;
-                const {id} = JSON.parse(material_1_key);
-                const recipe_material = selected_recipe.materials.filter(x=> x.material_id===id)[0];
-
-                if(recipe_material.count <= character.inventory[material_1_key]?.count) {
-                    total_crafting_attempts++;
-                    total_crafting_successes++;
-                    result = selected_recipe.getResult(character.inventory[material_1_key].item, station_tier);
-                    add_to_character_inventory([{item: result, count: 1}]);
-                    remove_from_character_inventory([{item_key: material_1_key, item_count: recipe_material.count}]);
-                    log_message(`Created ${result.getName()} [${result.quality}% quality]`, "crafting");
-                    
-                    const exp_value = get_recipe_xp_value({category, subcategory, recipe_id, material_count: recipe_material.count, rarity_multiplier: rarity_multipliers[result.getRarity()], result_tier: result.component_tier});
-                    
-                    leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value});
-                    material_div.classList.remove("selected_material");
-                    if(character.inventory[material_1_key]) { 
-                        //if item is still present in inventory + if there's not enough of it = change recipe color
-                        if(recipe_material.count > character.inventory[material_1_key].count) { 
-                            material_div.classList.add("recipe_unavailable");
-                        }
-                    } else {
-                        material_div.remove();
-                    }
-                    update_displayed_material_choice({category, subcategory, recipe_id, refreshing: true});
-                    //update_displayed_crafting_recipes();
-                } else {
-                    console.log("Tried to create an item without having necessary materials");
-                }
-            }
-            
-        } else if(subcategory === "equipment") {
-            //read the selected components, pass them as params
-            
-            const component_1_key = recipe_div.children[1].children[0].children[1].querySelector(".selected_component")?.dataset.item_key;
-            
-            const component_2_key = recipe_div.children[1].children[1].children[1].querySelector(".selected_component")?.dataset.item_key;
-
-            if(!component_1_key || !component_2_key) {
-                return;
-            } else {
-                if(!character.inventory[component_1_key] || !character.inventory[component_2_key]) {
-                    throw new Error(`Tried to create item with components that are not present in the inventory!`);
-                } else {
-                    total_crafting_attempts++;
-                    total_crafting_successes++;
-                    result = selected_recipe.getResult(character.inventory[component_1_key].item, character.inventory[component_2_key].item, station_tier);
-                    remove_from_character_inventory([{item_key: component_1_key}, {item_key: component_2_key}]);
-                    add_to_character_inventory([{item: result}]);
-
-                    log_message(`Created ${result.getName()} [${result.quality}% quality]`, "crafting");
-
-                    const id_1 = JSON.parse(component_1_key).id;
-                    const id_2 = JSON.parse(component_2_key).id;
-
-                    const exp_value = get_recipe_xp_value({category, subcategory, recipe_id, selected_components: [item_templates[id_1], item_templates[id_2]], rarity_multiplier: rarity_multipliers[result.getRarity()]})
-                    
-                    leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value});
-                    
-                    const component_keys = {};
-                    component_keys[component_1_key] = true;
-                    component_keys[component_2_key] = true;
-                    update_displayed_component_choice({category, recipe_id, component_keys});
-                }
-            }
-            //update_displayed_crafting_recipes();
-        }  
+    if (recipe_materials.includes(null)) {
+        console.warn("Missing required materials for crafting.");
+        return;
     }
+
+    const result = selected_recipe.getResult();
+    const { result_id, count } = result;
+
+    while (attempts < craft_amount && selected_recipe.get_availability()) {
+        const has_enough = recipe_materials.every(({ item_key, item_count }) =>
+            character.inventory[item_key]?.count >= item_count
+        );
+
+        if (!has_enough) break;
+
+        total_crafting_attempts++;
+        const success_chance = selected_recipe.get_success_chance(station_tier);
+
+        remove_from_character_inventory(recipe_materials);
+
+        const exp_value = get_recipe_xp_value({ category, subcategory, recipe_id });
+
+        if (Math.random() < success_chance) {
+            total_crafting_successes++;
+            add_to_character_inventory([{ item: item_templates[result_id], count }]);
+            success_count++;
+            if (craft_amount === 1) {
+                log_message(`Created ${item_templates[result_id].getName()} x${count}`, "crafting");
+            }
+            leveled = add_xp_to_skill({ skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value });
+        } else {
+            if (craft_amount === 1) {
+                log_message(`Failed to create ${item_templates[result_id].getName()}!`, "crafting");
+            }
+            leveled = add_xp_to_skill({ skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value / 2 });
+        }
+
+        attempts++;
+    }
+
+if (craft_amount > 1 && attempts > 0) {
+    log_message(`Crafted ${success_count}x [${item_templates[result_id].getName()}]. (${success_count} / ${attempts} success rate)`, "crafting");
+}
+
+    update_item_recipe_visibility();
+    update_item_recipe_tooltips();
+    if (leveled) {
+        // TODO: Reload all recipe tooltips of matching category
+    }
+} else if (subcategory === "components" || selected_recipe.recipe_type === "component") {
+    const material_div = recipe_div.children[1].querySelector(".selected_material");
+    if (!material_div) return;
+
+    const material_1_key = material_div.dataset.item_key;
+    const { id } = JSON.parse(material_1_key);
+    const recipe_material = selected_recipe.materials.find(x => x.material_id === id);
+
+    let attempts = 0;
+    let max_quality = 0;
+    let max_quality_count = 0;
+    let quality_name = "";
+
+    while (attempts < craft_amount && character.inventory[material_1_key]?.count >= recipe_material.count) {
+        total_crafting_attempts++;
+        total_crafting_successes++;
+        const result = selected_recipe.getResult(character.inventory[material_1_key].item, station_tier);
+        add_to_character_inventory([{ item: result, count: 1 }]);
+        remove_from_character_inventory([{ item_key: material_1_key, item_count: recipe_material.count }]);
+
+        if (craft_amount === 1) {
+            log_message(`Created ${result.getName()} [${result.quality}% quality]`, "crafting");
+        }
+
+        if (result.quality > max_quality) {
+            max_quality = result.quality;
+            max_quality_count = 1;
+            quality_name = result.getName();
+        } else if (result.quality === max_quality) {
+            max_quality_count++;
+        }
+
+        const exp_value = get_recipe_xp_value({
+            category, subcategory, recipe_id,
+            material_count: recipe_material.count,
+            rarity_multiplier: rarity_multipliers[result.getRarity()],
+            result_tier: result.component_tier
+        });
+
+        const leveled = add_xp_to_skill({
+            skill: skills[selected_recipe.recipe_skill],
+            xp_to_add: exp_value
+        });
+
+        material_div.classList.remove("selected_material");
+
+        if (character.inventory[material_1_key]) {
+            if (recipe_material.count > character.inventory[material_1_key].count) {
+                material_div.classList.add("recipe_unavailable");
+            }
+        } else {
+            material_div.remove();
+        }
+
+        update_displayed_material_choice({ category, subcategory, recipe_id, refreshing: true });
+
+        attempts++;
+    }
+
+if (craft_amount > 1 && attempts > 0) {
+    log_message(`Crafted ${attempts}x [${quality_name}]. Highest quality = ${max_quality}% (x ${max_quality_count})`, "crafting");
+}
+}	else if (subcategory === "equipment") {
+    const component_1_key = recipe_div.children[1].children[0].children[1].querySelector(".selected_component")?.dataset.item_key;
+    const component_2_key = recipe_div.children[1].children[1].children[1].querySelector(".selected_component")?.dataset.item_key;
+
+    let attempts = 0;
+    let max_quality = 0;
+    let max_quality_count = 0;
+    let quality_name = "";
+
+    while (
+        attempts < craft_amount &&
+        component_1_key &&
+        component_2_key &&
+        character.inventory[component_1_key] &&
+        character.inventory[component_2_key]
+    ) {
+        total_crafting_attempts++;
+        total_crafting_successes++;
+        const result = selected_recipe.getResult(
+            character.inventory[component_1_key].item,
+            character.inventory[component_2_key].item,
+            station_tier
+        );
+
+        remove_from_character_inventory([{ item_key: component_1_key }, { item_key: component_2_key }]);
+        add_to_character_inventory([{ item: result }]);
+
+        if (craft_amount === 1) {
+            log_message(`Created ${result.getName()} [${result.quality}% quality]`, "crafting");
+        }
+
+        if (result.quality > max_quality) {
+            max_quality = result.quality;
+            max_quality_count = 1;
+            quality_name = result.getName();
+        } else if (result.quality === max_quality) {
+            max_quality_count++;
+        }
+
+        const id_1 = JSON.parse(component_1_key).id;
+        const id_2 = JSON.parse(component_2_key).id;
+
+        const exp_value = get_recipe_xp_value({
+            category, subcategory, recipe_id,
+            selected_components: [item_templates[id_1], item_templates[id_2]],
+            rarity_multiplier: rarity_multipliers[result.getRarity()]
+        });
+
+        const leveled = add_xp_to_skill({ skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value });
+
+        const component_keys = {};
+        component_keys[component_1_key] = true;
+        component_keys[component_2_key] = true;
+
+        update_displayed_component_choice({ category, recipe_id, component_keys });
+
+        attempts++;
+    }
+
+if (craft_amount > 1 && attempts > 0) {
+    log_message(`Crafted ${attempts}x [${quality_name}]. Highest quality = ${max_quality}% (x ${max_quality_count})`, "crafting");
+}
+}
+	}
 }
 
 function character_equip_item(item_key) {
