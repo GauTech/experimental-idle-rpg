@@ -631,6 +631,7 @@ enemy_templates["Ant Queen"] = new Enemy({
         stats: {health: 20, attack: 12, agility: 2, dexterity: 2, magic: 0, intuition: 1, attack_speed: 0.8, defense: 1}, //stat_total = 20 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Rotten Flesh", chance: 0.20},
+			{item_name: "Small Treasure Chest", chance: 0.20},
         ],
     });
 	

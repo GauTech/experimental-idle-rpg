@@ -3195,40 +3195,99 @@ function character_unequip_item(item_slot) {
     }
 }
 
-function use_item(item_key) { 
-    const {id} = JSON.parse(item_key);
-    const item_effects = item_templates[id].effects;
-	const gluttony_value = item_templates[id].gluttony_value;
-	const mana_value = item_templates[id].mana_value;
+function use_item(item_key) {
+    const { id } = JSON.parse(item_key);
+    const item = item_templates[id];
 
-		add_xp_to_skill({skill: skills["Gluttony"], xp_to_add: gluttony_value});
-		add_xp_to_skill({skill: skills["Mana Expansion"], xp_to_add: mana_value});
-			if(id === "Dragon Heart"){ 
-			//log_message(item_key);
-			add_xp_to_skill({skill: skills["Dragon Heart"], xp_to_add: 1.3, use_bonus: false});
-			}
-			if(id === "Symbiote"){ 
-			add_xp_to_skill({skill: skills["Symbiote"], xp_to_add: 1.6, use_bonus: false});
-			}
+    if (item.tags?.loot_chest) {
+        open_loot_chest(item_key);
+        return;
+    }
+
+    const item_effects = item.effects;
+    const gluttony_value = item.gluttony_value;
+    const mana_value = item.mana_value;
+
+    add_xp_to_skill({ skill: skills["Gluttony"], xp_to_add: gluttony_value });
+    add_xp_to_skill({ skill: skills["Mana Expansion"], xp_to_add: mana_value });
+
+    if (id === "Dragon Heart") {
+        add_xp_to_skill({ skill: skills["Dragon Heart"], xp_to_add: 1.3, use_bonus: false });
+    }
+    if (id === "Symbiote") {
+        add_xp_to_skill({ skill: skills["Symbiote"], xp_to_add: 1.6, use_bonus: false });
+    }
 
     let used = false;
-    for(let i = 0; i < item_effects.length; i++) {
-        const duration = item_templates[id].effects[i].duration;
-        if(!active_effects[item_effects[i].effect] || active_effects[item_effects[i].effect].duration < duration) {
-
-            active_effects[item_effects[i].effect] = new ActiveEffect({...effect_templates[item_effects[i].effect], duration});
+    for (let i = 0; i < item_effects.length; i++) {
+        const duration = item_effects[i].duration;
+        if (!active_effects[item_effects[i].effect] || active_effects[item_effects[i].effect].duration < duration) {
+            active_effects[item_effects[i].effect] = new ActiveEffect({
+                ...effect_templates[item_effects[i].effect],
+                duration
+            });
             used = true;
         }
     }
 
-    if(used) {
-		//log_message(item_key);
+    if (used) {
         update_displayed_effects();
         character.stats.add_active_effect_bonus();
         update_character_stats();
     }
-    remove_from_character_inventory([{item_key}]);
-	
+
+    remove_from_character_inventory([{ item_key }]);
+}
+
+function open_loot_chest(item_key) {
+    const { id } = JSON.parse(item_key);
+    const chest = item_templates[id];
+
+    if (!chest || !Array.isArray(chest.loot)) {
+        console.error(`Invalid loot chest: ${id}`);
+        return;
+    }
+
+    const itemsToAdd = [];
+    const lootMap = new Map(); // Map<item_name, {item, count}>
+
+    for (const lootEntry of chest.loot) {
+        const roll = Math.random() * 100;
+        if (roll <= lootEntry.chance) {
+            const count = Math.floor(
+                Math.random() * (lootEntry.max_count - lootEntry.min_count + 1)
+            ) + lootEntry.min_count;
+
+            for (let i = 0; i < count; i++) {
+                const item = getItem(item_templates[lootEntry.item_id]);
+                const key = item.getInventoryKey();
+                itemsToAdd.push({ item, item_key: key });
+            }
+
+            // Track item counts for log_loot
+            const existing = lootMap.get(lootEntry.item_id);
+            if (existing) {
+                existing.count += count;
+            } else {
+                lootMap.set(lootEntry.item_id, {
+                    item: getItem(item_templates[lootEntry.item_id]),
+                    count: count
+                });
+            }
+        }
+    }
+
+    if (itemsToAdd.length > 0) {
+        add_to_character_inventory(itemsToAdd);
+
+        // Convert lootMap to loot_list for log_loot
+        const loot_list = Array.from(lootMap.values());
+        log_loot(loot_list, false);
+    } else {
+        log_message(`You opened the ${chest.name}, but it was empty.`);
+    }
+
+    remove_from_character_inventory([{ item_key }]);
 }
 
 function get_date() {

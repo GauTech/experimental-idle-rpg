@@ -855,13 +855,28 @@ function getAdjustedReadingTime(bookTitle) {
 }
 
 /**
+ * lootchest clase setup 
+ * 
+ */
+
+
+class LootChestItem extends UsableItem {
+    constructor(item_data) {
+        super(item_data);
+        this.loot = item_data.loot || []; // Array of { item_id, chance, min_count, max_count }
+        this.tags["loot_chest"] = true;
+    }
+}
+
+
+/**
  * @param {*} item_data 
  * @returns item of proper type, created with item_data
  */
 function getItem(item_data) {
-    switch(item_data.item_type) {
+    switch (item_data.item_type) {
         case "EQUIPPABLE":
-            switch(item_data.equip_slot) {
+            switch (item_data.equip_slot) {
                 case "weapon":
                     return new Weapon(item_data);
                 case "off-hand":
@@ -871,23 +886,26 @@ function getItem(item_data) {
                 case "axe":
                 case "pickaxe":
                 case "sickle":
-				case "rod":
+                case "rod":
                     return new Tool(item_data);
                 default:
                     return new Armor(item_data);
             }
         case "USABLE":
+            if (item_data.tags?.loot_chest) {
+                return new LootChestItem(item_data);
+            }
             return new UsableItem(item_data);
         case "BOOK":
             return new Book(item_data);
         case "OTHER":
             return new OtherItem(item_data);
         case "COMPONENT":
-            if(item_data.tags["weapon component"]) 
+            if (item_data.tags["weapon component"])
                 return new WeaponComponent(item_data);
-            else if(item_data.tags["armor component"]) 
+            else if (item_data.tags["armor component"])
                 return new ArmorComponent(item_data);
-            else if(item_data.tags["shield component"]) 
+            else if (item_data.tags["shield component"])
                 return new ShieldComponent(item_data);
             else throw new Error(`Item ${item_data.name} has a wrong component type`);
         case "MATERIAL":
@@ -3011,6 +3029,18 @@ item_templates["Stale bread"] = new UsableItem({
 		effects: [{effect: "Minor magic boost", duration: 300},{effect: "Cheap meat meal", duration: 300}],
     });
 })();
+
+item_templates["Small Treasure Chest"] = new LootChestItem({
+    name: "Small Treasure Chest",
+    description: "A wooden chest containing random valuables.",
+    value: 50,
+    gluttony_value: 0,
+    item_type: "USABLE",
+    tags: { loot_chest: true },
+    loot: [
+        { item_id: "Weak healing powder", chance: 100, min_count: 5, max_count: 15 },
+    ],
+});
 
 Object.keys(item_templates).forEach(id => {
     item_templates[id].id = id;

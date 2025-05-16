@@ -1226,21 +1226,27 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
     item_control_div.appendChild(item_div);
 
     if(target === "character") {
-        if(target_item.item_type === "USABLE") {
-            const item_use_button = document.createElement("div");
-            item_use_button.classList.add("item_use_button");
-            item_use_button.innerText = "[use]";
-            const item_auto_use_button = document.createElement("div");
-            item_auto_use_button.classList.add("item_auto_use_button");
-            item_auto_use_button.innerText = "auto";
+			if (target_item.item_type === "USABLE") {
+				const item_use_button = document.createElement("div");
+				item_use_button.classList.add("item_use_button");
 
-            if(favourite_consumables[target_item.id]) {
-                item_auto_use_button.classList.add("item_auto_use_button_active");
-            }
+				const isLootChest = target_item.tags?.loot_chest;
 
-            item_additional.appendChild(item_use_button);
-            item_additional.appendChild(item_auto_use_button);
-        } else if(target_item.item_type === "BOOK") {
+				item_use_button.innerText = isLootChest ? "[open]" : "[use]";
+				item_additional.appendChild(item_use_button);
+
+				if (!isLootChest) {
+					const item_auto_use_button = document.createElement("div");
+					item_auto_use_button.classList.add("item_auto_use_button");
+					item_auto_use_button.innerText = "auto";
+
+					if (favourite_consumables[target_item.id]) {
+						item_auto_use_button.classList.add("item_auto_use_button_active");
+					}
+
+					item_additional.appendChild(item_auto_use_button);
+				}
+			} else if(target_item.item_type === "BOOK") {
             const item_read_button = document.createElement("div");
             item_read_button.classList.add("item_use_button");
             item_read_button.innerText = "[read]";
@@ -1248,6 +1254,7 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
 
             item_div.classList.add("item_book");
         }
+		
         if(typeof trade_index === "undefined" && target_item.tags.equippable) {
             if(!is_equipped) {
                 let item_equip_span = document.createElement("span");
