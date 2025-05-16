@@ -3039,6 +3039,7 @@ item_templates["Small Treasure Chest"] = new LootChestItem({
     tags: { loot_chest: true },
     loot: [
         { item_id: "Weak healing powder", chance: 100, min_count: 5, max_count: 15 },
+		{ money: true, chance: 100, min_amount: 50, max_amount: 120 }
     ],
 });
 

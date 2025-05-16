@@ -1,11 +1,12 @@
 To do:
 
-console bug if you save+reload whilst reading (but not re-reading) a book
-Stance list and magic list tooltips extend beyond bottom of the page. Stance list also can't handle scrolling. (Could trim a stance instead).
-Add allies feature
-Add investigations / found items in area feature
+Known issues:
+Log gathering result handling isn't working on my version.
+Stances and magics unlocked via book or milestone rewards produce messages every time save data is loaded.
+Craft amount buttons are not displaying.
+Console bug if you save+reload whilst reading (but not re-reading) a book
+ Stance list also can't handle scrolling. (Could trim a stance instead).
 Reading book then moving to combat zone doesn't remove the book reading display.
-
 
 
 Changes:
@@ -17,6 +18,14 @@ Three types of magic.
 -Special spells do unique things (e.g. teleport to any non-combat location).
 All spells have a mana cost and a cooldown.
 Magic has an auto-cast toggle to automatically cast magic when cooldown elapses if possible.
+
+Allies feature:
+Assemble party of allies that attack enemies.
+Allies are untargettable damage platforms for now.
+
+Special combat effects:
+Enemies can now have defense piercing, apply status effects, deal ambush damage (free damage when they spawn) and deathrattle damage (free damage when they die.)
+Bestiary also properly lists these special effects.
 
 
 Many new skills:

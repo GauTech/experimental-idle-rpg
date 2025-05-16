@@ -1177,7 +1177,7 @@ location_types["thundering"] = new LocationType({
         enemies_list: ["Starving wolf", "Young wolf"],
         enemy_count: 30, 
         enemy_stat_variation: 0.2,
-        name: "Forest", 
+        name: "Forest2", 
         parent_location: locations["Forest road"],
         first_reward: {
             xp: 40,
@@ -1502,7 +1502,7 @@ locations["Courtyard"].connected_locations.push({location: locations["Tower"]});
 locations["The Midden"] = new Location({ 
         connected_locations: [{location: locations["Docks"]},{location: locations["Deathwater Bog"]}],
         description: ["The Midden"],
-        name: ["The Midden"],
+        name: "The Midden",
         is_unlocked: true,
     });
 	
@@ -1512,7 +1512,7 @@ locations["Deathwater Bog"].connected_locations.push({location: locations[["The 
 locations["Burning Fields"] = new Location({ 
         connected_locations: [{location: locations["The Midden"]}],
         description: ["Burning Fields"],
-        name: ["Burning Fields"],
+        name: "Burning Fields",
         is_unlocked: false,
     });
 	
@@ -2516,7 +2516,7 @@ locations["The Dregs2"] = new Combat_zone({
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
         is_unlocked: true,
-        name: "The Dregs", 
+        name: "The Dregs2", 
         parent_location: locations["Burning Fields"],
         first_reward: {
             xp: 70,

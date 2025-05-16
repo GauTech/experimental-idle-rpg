@@ -698,20 +698,63 @@ function clear_message_log() {
 /**
  * @param {Array} loot_list [{item, count},...] 
  */
-function log_loot(loot_list, is_combat=true) {
-    
-    if(loot_list.length == 0) {
+function log_loot(arg1, arg2 = true, arg3 = false) {
+    let loot_list, is_combat, is_a_summary;
+
+    // Support destructured object syntax
+    if (typeof arg1 === "object" && !Array.isArray(arg1) && arg1.loot_list) {
+        ({ loot_list, is_combat = false, is_a_summary = false } = arg1);
+    } else {
+        // Backward-compatible syntax
+        loot_list = arg1;
+        is_combat = arg2;
+        is_a_summary = arg3;
+    }
+
+    if (!loot_list || loot_list.length === 0) {
         return;
     }
 
-    let message = `${is_combat?"Looted":"Gained"} "` + loot_list[0]["item"]["name"] + `" x` + loot_list[0]["count"];
-    if(loot_list.length > 1) {
-        for(let i = 1; i < loot_list.length; i++) {
-            message += (`, "` + loot_list[i]["item"]["name"] + `" x` + loot_list[i]["count"]);
+    let item;
+    if (loot_list[0].item) {
+        item = loot_list[0].item;
+    } else if (loot_list[0].item_id) {
+        item = item_templates[loot_list[0].item_id];
+    } else if (loot_list[0].item_key) {
+        item = getItemFromKey(loot_list[0].item_key);
+    }
+
+    let message_type, message;
+
+    if (is_combat) {
+        message_type = "combat_loot";
+        message = 'Looted "';
+    } else if (is_a_summary) {
+        message_type = "total_gathered_loot";
+        message = 'Gained in total: "';
+    } else {
+        message_type = "gathered_loot";
+        message = 'Gained "';
+    }
+
+    message += item.getName ? item.getName() : item.name;
+    message += `" x` + loot_list[0]["count"];
+
+    if (loot_list.length > 1) {
+        for (let i = 1; i < loot_list.length; i++) {
+            if (loot_list[i].item) {
+                item = loot_list[i].item;
+            } else if (loot_list[i].item_id) {
+                item = item_templates[loot_list[i].item_id];
+            } else if (loot_list[i].item_key) {
+                item = getItemFromKey(loot_list[i].item_key);
+            }
+
+            message += `, "` + (item.getName ? item.getName() : item.name) + `" x` + loot_list[i]["count"];
         }
     }
 
-    log_message(message, `${is_combat?"combat_loot":"gathered_loot"}`);
+    log_message(message, message_type);
 }
 
 function log_rare_loot(rare_loot, is_combat=true) {
@@ -3947,6 +3990,13 @@ function create_new_bestiary_entry(enemy_name) {
     tooltip_xp.innerHTML = `<br>Base xp value: ${enemy.xp_value} <br><br>`;
     const tooltip_desc = document.createElement("div"); //enemy description
     tooltip_desc.innerHTML = enemy.description;
+	
+const tooltip_traits = document.createElement("div");
+const traitsText = generateTraitsText(enemy);
+if (traitsText) {
+    tooltip_traits.innerHTML = `${traitsText}<br><br>`;
+}	
+	
 
     const tooltip_tags = document.createElement("div"); //enemy description
 
@@ -4126,6 +4176,7 @@ for(let i = 0; i < enemy.loot_list.length; i++) {
 	bestiary_tooltip.appendChild(tooltip_desc);
 	bestiary_tooltip.appendChild(tooltip_danger_rating);
     bestiary_tooltip.appendChild(tooltip_xp);
+	if (traitsText) bestiary_tooltip.appendChild(tooltip_traits);
     bestiary_tooltip.appendChild(tooltip_tags);
     bestiary_tooltip.appendChild(tooltip_stats);
     bestiary_tooltip.appendChild(tooltip_drops);
@@ -4141,6 +4192,70 @@ for(let i = 0; i < enemy.loot_list.length; i++) {
     //sorts bestiary_list div by enemy rank
     [...bestiary_list.children].sort((a,b)=>parseInt(a.getAttribute("data-bestiary")) - parseInt(b.getAttribute("data-bestiary")))
                                 .forEach(node=>bestiary_list.appendChild(node));
+}
+
+//generates traitstext for bestiary tooltip generation.
+
+function generateTraitsText(enemy) {
+    const traits = [];
+
+    // Helper for status effects
+    const formatEffect = (type, value, suffix = "") => {
+        if (typeof value === "number") {
+            return `${capitalize(type)} (${value} ticks, 100% chance)${suffix}`;
+        } else if (typeof value === "object") {
+            const duration = value.duration ?? 0;
+            const chance = value.chance !== undefined ? value.chance * 100 : 100;
+            return `${capitalize(type)} (${duration} ticks, ${chance}% chance)${suffix}`;
+        }
+        return "";
+    };
+
+    const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+    // on_entry
+    if (enemy.on_entry && typeof enemy.on_entry === "object") {
+        if ("hero_damage" in enemy.on_entry) {
+            traits.push(`${enemy.on_entry.hero_damage} Ambush Damage`);
+        }
+    }
+
+    // on_death
+    if (enemy.on_death && typeof enemy.on_death === "object") {
+        if ("hero_damage" in enemy.on_death) {
+            traits.push(`${enemy.on_death.hero_damage} Deathrattle Damage`);
+        }
+    }
+
+    // on_strike
+    if (enemy.on_strike && typeof enemy.on_strike === "object") {
+        for (const [key, val] of Object.entries(enemy.on_strike)) {
+            if (key === "bark") continue;
+            if (key === "multistrike") traits.push(`Multistrike ${val}`);
+            else if (key === "pierce") traits.push(`Pierce ${val}`);
+            else if (key === "flee" && val === true) traits.push(`Escapes`);
+            else if (["poison", "burn", "freeze", "stun"].includes(key)) {
+                traits.push(formatEffect(key, val));
+            }
+        }
+    }
+
+    // on_connectedstrike
+    if (enemy.on_connectedstrike && typeof enemy.on_connectedstrike === "object") {
+        for (const [key, val] of Object.entries(enemy.on_connectedstrike)) {
+            if (key === "bark") continue;
+            if (key === "flee" && val === true) traits.push(`Escapes (On hit only)`);
+            else if (["poison", "burn", "freeze", "stun"].includes(key)) {
+                traits.push(formatEffect(key, val, " (On hit only)"));
+            }
+        }
+    }
+
+    if (traits.length > 0) {
+        return `Special Traits: ${traits.join(", ")}`;
+    } else {
+        return ""; // No traits to show
+    }
 }
 
 /**

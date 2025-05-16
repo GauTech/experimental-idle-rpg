@@ -108,6 +108,8 @@ let tags_bonus = 1;
 let type_bonus = 1;
 let counter_chance = 0.01;
 
+let gathered_materials = {};
+
 //current enemy
 let current_enemies = null;
 
@@ -186,6 +188,7 @@ const options = {
     remember_sorting_options: false,
     combat_disable_autoswitch: false,
     auto_use_when_longest_runs_out: true,
+	log_total_gathering_gain: true,
 
 };
 
@@ -338,6 +341,21 @@ function roll_item_discovery(location) {
 	return
     }
 }
+
+function option_log_gathering_result(option) {
+    const checkbox = document.getElementById("options_log_gathering_result");
+
+    if(checkbox.checked || option) {
+        options.log_total_gathering_gain = true;
+    } else {
+        options.log_total_gathering_gain = false;
+    }
+
+    if(option) {
+        checkbox.checked = option;
+    }
+}
+
 
 function change_location(location_name) {
     let location = locations[location_name];
@@ -494,7 +512,16 @@ function start_activity(selected_activity) {
     } else if(activities[current_activity.activity_name].type === "TRAINING") {
         //
     } else if(activities[current_activity.activity_name].type === "GATHERING") { 
-        //
+        
+        let has_proper_tool = !activities[current_activity.activity_name].required_tool_type || character.equipment[activities[current_activity.activity_name].required_tool_type];
+        //just check if slot is not empty
+
+        if(!has_proper_tool) {
+            log_message("You need to equip a proper tool to do that!");
+            current_activity = null;
+            return;
+        }
+        current_activity.gathered_materials = {};
     } else throw `"${activities[current_activity.activity_name].type}" is not a valid activity type!`;
 
     current_activity.gathering_time = 0;
@@ -508,15 +535,27 @@ function start_activity(selected_activity) {
 function end_activity() {
     
     log_message(`${character.name} finished ${current_activity.activity_name}`, "activity_finished");
+	console.log("activity ended");
+	console.log(options.log_total_gathering_gain);
     
     if(current_activity.earnings) {
-        character.money += current_activity.earnings;
         log_message(`${character.name} earned ${format_money(current_activity.earnings)}`, "activity_money");
-        update_displayed_money();
+        add_money_to_character(current_activity.earnings);
+    }
+	console.log("activity ended");
+
+    if(current_activity.gathered_materials && options.log_total_gathering_gain) {
+		console.log("if condition valid");
+        const loot = []; 
+        Object.keys(current_activity.gathered_materials).forEach(mat_key => {
+            loot.push({item_key: mat_key, count: current_activity.gathered_materials[mat_key]});
+        });
+		console.log("loot =",loot);
+        log_loot({loot_list: loot, is_a_summary: true});
     }
     end_activity_animation(); //clears the "animation"
     current_activity = null;
-    change_location(current_location.name);
+    change_location(current_location.id);
 }
 
 /**
@@ -869,6 +908,10 @@ function process_rewards({rewards = {}, source_type, source_name, is_first_clear
             current_location = locations[rewards.move_to.location];
         }
     }
+}
+function add_money_to_character(money_num) {
+    character.money += money_num;
+    update_displayed_money();
 }
 
 //single tick of resting
@@ -3249,38 +3292,60 @@ function open_loot_chest(item_key) {
     }
 
     const itemsToAdd = [];
-    const lootMap = new Map(); // Map<item_name, {item, count}>
+    const lootMap = new Map(); // Map<item_id, { item, count }>
+    let totalMoney = 0;
 
     for (const lootEntry of chest.loot) {
         const roll = Math.random() * 100;
-        if (roll <= lootEntry.chance) {
-            const count = Math.floor(
-                Math.random() * (lootEntry.max_count - lootEntry.min_count + 1)
-            ) + lootEntry.min_count;
+        if (roll > lootEntry.chance) continue;
 
-            for (let i = 0; i < count; i++) {
-                const item = getItem(item_templates[lootEntry.item_id]);
-                const key = item.getInventoryKey();
-                itemsToAdd.push({ item, item_key: key });
-            }
+        // MONEY ENTRY
+        if (lootEntry.money) {
+            const amount = Math.floor(
+                Math.random() * (lootEntry.max_amount - lootEntry.min_amount + 1)
+            ) + lootEntry.min_amount;
+            totalMoney += amount;
+            continue;
+        }
 
-            // Track item counts for log_loot
-            const existing = lootMap.get(lootEntry.item_id);
-            if (existing) {
-                existing.count += count;
-            } else {
-                lootMap.set(lootEntry.item_id, {
-                    item: getItem(item_templates[lootEntry.item_id]),
-                    count: count
-                });
-            }
+        // ITEM ENTRY
+        const count = Math.floor(
+            Math.random() * (lootEntry.max_count - lootEntry.min_count + 1)
+        ) + lootEntry.min_count;
+
+        for (let i = 0; i < count; i++) {
+            const item = getItem(item_templates[lootEntry.item_id]);
+            const key = item.getInventoryKey();
+            itemsToAdd.push({ item, item_key: key });
+        }
+
+        // Update loot map for logging
+        const existing = lootMap.get(lootEntry.item_id);
+        if (existing) {
+            existing.count += count;
+        } else {
+            lootMap.set(lootEntry.item_id, {
+                item: getItem(item_templates[lootEntry.item_id]),
+                count: count
+            });
         }
     }
 
+    // Award Items
     if (itemsToAdd.length > 0) {
         add_to_character_inventory(itemsToAdd);
+    }
 
-        // Convert lootMap to loot_list for log_loot
+    // Award Money
+    if (totalMoney > 0) {
+        add_money_to_character(totalMoney);
+
+        
+			log_message(`${character.name} earned ${format_money(totalMoney)}`);
+        }
+
+    // Log result
+    if (lootMap.size > 0) {
         const loot_list = Array.from(lootMap.values());
         log_loot(loot_list, false);
     } else {
@@ -3370,6 +3435,7 @@ function create_save() {
         save_data.total_crafting_attempts = total_crafting_attempts;
         save_data.total_crafting_successes = total_crafting_successes;
         save_data.total_kills = total_kills;
+		save_data.gathered_materials = gathered_materials;
         save_data.global_flags = global_flags;
 		save_data.global_battle_state = global_battle_state;
         save_data["character"] = {
@@ -3435,11 +3501,12 @@ function create_save() {
             }
         }); //save activities' unlocked status (this is separate from unlock status in location)
 
-        if(current_activity) {
+    if(current_activity) {
             save_data["current_activity"] = {activity_id: current_activity.id, 
                                              working_time: current_activity.working_time, 
                                              earnings: current_activity.earnings,
                                              gathering_time: current_activity.gathering_time,
+                                             gathered_materials: current_activity.gathered_materials,
                                             };
         }
         
@@ -3636,6 +3703,7 @@ global_battle_state = save_data.global_battle_state || {};
     total_crafting_attempts = save_data.total_crafting_attempts || 0;
     total_crafting_successes = save_data.total_crafting_successes || 0;
     total_deaths = save_data.total_deaths || 0;
+	gathered_materials = save_data.gathered_materials || {};
 
     name_field.value = save_data.character.name;
     character.name = save_data.character.name;
@@ -3659,6 +3727,8 @@ global_battle_state = save_data.global_battle_state || {};
         })
     }
     option_remember_filters(options.remember_message_log_filters);
+	
+	option_log_gathering_result(options.log_total_gathering_gain);
 
     //this can be removed at some point
     const is_from_before_eco_rework = compare_game_version("v0.3.5", save_data["game version"]) == 1;
@@ -4266,19 +4336,21 @@ if (save_data.current_party) {
     if(save_data.current_activity) {
         //search for it in location from save_data
         const activity_id = save_data.current_activity.activity_id;
-        if(typeof activity_id !== "undefined" && current_location.activities[activity_id] && activities[activity_id]) {
+        if(typeof activity_id !== "undefined" && current_location.activities[activity_id] && activities[current_location.activities[activity_id].activity_name]) {
             
             start_activity(activity_id);
-            if(activities[activity_id].type === "JOB") {
+            if(activities[current_location.activities[activity_id].activity_name].type === "JOB") {
                 current_activity.working_time = save_data.current_activity.working_time;
                 current_activity.earnings = save_data.current_activity.earnings * ((is_from_before_eco_rework == 1)*10 || 1);
                 document.getElementById("action_end_earnings").innerHTML = `(earnings: ${format_money(current_activity.earnings)})`;
+            } else if(activities[current_location.activities[activity_id].activity_name].type === "GATHERING") {
+                current_activity.gathered_materials = save_data.current_activity.gathered_materials || {};
             }
 
             current_activity.gathering_time = save_data.current_activity.gathering_time;
             
         } else {
-            console.warn("Couldn't find saved activity! It might have been removed");
+            console.warn(`Couldn't find saved activity "${activity_id}"! It might have been removed`);
         }
     }
 
@@ -4495,11 +4567,14 @@ function update() {
                             if(Math.random() > (1-gained_resources[i].chance)) {
                                 const count = Math.floor(Math.random()*(gained_resources[i].count[1]-gained_resources[i].count[0]+1))+gained_resources[i].count[0];
                                 items.push({item: item_templates[gained_resources[i].name], count: count});
+								
+								gathered_materials[gained_resources[i].name] = (gathered_materials[gained_resources[i].name] || 0) + count;
                             }
                         }
 
                         if(items.length > 0) {
                             log_loot(items, false);
+
                             add_to_character_inventory(items);
                         }
 
@@ -4848,6 +4923,7 @@ window.option_uniform_textsize = option_uniform_textsize;
 window.option_bed_return = option_bed_return;
 window.option_combat_autoswitch = option_combat_autoswitch;
 window.option_remember_filters = option_remember_filters;
+window.option_log_gathering_result = option_log_gathering_result;
 
 window.getDate = get_date;
 
