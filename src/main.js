@@ -1557,13 +1557,20 @@ function set_new_combat({enemies} = {}) {
     if (!current_location.get_next_enemies) {
         clear_all_enemy_attack_loops();
         clear_character_attack_loop();
-        clear_all_ally_attack_loops(); // New: clear ally loops too
+        clear_all_ally_attack_loops(); 
         return;
     }
 
     current_enemies = enemies || current_location.get_next_enemies();
     clear_all_enemy_attack_loops();
     clear_all_ally_attack_loops();
+
+    // Trigger on_entry effects for each enemy
+    current_enemies.forEach(enemy => {
+        if (enemy.on_entry && typeof enemy.on_entry === "object") {
+            enemy_entrance_effects(enemy.on_entry);
+        }
+    });
 
     let character_attack_cooldown = 1 / (character.stats.full.attack_speed);
     enemy_attack_cooldowns = [...current_enemies.map(x => 1 / x.stats.attack_speed)];
@@ -1718,35 +1725,55 @@ function clear_enemy_attack_loop(enemy_id) {
 
 function apply_on_strike_effects(attacker) {
     if (!attacker.on_strike) return { pierce: 0, damage_multiplier: 1 };
-	
+
+    // Handle fleeing
     if (attacker.on_strike.flee === true) {
         const parent = current_location.parent_location.name;
         if (typeof parent === "string" && locations[parent]) {
             change_location(parent);
-			
-            
-        if (attacker.name === "Titan Turtle") {
-            log_message("The beast very slowly escaped!");
-        } else {
-            log_message("The beast escaped!");
-        }
+
+            if (attacker.name === "Titan Turtle") {
+                log_message("The beast very slowly escaped!");
+            } else {
+                log_message("The beast escaped!");
+            }
             return { pierce: 0, damage_multiplier: 1 };
         } else {
             console.error("Invalid parent location:", parent);
-			return { pierce: 0, damage_multiplier: 1 };
+            return { pierce: 0, damage_multiplier: 1 };
+        }
+    }
+
+    // Handle bark messages
+    if (Array.isArray(attacker.on_strike.bark) && attacker.on_strike.bark.length > 0) {
+        const message = attacker.on_strike.bark.shift(); // Remove and get the first message
+        if (typeof message === "string") {
+            log_message(`"${message}"`, "background");
         }
     }
 
     let pierce = attacker.on_strike.pierce || 0;
     let damage_multiplier = attacker.on_strike.multistrike || 1;
 
-    const status_effects = ["poison", "freeze", "burn", "stun"];
+const status_effects = ["poison", "freeze", "burn", "stun"];
 
-    for (const effect_name of status_effects) {
-        if (attacker.on_strike[effect_name]) {
-            const duration = attacker.on_strike[effect_name];
+for (const effect_name of status_effects) {
+    const effect_data = attacker.on_strike[effect_name];
+    
+    if (effect_data) {
+        // Support legacy format (direct duration), or new format ({duration, chance})
+        let duration, chance;
+        if (typeof effect_data === "object" && effect_data !== null) {
+            duration = effect_data.duration;
+            chance = effect_data.chance ?? 1; // default to 100% chance if not specified
+        } else {
+            duration = effect_data;
+            chance = 1;
+        }
 
-            let stats = {};  ///need to decide how resistance skills will apply to these.
+        // Roll to apply effect
+        if (Math.random() <= chance) {
+            let stats = {};
             switch (effect_name) {
                 case "poison":
                     stats = {
@@ -1765,7 +1792,7 @@ function apply_on_strike_effects(attacker) {
                     break;
                 case "stun":
                     stats = {
-                        attack_speed: { multiplier: 0.1 }, // placeholder for stun logic
+                        attack_speed: { multiplier: 0.1 }, // placeholder
                     };
                     break;
             }
@@ -1773,21 +1800,113 @@ function apply_on_strike_effects(attacker) {
             const effect = new ActiveEffect({
                 name: effect_name.charAt(0).toUpperCase() + effect_name.slice(1),
                 duration,
-                effects: {
-                    stats,
-                }
+                effects: { stats }
             });
 
             active_effects[effect.id] = effect;
-			effect_templates[effect.id] = effect;
+            effect_templates[effect.id] = effect;
 
-		update_displayed_effects();
-		character.stats.add_active_effect_bonus();
-		update_displayed_stats(); 	
-        log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
+            update_displayed_effects();
+            character.stats.add_active_effect_bonus();
+            update_displayed_stats();
+
+            log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
         }
     }
+}
+
     return { pierce, damage_multiplier };
+}
+
+function apply_on_connectedstrike_effects(attacker) {
+    if (!attacker.on_connectedstrike) return;
+
+    const data = attacker.on_connectedstrike;
+
+    // Handle fleeing
+    if (data.flee === true) {
+        const parent = current_location.parent_location.name;
+        if (typeof parent === "string" && locations[parent]) {
+            change_location(parent);
+
+            if (attacker.name === "Titan Turtle") {
+                log_message("The beast very slowly escaped!");
+            } else {
+                log_message("The beast escaped!");
+            }
+            return;
+        } else {
+            console.error("Invalid parent location:", parent);
+            return;
+        }
+    }
+
+    // Handle bark messages
+    if (Array.isArray(data.bark) && data.bark.length > 0) {
+        const message = data.bark.shift(); // Remove and get the first message
+        if (typeof message === "string") {
+            log_message(`"${message}"`, "background");
+        }
+    }
+
+    // Handle status effects
+    const status_effects = ["poison", "freeze", "burn", "stun"];
+
+    for (const effect_name of status_effects) {
+        const effect_data = data[effect_name];
+        
+        if (effect_data) {
+            let duration, chance;
+            if (typeof effect_data === "object" && effect_data !== null) {
+                duration = effect_data.duration;
+                chance = effect_data.chance ?? 1;
+            } else {
+                duration = effect_data;
+                chance = 1;
+            }
+
+            if (Math.random() <= chance) {
+                let stats = {};
+                switch (effect_name) {
+                    case "poison":
+                        stats = {
+                            health_regeneration_flat: { flat: -5 },
+                        };
+                        break;
+                    case "freeze":
+                        stats = {
+                            attack_speed: { multiplier: 0.5 },
+                        };
+                        break;
+                    case "burn":
+                        stats = {
+                            health_regeneration_flat: { flat: -5 },
+                        };
+                        break;
+                    case "stun":
+                        stats = {
+                            attack_speed: { multiplier: 0.1 },
+                        };
+                        break;
+                }
+
+                const effect = new ActiveEffect({
+                    name: effect_name.charAt(0).toUpperCase() + effect_name.slice(1),
+                    duration,
+                    effects: { stats }
+                });
+
+                active_effects[effect.id] = effect;
+                effect_templates[effect.id] = effect;
+
+                update_displayed_effects();
+                character.stats.add_active_effect_bonus();
+                update_displayed_stats();
+
+                log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
+            }
+        }
+    }
 }
 
 /**
@@ -2151,6 +2270,7 @@ function do_enemy_combat_action(enemy_id) {
         add_xp_to_skill({skill: skills["Last Stand"], xp_to_add: attacker.xp_value});
     }
 
+	apply_on_connectedstrike_effects(attacker);
 
     let { damage_taken, fainted } = character.take_damage({
     damage_value: damage_dealt,
@@ -2408,6 +2528,11 @@ if (rare_loot.length > 0) {
 function execute_death_effects(on_death) {
     if (!on_death) return;
 
+    // Handle death bark
+    if (typeof on_death.bark === "string" && on_death.bark.trim().length > 0) {
+        log_message(`"${on_death.bark}"`, "background");
+    }
+
     // Handle setting global flags
     if (on_death.flags && Array.isArray(on_death.flags)) {
         on_death.flags.forEach(flag => {
@@ -2421,29 +2546,26 @@ function execute_death_effects(on_death) {
 
     // Handle special hero damage with a message
     if (typeof on_death.hero_damage === 'number' && on_death.hero_damage > 0) {
-		log_message(character.name + " received " + (on_death.hero_damage) + " defense bypassing damage from a dying enemy", "hero_missed");
-	let {damage_taken, fainted} = character.take_damage({damage_value: on_death.hero_damage, negate_defense: true});
-	update_displayed_health();
-	
-    if(fainted) {
-        total_deaths++;
-		log_message(character.name + " fainted due to damage from a dying enemy", "hero_defeat")
-        log_message(character.name + " has lost consciousness", "hero_defeat")
-		add_xp_to_skill({skill: skills["Undying"], xp_to_add: 1000});;
-
+        log_message(character.name + " received " + (on_death.hero_damage) + " defense bypassing damage from a dying enemy", "hero_missed");
+        let { damage_taken, fainted } = character.take_damage({ damage_value: on_death.hero_damage, negate_defense: true });
         update_displayed_health();
-        if(options.auto_return_to_bed && last_location_with_bed) {
-            change_location(last_location_with_bed);
-            start_sleeping();
-        } else {
-            change_location(current_location.parent_location.name);
+
+        if (fainted) {
+            total_deaths++;
+            log_message(character.name + " fainted due to damage from a dying enemy", "hero_defeat");
+            log_message(character.name + " has lost consciousness", "hero_defeat");
+            add_xp_to_skill({ skill: skills["Undying"], xp_to_add: 1000 });
+
+            update_displayed_health();
+
+            if (options.auto_return_to_bed && last_location_with_bed) {
+                change_location(last_location_with_bed);
+                start_sleeping();
+            } else {
+                change_location(current_location.parent_location.name);
+            }
+            return;
         }
-        return;
-	
-}	
-		
-		
-		
     }
 
     // Placeholder for future death effects
@@ -2452,6 +2574,55 @@ function execute_death_effects(on_death) {
     }
 }
 
+function enemy_entrance_effects(on_entry) {
+    if (!on_entry) return;
+
+    // Handle entrance bark
+    if (typeof on_entry.bark === "string" && on_entry.bark.trim().length > 0) {
+        log_message(`"${on_entry.bark}"`, "background");
+    }
+
+    // Handle setting global flags
+    if (on_entry.flags && Array.isArray(on_entry.flags)) {
+        on_entry.flags.forEach(flag => {
+            if (global_flags.hasOwnProperty(flag)) {
+                global_flags[flag] = true;
+            } else {
+                console.warn(`Unknown global flag: ${flag}`);
+            }
+        });
+    }
+
+    // Handle instant hero damage
+    if (typeof on_entry.hero_damage === 'number' && on_entry.hero_damage > 0) {
+        log_message(character.name + " took " + on_entry.hero_damage + " damage from a sudden ambush!", "hero_missed");
+
+        let { damage_taken, fainted } = character.take_damage({ damage_value: on_entry.hero_damage, negate_defense: true });
+        update_displayed_health();
+
+        if (fainted) {
+            total_deaths++;
+            log_message(character.name + " was overwhelmed in a surprise attack!", "hero_defeat");
+            log_message(character.name + " has lost consciousness", "hero_defeat");
+            add_xp_to_skill({ skill: skills["Undying"], xp_to_add: 1000 });
+
+            update_displayed_health();
+
+            if (options.auto_return_to_bed && last_location_with_bed) {
+                change_location(last_location_with_bed);
+                start_sleeping();
+            } else {
+                change_location(current_location.parent_location.name);
+            }
+            return;
+        }
+    }
+
+    // Placeholder for future entrance effects
+    if (on_entry.custom_effects && typeof on_entry.custom_effects === 'function') {
+        on_entry.custom_effects();
+    }
+}
 
 function perform_counterattack(attacker) {
 	let stance_counter_rate = (stances[current_stance].counter_rate || 0.05)

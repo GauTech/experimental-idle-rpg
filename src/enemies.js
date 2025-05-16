@@ -21,8 +21,10 @@ class Enemy {
                  size = "small",
                  add_to_bestiary = true,
                  tags = {},
+				 on_entry = {},
 				 on_death = {},
 				 on_strike = {},
+				 on_connectedstrike = {},
 				 custom_generate = {},
                 }) {
                     
@@ -35,8 +37,40 @@ class Enemy {
         this.stats.max_health = stats.health;
         this.loot_list = loot_list;
         this.tags = {};
+		this.on_entry = on_entry;
 		this.on_death = on_death;
-		this.on_strike = on_strike; // valid examples, on_strike: {multistrike: 3, pierce: 5} OR on_strike: {poison: 200}, where number is duration. Valid handling for poison, burn, freese, stun. Placeholder logic on stun.
+		/*
+		Valid handling of on_entry and on_death effects
+		    on_entry OR on_death: {
+        bark: "msg", background message to play when invoked
+        hero_damage: x, where x is armour bypassing damage
+        flags: ["flag"], where flag is whatever flag to set.    },
+		
+		*/
+		this.on_strike = on_strike; 
+		/*
+		Valid handling of on_strike
+		on_strike: {multistrike: x}, where is used as a damage multiplier
+		on_strike: {pierce: x}, where is used to pierce defence
+		on_strike: {poison: x}, where is used for poison effect duration OR { poison: { duration: x, chance: y } } where x is duration and y is % chance of occuring (1=100%)
+		on_strike: {burn: x}, where is used for burn effect duration OR { poison: { burn: x, chance: y } } where x is duration and y is % chance of occuring (1=100%)
+		on_strike: {freeze: x}, where is used for freeze effect duration OR { poison: { freeze: x, chance: y } } where x is duration and y is % chance of occuring (1=100%)
+		on_strike: {stun: x}, where is used for stun effect duration OR { stun: { duration: x, chance: y } } where x is duration and y is % chance of occuring (1=100%)
+		on_strike: {flee: true}, causes the enemy to eject player from the combat encounter and generates a log message about escaping.
+		on_strike: {bark: ["string1","string2","string3"]}, each on_strike invocation will play the next message in the barks list as a background message.
+		*/
+		this.on_connectedstrike = on_connectedstrike; 
+		/*
+		Valid handling of on_connectedstrike
+		on_connectedstrike: {poison: x}, where is used for poison effect duration OR { poison: { duration: x, chance: y } } where x is duration and y is % chance of occuring (1=100%)
+		on_connectedstrike: {burn: x}, where is used for burn effect duration OR { burn: { duration: x, chance: y } } where x is duration and y is % chance of occuring (1=100%)
+		on_connectedstrike: {freeze: x}, where is used for freeze effect duration OR { freeze: { duration: x, chance: y } } where x is duration and y is % chance of occuring (1=100%)
+		on_connectedstrike: {stun: x}, where is used for stun effect duration OR { stun: { duration: x, chance: y } } where x is duration and y is % chance of occuring (1=100%)
+		on_connectedstrike: {flee: true}, causes the enemy to eject player from the combat encounter and generates a log message about escaping.
+		on_connectedstrike: {bark: ["string1","string2","string3"]}, each on_connectedstrike invocation will play the next message in the barks list as a background message.
+		
+		NOTE: on_strike effects are called when the enemy attacks, on_connectedstrike effects are called when the attack successfully hits
+		*/
 		this.custom_generate = custom_generate;
         for(let i = 0; i <tags.length; i++) {
          this.tags[tags[i]] = true;
@@ -337,6 +371,7 @@ Platinum Slime
         rank: 3,
         size: "small",
         tags: ["amorphous"],
+		on_strike: {pierce: 1},
         stats: {health: 40, attack: 28, agility: 4, dexterity: 22, magic: 0, intuition: 2, attack_speed: 1, defense: 0}, 
         loot_list: [
             {item_name: "Goo", chance: 0.80},
@@ -351,6 +386,7 @@ Platinum Slime
         rank: 4,
         size: "small",
         tags: ["amorphous"],
+		on_strike: {poison: 200},
         stats: {health: 160, attack: 56, agility: 8, dexterity: 44, magic: 0, intuition: 8, attack_speed: 1.2, defense: 6}, 
         loot_list: [
             {item_name: "Goo", chance: 0.80, count: 2},
@@ -420,6 +456,10 @@ enemy_templates["Spider Ambusher"] = new Enemy({
     rank: 4,
     size: "small",
     tags: ["arthropod"],
+			    on_entry: {
+        bark: "Hiss!",
+        hero_damage: 2,
+    },
     stats: {health: 70, attack: 38, agility: 34, dexterity: 36, magic: 0, intuition: 12, attack_speed: 1.3, defense: 3},
     loot_list: [
         {item_name: "Spider Silk", chance: 0.50},
@@ -463,6 +503,7 @@ enemy_templates["Death-With-Legs"] = new Enemy({
     rank: 5,
     size: "large",
     tags: ["arthropod"],
+	on_strike: {pierce: 5},
     stats: {health: 260, attack: 80, agility: 40, dexterity: 64, magic: 0, intuition: 16, attack_speed: 1.3, defense: 34},
     loot_list: [
         {item_name: "Venom Gland", chance: 0.60},
@@ -582,6 +623,11 @@ enemy_templates["Ant Queen"] = new Enemy({
         rank: 1,
         size: "medium",
         tags: ["undead","humanoid"],
+		on_strike: {bark: ["Grooooan","Braaains"]},
+		on_death: {
+		bark: "The monster lets out a final shriek!",
+
+},
         stats: {health: 20, attack: 12, agility: 2, dexterity: 2, magic: 0, intuition: 1, attack_speed: 0.8, defense: 1}, //stat_total = 20 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Rotten Flesh", chance: 0.20},

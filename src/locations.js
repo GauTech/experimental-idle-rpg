@@ -244,6 +244,8 @@ class Combat_zone {
             size: template.size,
             on_death: template.on_death,
             on_strike: template.on_strike,
+			on_connectedstrike: template.on_connectedstrike,
+			on_entry: template.on_entry,
         });
 
         newEnemy.is_alive = true;
