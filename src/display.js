@@ -1,7 +1,7 @@
 "use strict";
 
 import { traders } from "./traders.js";
-import { current_trader, to_buy, to_sell } from "./trade.js";
+import { current_trader, to_buy, to_sell, add_to_selling_list } from "./trade.js";
 import { skills, get_unlocked_skill_rewards, get_next_skill_milestone } from "./skills.js";
 import { character, get_skill_xp_gain, get_hero_xp_gain, get_skills_overall_xp_gain } from "./character.js";
 import { current_enemies, options, 
@@ -4368,6 +4368,48 @@ function remove_class_from_all(class_name) {
         elems.item(0).classList.remove(class_name);
     }
 }
+
+function addJunk() {
+    if (!character || !character.inventory) {
+        console.warn("Character or inventory not defined.");
+        return;
+    }
+
+    for (let item_key in character.inventory) {
+        const invEntry = character.inventory[item_key];
+        const item = invEntry.item;
+        const count = invEntry.count;
+		// console.log("item =", item);
+
+        if (!item || count <= 0) continue;
+
+        if (item.item_type === "JUNK") {
+			console.log("item =", item);
+            total_price += add_to_selling_list({
+                item_key: item_key,
+                count: count
+            });
+        }
+    }
+	
+	        update_displayed_trader_inventory();
+                    update_displayed_character_inventory();
+
+                    trade_price_value.innerHTML = format_money(total_price);
+                    check_trade_cost();
+
+    console.log("All junk items added to the selling list.");
+}
+
+// Attach event listener when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+    const addJunkButton = document.getElementById("add_junk_button");
+    if (addJunkButton) {
+        addJunkButton.addEventListener("click", addJunk);
+    } else {
+        console.warn("Add Junk button not found.");
+    }
+});
 
 export {
     start_activity_animation,

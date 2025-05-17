@@ -1122,14 +1122,25 @@ i {
 	font-size: 16px;
 }
 
-#accept_trade_button, #cancel_trade_button, .trader_sorting_button {
+#accept_trade_button, #cancel_trade_button, #add_junk_button, .trader_sorting_button {
     float:left;
-	width: 198px;
 	text-align: center;
 	outline: 1px solid white;
 	margin: -1px 1px;
 	cursor: pointer;
 	font-size: 16px;
+}
+
+#accept_trade_button, #cancel_trade_button {
+	width: 149px;
+}
+
+#add_junk_button {
+	width: 95px;
+}
+
+.trader_sorting_button {
+width: 198px;
 }
 
 #accept_trade_button {
