@@ -749,7 +749,7 @@ enemy_templates["Ant Queen"] = new Enemy({
 
     enemy_templates["Frail Zombie"] = new Enemy({
         name: "Frail Zombie", 
-        description: "It could fall apart at any moment. Especially if takes a hit or two.",
+        description: "It could fall apart at any moment. Especially if it takes a hit or two.",
 		xp_value: 1, 
         rank: 1,
         size: "medium",
@@ -766,12 +766,13 @@ enemy_templates["Ant Queen"] = new Enemy({
 
     enemy_templates["Plague Rat"] = new Enemy({
         name: "Plague Rat", 
-        description: "Plague Rat",
+        description: "Scurrying little disease vectors.",
 		xp_value: 5, 
         rank: 2,
         size: "small",
         tags: ["beast"],
-        stats: {health: 30, attack: 10, agility: 11, dexterity: 11, magic: 0, intuition: 4, attack_speed: 0.9, defense: 1}, //stat_total = 40
+		on_connectedstrike: { poison: { duration: 10, chance: 0.2 } }, 
+        stats: {health: 30, attack: 3, agility: 11, dexterity: 11, magic: 0, intuition: 4, attack_speed: 0.9, defense: 1}, //stat_total = 40
         loot_list: [
             {item_name: "Rat meat chunks", chance: 0.10},
 			{item_name: "Rat fang", chance: 0.40}
@@ -803,6 +804,24 @@ enemy_templates["Ant Queen"] = new Enemy({
             {item_name: "Rotten Flesh", chance: 0.40},
         ],
     });
+
+///
+    enemy_templates["Royal Rat"] = new Enemy({
+        name: "Plague Rat", 
+        description: "Scurrying little disease vectors.",
+		xp_value: 50, 
+        rank: 2,
+        size: "medium",
+        tags: ["beast"],
+		on_connectedstrike: { poison: { duration: 10, chance: 1 } }, 
+        stats: {health: 300, attack: 3, agility: 11, dexterity: 11, magic: 0, intuition: 4, attack_speed: 1, defense: 1}, //stat_total = 40
+        loot_list: [
+            {item_name: "Rat meat chunks", chance: 0.10},
+			{item_name: "Rat fang", chance: 0.40},
+			{item_name: "Shoddy Treasure Chest", chance: 0.005}
+        ],
+    });
+
 
 /// rank 3s
     enemy_templates["Skeleton Archer"] = new Enemy({
@@ -858,9 +877,9 @@ Umbral Knight*/
 
     enemy_templates["Bloody Knight"] = new Enemy({
         name: "Bloody Knight", 
-        description: "Bloody Knight",
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
 		xp_value: 400, 
-        rank: 4,
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 60, agility: 30, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, // 1 stat x2
@@ -871,9 +890,9 @@ Umbral Knight*/
 
     enemy_templates["Famine Knight"] = new Enemy({
         name: "Famine Knight", 
-        description: "Famine Knight",
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
 		xp_value: 400, 
-        rank: 4,
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 60, agility: 30, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
@@ -884,11 +903,12 @@ Umbral Knight*/
 
     enemy_templates["Plague Knight"] = new Enemy({
         name: "Plague Knight", 
-        description: "Plague Knight",
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
 		xp_value: 400, 
-        rank: 4,
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
+		on_connectedstrike: { poison: { duration: 20, chance: 0.5 } }, 
         stats: {health: 160, attack: 60, agility: 30, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
         loot_list: [
             {item_name: "Order Badge", chance: 1},
@@ -897,9 +917,9 @@ Umbral Knight*/
 	
     enemy_templates["Silent Knight"] = new Enemy({
         name: "Silent Knight", 
-        description: "Silent Knight",
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
 		xp_value: 400, 
-        rank: 4,
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 60, agility: 15, dexterity: 112, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
@@ -910,9 +930,9 @@ Umbral Knight*/
 	
     enemy_templates["Ash Knight"] = new Enemy({
         name: "Ash Knight", 
-        description: "Ash Knight",
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
 		xp_value: 400, 
-        rank: 4,
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 120, agility: 15, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
@@ -923,9 +943,9 @@ Umbral Knight*/
 	
     enemy_templates["Storm Knight"] = new Enemy({
         name: "Storm Knight", 
-        description: "Storm Knight",
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
 		xp_value: 400, 
-        rank: 4,
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 120, agility: 15, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
@@ -936,9 +956,9 @@ Umbral Knight*/
 	
     enemy_templates["Umbral Knight"] = new Enemy({
         name: "Umbral Knight", 
-        description: "Umbral Knight",
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
 		xp_value: 400, 
-        rank: 4,
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 60, agility: 15, dexterity: 112, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
@@ -1447,7 +1467,7 @@ Umbral Knight*/
         name: "Shadow", 
         description: "A perfect mirror of your power.",
 		add_to_bestiary: false,
-		xp_value: 60000, 
+		xp_value: 100, 
         rank: 9,
         size: "medium",
         tags: ["humanoid", "spirit"],

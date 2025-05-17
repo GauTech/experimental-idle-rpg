@@ -140,14 +140,14 @@ class TradeItem {
         name: "Peddler",
         inventory_template: "General",
         is_unlocked: false,
-        location_name: "Village",
+        location_name: "Sanctuary",
     });
     traders["smith trader"] = new Trader({
         name: "the smith",
         inventory_template: "Smith",
         is_unlocked: false,
-        location_name: "Village",
-		profit_margin: 2.5,
+        location_name: "Sanctuary",
+		profit_margin: 3,
     });
     traders["suspicious trader"] = new Trader({
         name: "suspicious trader",

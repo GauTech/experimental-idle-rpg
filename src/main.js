@@ -85,6 +85,8 @@ const global_flags = {
 	is_ant_hive_beaten: false,
 	is_rare_ant_killed: false,
 	is_hero_level10: false,
+	is_hero_level20: false,
+	is_hero_level50: false,
 	is_mining_level20: false,
 	is_woodcutting_level20: false,
 	is_herbalism_level20: false,
@@ -106,7 +108,7 @@ let total_crafting_successes = 0;
 let total_kills = 0;
 let tags_bonus = 1;
 let type_bonus = 1;
-let counter_chance = 0.01;
+let counter_chance = 0.05;
 
 let gathered_materials = {};
 
@@ -183,7 +185,7 @@ const tickrate = 1;
 //stuff from options panel
 const options = {
     uniform_text_size_in_action: false,
-    auto_return_to_bed: false,
+    auto_return_to_bed: true,
     remember_message_log_filters: false,
     remember_sorting_options: false,
     combat_disable_autoswitch: false,
@@ -1811,7 +1813,7 @@ function apply_on_strike_effects(attacker) {
     let pierce = attacker.on_strike.pierce || 0;
     let damage_multiplier = attacker.on_strike.multistrike || 1;
 
-const status_effects = ["poison", "freeze", "burn", "stun"];
+const status_effects = ["poison", "freeze", "burn", "stun", "toxic"];
 
 for (const effect_name of status_effects) {
     const effect_data = attacker.on_strike[effect_name];
@@ -1832,6 +1834,11 @@ for (const effect_name of status_effects) {
             let stats = {};
             switch (effect_name) {
                 case "poison":
+                    stats = {
+                        health_regeneration_flat: { flat: (-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))) },
+                    };
+                    break;
+				      case "toxic":
                     stats = {
                         health_regeneration_flat: { flat: -5 },
                     };
@@ -1906,7 +1913,7 @@ function apply_on_connectedstrike_effects(attacker) {
     }
 
     // Handle status effects
-    const status_effects = ["poison", "freeze", "burn", "stun"];
+    const status_effects = ["poison", "freeze", "burn", "stun", "toxic"];
 
     for (const effect_name of status_effects) {
         const effect_data = data[effect_name];
@@ -1926,9 +1933,14 @@ function apply_on_connectedstrike_effects(attacker) {
                 switch (effect_name) {
                     case "poison":
                         stats = {
-                            health_regeneration_flat: { flat: -5 },
+                            health_regeneration_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
                         };
                         break;
+					        case "toxic":
+                        stats = {
+                            health_regeneration_flat: { flat: -5 },
+                        };
+                        break;	
                     case "freeze":
                         stats = {
                             attack_speed: { multiplier: 0.5 },
@@ -2209,6 +2221,7 @@ function do_ally_combat_action(ally_index) {
                 }
 				
                 kill_enemy(target);
+				
 
                 if (target.on_death && Object.keys(target.on_death).length > 0) {
                     execute_death_effects(target.on_death);
@@ -2777,6 +2790,22 @@ function kill_enemy(target) {
     clear_enemy_attack_loop(enemy_id);
 }
 
+function kill_player({is_combat = true} = {}) {
+    if(is_combat) {
+        total_deaths++;
+        log_message(character.name + " has lost consciousness", "hero_defeat");
+
+        update_displayed_health();
+        if(options.auto_return_to_bed && last_location_with_bed) {
+            change_location(last_location_with_bed);
+            start_sleeping();
+        } else {
+            change_location(current_location.parent_location.id);
+        }
+    }
+}
+
+
 function use_stamina(num = 1, use_efficiency = true) {
     
     character.stats.full.stamina -= num/(use_efficiency * character.stats.full.stamina_efficiency || 1);
@@ -2975,10 +3004,16 @@ function add_xp_to_character(xp_to_add, should_info = true, use_bonus) {
     }
 
     update_displayed_character_xp(level_up);
-	
-	if(character.starting_xp.current_level > 10 ){
+		if(character.xp.current_level >= 10 ){
 		 global_flags.is_hero_level10 = true;
 	}
+		if(character.xp.current_level >= 20 ){
+		 global_flags.is_hero_level20 = true;
+	}
+			if(character.xp.current_level >= 50 ){
+		 global_flags.is_hero_level20 = true;
+	}
+	
 }
 
 
@@ -3623,6 +3658,24 @@ function create_save() {
                     }
                 });
             }
+		            if(locations[key].actions) {
+                save_data["locations"][key]["actions"] = {};
+                Object.keys(locations[key].actions).forEach(action_key => {
+                    if(locations[key].actions[action_key].is_unlocked || locations[key].actions[action_key].is_finished) {
+                        save_data["locations"][key]["actions"][action_key] = {};
+
+                        if(locations[key].actions[action_key].is_unlocked) {
+                            save_data["locations"][key]["actions"][action_key].is_unlocked = true;
+                        }
+                        if(locations[key].actions[action_key].is_finished) {
+                            save_data["locations"][key]["actions"][action_key].is_finished = true;
+                        }
+                    }
+                    
+                });
+            }	
+			
+			
         }); //save locations' (and their activities') unlocked status and their killcounts
 
         save_data["activities"] = {};
@@ -4407,6 +4460,20 @@ if (save_data.current_party) {
                     }
                 }
             }
+			            if(save_data.locations[key].actions) {
+                Object.keys(save_data.locations[key].actions).forEach(action_key => {
+                    if(save_data.locations[key].actions[action_key].is_unlocked) {
+                        locations[key].actions[action_key].is_unlocked = true;
+                    }
+
+                    if(save_data.locations[key].actions[action_key].is_finished) {
+                        locations[key].actions[action_key].is_finished = true;
+                    }
+
+                });
+            }
+			
+			
         } else {
             console.warn(`Location "${key}" couldn't be found!`);
             return;
@@ -4780,6 +4847,9 @@ function update() {
         update_displayed_effect_durations();
         update_displayed_effects();
 
+
+
+
         //health regen
         if(character.stats.full.health_regeneration_flat) {
             character.stats.full.health += character.stats.full.health_regeneration_flat;
@@ -4787,6 +4857,20 @@ function update() {
         if(character.stats.full.health_regeneration_percent) {
             character.stats.full.health += character.stats.full.max_health * character.stats.full.health_regeneration_percent/100;
         }
+		
+      //health loss
+        if(character.stats.full.health_loss_flat) {
+            character.stats.full.health += character.stats.full.health_loss_flat;
+        }
+        if(character.stats.full.health_loss_percent) {
+            character.stats.full.health += character.stats.full.max_health * character.stats.full.health_loss_percent/100;
+        }
+
+        if(character.stats.full.health <= 0) {
+            kill_player({is_combat: "parent_location" in current_location});
+        }
+		
+		
         //stamina regen
         if(character.stats.full.stamina_regeneration_flat) {
             character.stats.full.stamina += character.stats.full.stamina_regeneration_flat;
@@ -4814,7 +4898,9 @@ function update() {
             character.stats.full.mana = character.stats.full.max_mana
         }
 
-        if(character.stats.full.health_regeneration_flat || character.stats.full.health_regeneration_percent) {
+       if(character.stats.full.health_regeneration_flat || character.stats.full.health_regeneration_percent 
+            || character.stats.full.health_loss_flat || character.stats.full.health_loss_percent
+        ) {
             update_displayed_health();
         }
         if(character.stats.full.stamina_regeneration_flat || character.stats.full.stamina_regeneration_percent) {
@@ -4823,6 +4909,7 @@ function update() {
         if(character.stats.full.mana_regeneration_flat || character.stats.full.mana_regeneration_percent) {
             update_displayed_mana();
         }
+
         
         save_counter += 1;
         if(save_counter >= save_period*tickrate) {

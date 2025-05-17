@@ -1178,79 +1178,79 @@ book_stats["The Spellblade Chronicles vol. 1"] = new BookData({
 item_templates["ABC for kids"] = new Book({
     name: "ABC for kids",
     description: "The simplest book on the market",
-    value: 100,
+    value: 500,
 });
 
 item_templates["Peak Literature"] = new Book({
     name: "Peak Literature",
     description: "Reborn as the Second Bastard Son of the 8th Margrave with an Animal Husbandry skill, so I'll Live As I Please Whilst Cheating at Horse Racing",
-    value: 100,
+    value: 500,
 });
 
 item_templates["Old combat manual"] = new Book({
     name: "Old combat manual",
     description: "Old book about combat, worn and outdated, but might still contain something useful",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Twist liek a snek"] = new Book({
     name: "Twist liek a snek",
     description: "This book has a terrible grammar, seemingly written by some uneducated bandit, but despite that it quite well details how to properly evade attacks.",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Ye olde dictionary"] = new Book({
     name: "Ye olde dictionary",
     description: "Ye olde dictionary",
-    value: 200,
+    value: 1000,
 });
 
 
 item_templates["Joy of Mining"] = new Book({
     name: "Joy of Mining",
     description: "Joy of Mining",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Joy of Woodcutting"] = new Book({
     name: "Joy of Woodcutting",
     description: "Joy of Woodcutting",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Joy of Fishing"] = new Book({
     name: "Joy of Fishing",
     description: "Joy of Fishing",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Joy of Herbalism"] = new Book({
     name: "Joy of Herbalism",
     description: "Joy of Herbalism",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Power of Dreams"] = new Book({
     name: "Power of Dreams",
     description: "Power of Dreams",
-    value: 100,
+    value: 1000,
 });
 
 item_templates["TRUE ULTIMATE POWER"] = new Book({
     name: "TRUE ULTIMATE POWER",
     description: "TRUE ULTIMATE POWER",
-    value: 1000,
+    value: 2000,
 });
 
 item_templates["The Spellblade Chronicles vol. 1"] = new Book({
     name: "The Spellblade Chronicles vol. 1",
     description: "The Spellblade Chronicles vol. 1",
-    value: 1000,
+    value: 2000,
 });
 
 //miscellaneous and loot:
 (function(){
-    item_templates["Rat fang"] = new OtherItem({
+    item_templates["Rat fang"] = new Junk({
         name: "Rat fang", 
         description: "Fang of a huge rat, not very sharp, but can still pierce a human skin if enough force is applied", 
         value: 8,
@@ -1351,7 +1351,7 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         material_type: "bone",
     });
 	
-    item_templates["Rotten Flesh"] = new Material({
+    item_templates["Rotten Flesh"] = new Junk({
         name: "Rotten Flesh", 
         description: "Rotten Flesh",
         value: 1,
@@ -1422,7 +1422,7 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         material_type: "material",
     });
 	
-	    item_templates["Bat Wings"] = new Material({
+	    item_templates["Bat Wings"] = new Junk({
         name: "Bat Wings", 
         description: "Bat Wings",
         value: 2,

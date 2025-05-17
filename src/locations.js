@@ -5,7 +5,7 @@ import { dialogues as dialoguesList} from "./dialogues.js";
 import { skills } from "./skills.js";
 import { current_game_time } from "./game_time.js";
 import { activities } from "./activities.js";
-import { character } from "./character.js";
+import { character, get_total_skill_level } from "./character.js";
 const locations = {};
 const location_types = {};
 //contains all the created locations
@@ -289,9 +289,9 @@ class Combat_zone {
 
     //calculates total penalty with and without hero skills
     //launches on every combat action
-    get_total_effect() {
-        const effects = {multipliers: {}};
-        const hero_effects = {multipliers: {}};
+		 get_total_effect() {
+        const effects = {multipliers: {}, flats: {}};
+        const hero_effects = {multipliers: {}, flats: {}};
         
         //iterate over types of location
         for(let i = 0; i < this.types.length; i++) {
@@ -302,12 +302,20 @@ class Combat_zone {
             }
 
             //iterate over effects each type has 
-            //(ok there's really just only 3 that make sense: attack points, evasion points, strength, though maybe also attack speed? mainly the first 2 anyway)
-            Object.keys(type.effects.multipliers).forEach((effect) => { 
 
-                effects.multipliers[effect] = (effects.multipliers[effect] || 1) * type.effects.multipliers[effect];
+            Object.keys(type.effects).forEach(stat => { 
+                if(type.effects[stat].multiplier) {
+                    effects.multipliers[stat] = (effects.multipliers[stat] || 1) * type.effects[stat].multiplier;
                 
-                hero_effects.multipliers[effect] = (hero_effects.multipliers[effect] || 1) * get_location_type_penalty(this.types[i].type, this.types[i].stage, effect);
+                    hero_effects.multipliers[stat] = (hero_effects.multipliers[stat] || 1) * get_location_type_penalty(this.types[i].type, this.types[i].stage, stat, "multiplier");
+                }
+
+                if(type.effects[stat].flat) {
+                    effects.flats[stat] = (effects.flats[stat] || 0) + type.effects[stat].flat;
+                
+                    hero_effects.flats[stat] = (hero_effects.flats[stat] || 0) + get_location_type_penalty(this.types[i].type, this.types[i].stage, stat, "flat");
+                }
+
             })
         }
 
@@ -657,14 +665,29 @@ class LocationType{
     }
 }
 
-function get_location_type_penalty(type, stage, stat) {
+function get_location_type_penalty(type, stage, stat, category) {
     
     const skill = skills[location_types[type].stages[stage].related_skill];
 
-    const base = location_types[type].stages[stage].effects.multipliers[stat];
+    //maybe give all stages a range of skill lvls where they start scaling and where they get fully nullified?
 
-    return base**(1- skill.current_level/skill.max_level);
+    if(category === "multiplier") {
+        const base = location_types[type].stages[stage].effects[stat].multiplier;
+    
+        return base**(1-(skill.current_level/skill.max_level));
+    } else if(category === "flat") {
+        const base = location_types[type].stages[stage].effects[stat].flat;
+
+        return base*(1-(skill.current_level/skill.max_level))**0.66667;
+    } else {
+        throw new Error(`Unsupported category of stat effects "${category}", should be either "flat" or "multiplier"!`);
+    }
+    
 }
+
+
+
+
 
 function get_equipped_tool_bonus(tool) {
     return character.equipment?.[tool]?.tool_bonus ?? 0;
@@ -675,7 +698,7 @@ function get_equipped_tool_bonus(tool) {
 //create location types
 (function(){
     
-    location_types["bright"] = new LocationType({
+  location_types["bright"] = new LocationType({
         name: "bright",
         stages: {
             1: {
@@ -685,20 +708,16 @@ function get_equipped_tool_bonus(tool) {
                 description: "An extremely bright place, excessive light makes it hard to keep eyes open",
                 related_skill: "Dazzle resistance",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.5,
-                        evasion_points: 0.5,
-                    }
+                    attack_points: {multiplier: 0.5},
+                    evasion_points: {multiplier: 0.5},
                 }
             },
             3: {
                 description: "A place with so much light that an average person would go blind in an instant",
                 related_skill: "Dazzle resistance",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.1,
-                        evasion_points: 0.1,
-                    }
+                    attack_points: {multiplier: 0.1},
+                    evasion_points: {multiplier: 0.1},
                 }
             }
         }
@@ -707,7 +726,7 @@ function get_equipped_tool_bonus(tool) {
         name: "dark",
         stages: {
             1: {
-                description: "A place where it's always as dark as during a bright night",
+                description: "It's dark here, comparable to a bright night",
                 related_skill: "Night vision",
                 //no effects here, since in this case they are provided via the overall "night" penalty
             },
@@ -715,21 +734,17 @@ function get_equipped_tool_bonus(tool) {
                 description: "An extremely dark place, darker than most of the nights",
                 related_skill: "Night vision",
                 effects: {
-                    multipliers: {
-                        //they dont need to be drastic since they apply on top of 'night' penalty
-                        attack_points: 0.8,
-                        evasion_points: 0.8,
-                    }
+                    //they dont need to be drastic since they apply on top of 'night' penalty
+                    attack_points: {multiplier: 0.8},
+                    evasion_points: {multiplier: 0.8},
                 }
             },
             3: {
                 description: "Pure darkness with not even a tiniest flicker of light",
                 related_skill: "Presence sensing",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.15,
-                        evasion_points: 0.15,
-                    }
+                    attack_points: {multiplier: 0.15},
+                    evasion_points: {multiplier: 0.15},
                 }
             }
         }
@@ -738,15 +753,20 @@ function get_equipped_tool_bonus(tool) {
         name: "narrow",
         stages: {
             1: {
-                description: "A very narrow and tight area where there's not much place for maneuvering",
+                description: "A narrow area where there's not much place for maneuvering",
                 related_skill: "Tight maneuvers",
                 effects: {
-                    multipliers: {
-                        evasion_points: 0.333,
-                                }
-                        }
+                    evasion_points: {multiplier: 0.5},
                 }
+            },
+            2: {
+                description: "A very tight and narrow area where there's not much place for maneuvering",
+                related_skill: "Tight maneuvers",
+                effects: {
+                    evasion_points: {multiplier: 0.333},
+                }        
             }
+        }
     });
     location_types["open"] = new LocationType({
         name: "open",
@@ -755,18 +775,14 @@ function get_equipped_tool_bonus(tool) {
                 description: "A completely open area where attacks can come from any direction",
                 related_skill: "Spatial awareness",
                 effects: {
-                    multipliers: {
-                        evasion_points: 0.75,
-                    }
+                    evasion_points: {multiplier:  0.75},
                 }
             },
             2: {
                 description: "An area that's completely open and simultanously obstructs your view, making it hard to predict where an attack will come from",
                 related_skill: "Spatial awareness",
                 effects: {
-                    multipliers: {
-                        evasion_points: 0.5,
-                    }
+                    evasion_points: {multiplier: 0.5},
                 }
             }
         }
@@ -778,34 +794,27 @@ function get_equipped_tool_bonus(tool) {
                 description: "High temperature makes it hard to breath",
                 related_skill: "Heat resistance",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.5,
-                        evasion_points: 0.5,
-                        stamina_efficiency: 0.9,
-                    }
+                    attack_points: {multiplier: 0.5},
+                    evasion_points: {multiplier: 0.5},
+                    stamina: {multiplier: 0.8},
                 }
             },
             2: {
                 description: "It's so hot that just being here is painful",
                 related_skill: "Heat resistance",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.3,
-                        evasion_points: 0.3,
-                        stamina_efficiency: 0.8,
-                    }
+                    attack_points: {multiplier: 0.3},
+                    evasion_points: {multiplier: 0.3},
+                    stamina: {multiplier: 0.5},
                 }
             },
             3: {
                 description: "Temperature so high that wood ignites by itself",
                 related_skill: "Heat resistance",
-                //TODO: environmental damage if resistance is too low
                 effects: {
-                    multipliers: {
-                        attack_points: 0.1,
-                        evasion_points: 0.1,
-                        stamina_efficiency: 0.5,
-                    }
+                    attack_points: {multiplier: 0.1},
+                    evasion_points: {multiplier: 0.1},
+                    stamina: {multiplier: 0.3},
                 }
             }
         }
@@ -817,137 +826,142 @@ function get_equipped_tool_bonus(tool) {
                 description: "Cold makes your energy seep out...",
                 related_skill: "Cold resistance",
                 effects: {
-                    multipliers: {
-                        stamina_efficiency: 0.8,
-                    }
+                    stamina: {multiplier: 0.5},
                 }
             },
             2: {
                 description: "So cold...",
                 related_skill: "Cold resistance",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.7,
-                        evasion_points: 0.7,
-                        stamina_efficiency: 0.7,
-                    }
+                    attack_points: {multiplier: 0.7},
+                    evasion_points: {multiplier: 0.7},
+                    stamina: {multiplier: 0.2},
                 }
             },
             3: {
                 description: "This place is so cold, lesser beings would freeze in less than a minute...",
                 related_skill: "Cold resistance",
-                //TODO: environmental damage if resistance is too low (to both hp and stamina?)
                 effects: {
-                    multipliers: {
-                        attack_points: 0.5,
-                        evasion_points: 0.5,
-                        stamina_efficiency: 0.4,
-                    }
+                    attack_points: {multiplier: 0.5},
+                    evasion_points: {multiplier: 0.5},
+                    stamina: {multiplier: 0.1},
                 }
             }
         }
     });
-	
-  location_types["unstable"] = new LocationType({
+    location_types["thundering"] = new LocationType({
+        name: "thundering",
+        stages: {
+            1: {
+                description: "thundering",
+                related_skill: "Shock resistance",
+                effects: {
+                    stamina: {multiplier: 0.5},
+                }
+            },
+            2: {
+                description: "thundering",
+                related_skill: "Shock resistance",
+                effects: {
+                    attack_points: {multiplier: 0.7},
+                    evasion_points: {multiplier: 0.7},
+                    stamina: {multiplier: 0.2},
+                }
+            },
+            3: {
+                description: "thundering",
+                related_skill: "Shock resistance",
+                effects: {
+                    attack_points: {multiplier: 0.5},
+                    evasion_points: {multiplier: 0.5},
+                    stamina: {multiplier: 0.1},
+                }
+            }
+        }
+    });
+    location_types["unstable"] = new LocationType({
         name: "unstable",
         stages: {
             1: {
                 description: "Tricky terrain makes dodging difficult",
-                related_skill: "Equilibrium",
+                related_skill: "Equlibtium",
                 effects: {
-                    multipliers: {
-                        evasion_points: 0.1,
-                    }
+                    evasion_points: {multiplier: 0.1},
                 }
             },
-        }
+	        }
     });
-	
- location_types["noxious"] = new LocationType({
+    location_types["noxious"] = new LocationType({
         name: "noxious",
         stages: {
             1: {
                 description: "noxious",
                 related_skill: "Poison resistance",
                 effects: {
-                    multipliers: {
-                        evasion_points: 0.1,
-                    }
+                   health_loss_flat: {flat: -2}
                 }
             },
-        }
-    });	
-location_types["cursed"] = new LocationType({
+	        }
+    });
+    location_types["cursed"] = new LocationType({
         name: "cursed",
         stages: {
             1: {
-                description: "cursed1",
+                description: "cursed",
                 related_skill: "Curse resistance",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.8,
-                        evasion_points: 0.8,
-                    }
+                    stamina: {multiplier: 0.5},
                 }
             },
             2: {
-                description: "cursed2",
+                description: "cursed",
                 related_skill: "Curse resistance",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.6,
-                        evasion_points: 0.6,
-                    }
+                    attack_points: {multiplier: 0.7},
+                    evasion_points: {multiplier: 0.7},
+                    stamina: {multiplier: 0.2},
                 }
             },
             3: {
-                description: "cursed3",
+                description: "cursed",
                 related_skill: "Curse resistance",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.35,
-                        evasion_points: 0.35,
-                    }
+                    attack_points: {multiplier: 0.5},
+                    evasion_points: {multiplier: 0.5},
+                    stamina: {multiplier: 0.1},
                 }
             }
         }
     });
-	
-location_types["thundering"] = new LocationType({
-        name: "thundering",
+
+    location_types["thin air"] = new LocationType({
+        name: "thin air",
         stages: {
             1: {
-                description: "thundering1",
-                related_skill: "Shock resistance",
+                description: "Place with thinner air, which negatively impacts your body",
+                related_skill: "Breathing",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.8,
-                        evasion_points: 0.8,
-                    }
+                    stamina_efficiency: {multiplier: 0.5},
+                    agility: {multiplier: 0.8},
+                    strength: {multiplier: 0.8},
+                    dexterity: {multiplier: 0.8},
+                    intuition: {multiplier: 0.8},
                 }
             },
             2: {
-                description: "thundering2",
-                related_skill: "Shock resistance",
+                description: "Place with very thin air, heavily affecting your body",
+                related_skill: "Breathing",
                 effects: {
-                    multipliers: {
-                        attack_points: 0.6,
-                        evasion_points: 0.6,
-                    }
-                }
-            },
-            3: {
-                description: "thundering3",
-                related_skill: "Shock resistance",
-                effects: {
-                    multipliers: {
-                        attack_points: 0.35,
-                        evasion_points: 0.35,
-                    }
+                    stamina_efficiency: {multiplier: 0.1},
+                    agility: {multiplier: 0.5},
+                    strength: {multiplier: 0.5},
+                    dexterity: {multiplier: 0.5},
+                    intuition: {multiplier: 0.5},
                 }
             }
         }
     });
+
 })();
 
 
@@ -1377,18 +1391,18 @@ locations["Catacombs"].connected_locations.push({location: locations["Wandering 
     });
 locations["Catacombs"].connected_locations.push({location: locations["Sewer"]});
 
-	locations["Deathwater Bog"] = new Location({ 
+	locations["Putrid Bog"] = new Location({ 
         connected_locations: [{location: locations["Sewer"]}],
         description: "Obligatory poison swamp.",
-        name: "Deathwater Bog",
+        name: "Putrid Bog",
         is_unlocked: false,
     });
 	
-locations["Sewer"].connected_locations.push({location: locations["Deathwater Bog"]});
+locations["Sewer"].connected_locations.push({location: locations["Putrid Bog"]});
 
 	locations["Sewer Depths"] = new Location({ 
         connected_locations: [{location: locations["Sewer"]}],
-        description: "Deep sewers",
+        description: "Same great sewer, same awful smell. The vermin problem is worse here.",
         name: "Sewer Depths",
         is_unlocked: false,
 		background_noises: ["Squeeak!", "*Splash!*", "*You're overcome by the revolting stench*"],
@@ -1433,7 +1447,7 @@ locations["Sewer"].connected_locations.push({location: locations["Sewer Depths"]
         },
         repeatable_reward: {
             xp: 10,
-			locations: [{location:"Deathwater Bog"}, {location:"Sewer Depths"}],
+			locations: [{location:"Putrid Bog"}, {location:"Sewer Depths"}],
         }
     });
     locations["Sewer"].connected_locations.push({location: locations["Sewer Beasts"]});
@@ -1453,8 +1467,9 @@ locations["Sewer"].connected_locations.push({location: locations["Backstreets"]}
     locations["Deep Sewer Beasts"] = new Combat_zone({
         description: "Deal with sewer beasts.", 
         enemy_count: 30, 
-        enemies_list: ["Pinata"],
-        types: [{type: "dark", stage: 2, xp_gain: 5}],
+        enemies_list: ["Plague Rat"],
+        types: [{type: "dark", stage: 2, xp_gain: 5},{type: "noxious", stage: 1, xp_gain: 3} ],
+		enemy_group_size: [3,5],
         enemy_stat_variation: 0.1,
         is_unlocked: true, 
         name: "Deep Sewer Beasts", 
@@ -1464,6 +1479,7 @@ locations["Sewer"].connected_locations.push({location: locations["Backstreets"]}
         },
         repeatable_reward: {
             xp: 20,
+			locations: [{location: "Royal Rat's Court"}],
         }
     });
 	
@@ -1543,14 +1559,14 @@ locations["Tower"] = new Location({
 locations["Courtyard"].connected_locations.push({location: locations["Tower"]});
 
 locations["The Midden"] = new Location({ 
-        connected_locations: [{location: locations["Docks"]},{location: locations["Deathwater Bog"]}],
+        connected_locations: [{location: locations["Docks"]},{location: locations["Putrid Bog"]}],
         description: ["The Midden"],
         name: "The Midden",
         is_unlocked: true,
     });
 	
 locations["Docks"].connected_locations.push({location: locations[["The Midden"]]});
-locations["Deathwater Bog"].connected_locations.push({location: locations[["The Midden"]]});
+locations["Putrid Bog"].connected_locations.push({location: locations[["The Midden"]]});
 
 locations["Burning Fields"] = new Location({ 
         connected_locations: [{location: locations["The Midden"]}],
@@ -1961,7 +1977,7 @@ locations["Mines"].connected_locations.push({location: locations["Escaped Slimes
 locations["Massed Undead"] = new Combat_zone({
         description: "Massed Undead", 
         enemy_count: 25, 
-        types: [],
+        types: [{type: "dark", stage: 1,  xp_gain: 3}],
         enemies_list: ["Skeleton", "Zombie"],
         enemy_group_size: [3,4],
         enemy_stat_variation: 0.2,
@@ -2028,11 +2044,11 @@ locations["Shadow1"] = new Challenge_zone({
         name: "Shadow1",
         parent_location: locations["Burial Chamber"],
         first_reward: {
-            xp: 2000,
+            xp: 200,
         },
         repeatable_reward: {
-            xp: 1000,
-			skill: 10000,
+            xp: 100,
+			skill: 1000,
 			related_skill: "Limit Breaking",
             textlines: [{dialogue: "Shadow", lines: ["Shadow2"]}],
         }
@@ -2050,11 +2066,11 @@ locations["Shadow2"] = new Challenge_zone({
         name: "Shadow2",
         parent_location: locations["Burial Chamber"],
         first_reward: {
-            xp: 2000,
+            xp: 300,
         },
         repeatable_reward: {
-            xp: 1000,
-			skill: 20000,
+            xp: 150,
+			skill: 2000,
 			related_skill: "Limit Breaking",
 			textlines: [{dialogue: "Shadow", lines: ["Shadow3"]}],
         }
@@ -2072,11 +2088,11 @@ locations["Shadow3"] = new Challenge_zone({
         name: "Shadow3",
         parent_location: locations["Burial Chamber"],
         first_reward: {
-            xp: 2000,
+            xp: 400,
         },
         repeatable_reward: {
-            xp: 1000,
-			skill: 30000,
+            xp: 200,
+			skill: 3000,
 			related_skill: "Limit Breaking",
 			textlines: [{dialogue: "Shadow", lines: ["Shadow4"]}],
         }
@@ -2094,11 +2110,11 @@ locations["Shadow4"] = new Challenge_zone({
         name: "Shadow4",
         parent_location: locations["Burial Chamber"],
         first_reward: {
-            xp: 2000,
+            xp: 500,
         },
         repeatable_reward: {
-            xp: 1000,
-			skill: 40000,
+            xp: 2500,
+			skill: 4000,
 			related_skill: "Limit Breaking",
 			textlines: [{dialogue: "Shadow", lines: ["Shadow5"]}],
         }
@@ -2116,11 +2132,11 @@ locations["Shadow5"] = new Challenge_zone({
         name: "Shadow5",
         parent_location: locations["Burial Chamber"],
         first_reward: {
-            xp: 2000,
+            xp: 700,
         },
         repeatable_reward: {
-            xp: 1000,
-			skill: 100000,
+            xp: 350,
+			skill: 1000,
 			related_skill: "Limit Breaking",
         }
     });
@@ -2134,7 +2150,7 @@ locations["Saw Demon"] = new Challenge_zone({
         enemies_list: ["Saw Demon"],
         enemy_group_size: [1,1],
         enemy_stat_variation: 0.2,
-        is_unlocked: true, 
+        is_unlocked: false, 
         name: "Saw Demon",
         parent_location: locations["Forest"],
         first_reward: {
@@ -2156,7 +2172,7 @@ locations["Chain Demon"] = new Challenge_zone({
         enemies_list: ["Chain Demon"],
         enemy_group_size: [1,1],
         enemy_stat_variation: 0.2,
-        is_unlocked: true, 
+        is_unlocked: false, 
         name: "Chain Demon",
         parent_location: locations["Prison"],
         first_reward: {
@@ -2543,7 +2559,7 @@ locations["Forest"].connected_locations.push({location: locations["Forest Beasts
 locations["The Dregs"] = new Combat_zone({
         description: "The Dregs", 
 		types: [],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2563,7 +2579,7 @@ locations["The Midden"].connected_locations.push({location: locations["The Dregs
 locations["The Dregs2"] = new Combat_zone({
         description: "The Dregs", 
 		types: [],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2583,7 +2599,7 @@ locations["Burning Fields"].connected_locations.push({location: locations["The D
 locations["Fire Beasts"] = new Combat_zone({
         description: "Fire Beasts", 
 		types: [{type: "hot", stage: 1,  xp_gain: 3}, {type: "bright", stage: 1,  xp_gain: 3}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2603,7 +2619,7 @@ locations["Fire Pit"].connected_locations.push({location: locations["Fire Beasts
 locations["Fire Beasts2"] = new Combat_zone({
         description: "Fire Beasts2", 
 		types: [{type: "hot", stage: 2,  xp_gain: 5}, {type: "bright", stage: 1,  xp_gain: 3}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 30, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2623,7 +2639,7 @@ locations["Fire Pit"].connected_locations.push({location: locations["Fire Beasts
 locations["Fire Beasts3"] = new Combat_zone({
         description: "Fire Beasts3", 
 		types: [{type: "hot", stage: 3,  xp_gain: 10}, {type: "bright", stage: 2,  xp_gain: 3}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 50, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2642,12 +2658,12 @@ locations["Fire Pit"].connected_locations.push({location: locations["Fire Beasts
 locations["Ice Beasts"] = new Combat_zone({
         description: "Ice Beasts", 
 		types: [{type: "cold", stage: 1,  xp_gain: 3}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
-		rare_list: ["Speedy Pinata"],
+		rare_list: ["Zombie"],
 		rare_chance: 0.1,
-		boss_list: ["OmniPinata"],
+		boss_list: ["Zombie"],
         enemy_stat_variation: 0.2,
         is_unlocked: true,
         name: "Ice Beasts", 
@@ -2665,7 +2681,7 @@ locations["Glacier Wing"].connected_locations.push({location: locations["Ice Bea
 locations["Ice Beasts2"] = new Combat_zone({
         description: "Ice Beasts2", 
 		types: [{type: "cold", stage: 2,  xp_gain: 5}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 30, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2685,7 +2701,7 @@ locations["Glacier Wing"].connected_locations.push({location: locations["Ice Bea
 locations["Ice Beasts3"] = new Combat_zone({
         description: "Ice Beasts3", 
 		types: [{type: "cold", stage: 3,  xp_gain: 10}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 50, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2704,7 +2720,7 @@ locations["Glacier Wing"].connected_locations.push({location: locations["Ice Bea
 locations["Chaos Beasts"] = new Combat_zone({
         description: "Chaos Beasts", 
 		types: [{type: "cold", stage: 2,  xp_gain: 5}, {type: "hot", stage: 2,  xp_gain: 5}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2743,13 +2759,13 @@ locations["Ancient Bridge"].connected_locations.push({location: locations["Bridg
 locations["Toxic Enemies"] = new Combat_zone({
         description: "Toxic Enemies", 
 		types: [{type: "noxious", stage: 1,  xp_gain: 4}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
         is_unlocked: true,
         name: "Toxic Enemies", 
-        parent_location: locations["Deathwater Bog"],
+        parent_location: locations["Putrid Bog"],
         first_reward: {
             xp: 700,
         },
@@ -2757,12 +2773,12 @@ locations["Toxic Enemies"] = new Combat_zone({
             xp: 350,
         }
     });
-locations["Deathwater Bog"].connected_locations.push({location: locations["Toxic Enemies"], custom_text: "Toxic Enemies"});
+locations["Putrid Bog"].connected_locations.push({location: locations["Toxic Enemies"], custom_text: "Toxic Enemies"});
 
 locations["Palace Menagerie"] = new Combat_zone({
         description: "Palace Menagerie", 
 		types: [{type: "open", stage: 2,  xp_gain: 10}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2821,11 +2837,12 @@ locations["The Roost"].connected_locations.push({location: locations["Wild Drago
 locations["Royal Rat's Court"] = new Combat_zone({
         description: "Royal Rat's Court", 
 		types: [{type: "dark", stage: 3,  xp_gain: 10}, {type: "narrow", stage: 1,  xp_gain: 4}],
-        enemies_list: ["Pinata"],
-        enemy_count: 10, 
-        enemy_group_size: [2,3],
+        enemies_list: ["Plague Rat", "Bat"],
+		boss_list: ["Royal Rat"],
+        enemy_count: 20, 
+        enemy_group_size: [5,6],
         enemy_stat_variation: 0.2,
-        is_unlocked: true,
+        is_unlocked: false,
         name: "Royal Rat's Court", 
         parent_location: locations["Sewer Depths"],
         first_reward: {
@@ -2835,13 +2852,13 @@ locations["Royal Rat's Court"] = new Combat_zone({
             xp: 350,
         }
     });
-locations["Sewer Depths"].connected_locations.push({location: locations["Royal Rat's Court"], custom_text: "Royal Rat's Court"});
+locations["Sewer Depths"].connected_locations.push({location: locations["Royal Rat's Court"], custom_text: "Enter the Royal Rat's Court"});
 
 
 locations["Curse Enemies"] = new Combat_zone({
         description: "Curse Enemies", 
 		types: [{type: "dark", stage: 1,  xp_gain: 1}, {type: "cursed", stage: 1,  xp_gain: 1}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2860,7 +2877,7 @@ locations["Execution Chamber"].connected_locations.push({location: locations["Cu
 locations["Curse Enemies2"] = new Combat_zone({
         description: "Curse Enemies2", 
 		types: [{type: "dark", stage: 1,  xp_gain: 5}, {type: "cursed", stage: 2,  xp_gain: 5}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2879,7 +2896,7 @@ locations["Well of Souls"].connected_locations.push({location: locations["Curse 
 locations["Curse Enemies3"] = new Combat_zone({
         description: "Curse Enemies3", 
 		types: [{type: "dark", stage: 2,  xp_gain: 10}, {type: "cursed", stage: 3,  xp_gain: 10}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2898,7 +2915,7 @@ locations["Unholy Sanctum"].connected_locations.push({location: locations["Curse
 locations["Storm Enemies3"] = new Combat_zone({
         description: "Storm Enemies3", 
 		types: [{type: "open", stage: 2,  xp_gain: 10}, {type: "bright", stage: 2,  xp_gain: 10}, {type: "thundering", stage: 3,  xp_gain: 10}],
-        enemies_list: ["Pinata"],
+        enemies_list: ["Zombie"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -3100,7 +3117,7 @@ locations["Time Demon"] = new Challenge_zone({
             activity_name: "fieldwork",
             starting_text: "Work on the fields",
             get_payment: () => {
-                return 10 + Math.round(15 * skills["Farming"].current_level/skills["Farming"].max_level);
+                return 100 + Math.round(150 * skills["Farming"].current_level/skills["Farming"].max_level);
             },
             is_unlocked: true,
             working_period: 60*2,
@@ -3114,7 +3131,7 @@ locations["Time Demon"] = new Challenge_zone({
             starting_text: "Salvage scrap",
 			infinite: true,
             get_payment: () => {
-                return 10 + Math.round(30 * skills["Salvaging"].current_level/skills["Salvaging"].max_level);
+                return 50 + Math.round(100 * skills["Salvaging"].current_level/skills["Salvaging"].max_level);
             },
 			gained_resources: {
 					resources: [{name: "Low quality iron ore", ammount: [[1,1], [1,1]], chance: [0.02, 0.02]},{name: "Iron ore", ammount: [[1,1], [1,1]], chance: [0.01, 0.01]},{name: "Piece of wolf rat leather", ammount: [[1,1], [1,1]], chance: [0.05, 0.05]},{name: "Stale bread", ammount: [[1,1], [1,1]], chance: [0.5, 0.5]},{name: "Piece of rough wood", ammount: [[1,1], [1,1]], chance: [0.3, 0.3]}],
@@ -3360,7 +3377,7 @@ locations["Forest"].activities = {
             skill_xp_per_tick: 5,
             is_unlocked: false,
             gained_resources: {
-                resources: [{name: "Piece of wood", ammount: [[1,1], [1,3]], chance: [0.8, 1]}],
+                resources: [{name: "Piece of rough wood", ammount: [[1,1], [1,3]], chance: [0.8, 1]}],
                 time_period: [20, 10],
                 skill_required: [0, 20],
                 scales_with_skill: true,
@@ -3541,12 +3558,12 @@ function get_all_main_locations() {
                 }
             ],
             attempt_duration: 1,
-            success_chances: [0.2,0.6],
+            success_chances: [0.2,1],
             rewards: {
 								       skill_xp: {
             "Lockpicking": 100,
         },
-		locations: [{location: "Backsteets"}],
+		locations: [{location: "Backstreets"}],
 
 			 },
 			            loss_rewards: {
@@ -3585,7 +3602,7 @@ function get_all_main_locations() {
                 }
             ],
             attempt_duration: 1,
-            success_chances: [0.2,0.6],
+            success_chances: [0.2,1],
             rewards: {
 				locations: [{location: "Bone Tournament"}],
 			 },

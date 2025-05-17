@@ -3,7 +3,6 @@ To do:
 Known issues:
 Log gathering result handling isn't working on my version.
 Stances and magics unlocked via book or milestone rewards produce messages every time save data is loaded.
-Craft amount buttons are not displaying.
 Console bug if you save+reload whilst reading (but not re-reading) a book
  Stance list also can't handle scrolling. (Could trim a stance instead).
 Reading book then moving to combat zone doesn't remove the book reading display.

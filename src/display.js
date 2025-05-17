@@ -2002,18 +2002,29 @@ function create_location_types_display(current_location){
 
         const {type, stage} = current_location.types[i];
         const {effects} = location_types[type].stages[stage];
-        
-        if(effects?.multipliers) {
+        if(Object.keys(effects || {}).length > 0) {
             type_tooltip.innerHTML += `<br>`;
-            Object.keys(effects.multipliers).forEach(stat => {
-                const base = effects.multipliers[stat];
-                //const actual = (effects.multipliers[stat] + (1 - effects.multipliers[stat])*(skill.current_level/skill.max_level)**1.7);
-                const actual = get_location_type_penalty(type, stage, stat);
-                type_tooltip.innerHTML += `<br>${stat_names[stat]} x${Math.round(1000*actual)/1000}`;
-                if(base != actual) {
-                    type_tooltip.innerHTML += ` [base: x${effects.multipliers[stat]}]`
+
+            Object.keys(effects).forEach(stat => {
+                if(effects[stat].multiplier) {
+                    const base = effects[stat].multiplier;
+                    const actual = get_location_type_penalty(type, stage, stat, "multiplier");
+                    type_tooltip.innerHTML += `<br>${stat_names[stat]} x${Math.round(1000*actual)/1000}`;
+                    if(base != actual) {
+                        type_tooltip.innerHTML += ` [base: x${effects[stat].multiplier}]`;
+                    }
                 }
-            })
+                if(effects[stat].flat) {
+                    const base = effects[stat].flat;
+                    const actual = get_location_type_penalty(type, stage, stat, "flat");
+                    type_tooltip.innerHTML += `<br>${stat_names[stat]}: ${Math.round(1000*actual)/1000}`;
+                    if(base != actual) {
+                        type_tooltip.innerHTML += ` [base: ${effects[stat].flat}]`;
+                    }
+                }
+                
+            });
+
         } //other effects to be done when/if they are added
 
         type_div.appendChild(type_tooltip);
@@ -4012,12 +4023,12 @@ tooltip_danger_rating.classList.add("tooltip_danger_rating");
 
 // Map danger rating rank to label and class
 const danger_rank_map = {
-    1: "F", 2: "E", 3: "D", 4: "C", 5: "B",
+    1: "F", 2: "E", 3: "D", 4: "C", 4.1:"C", 5: "B",
     6: "A", 7: "A+", 8: "S", 9: "S+", 10: "S++"
-};
+}; // produces "?" if doesn't map. Can possibly use for weird enemies.
 
 const danger_rank_label = danger_rank_map[enemy.rank] || "?";
-tooltip_danger_rating.innerHTML = `<br>Danger Rating: <span class="danger_rating danger_rank_${enemy.rank}">${danger_rank_label}</span>`;
+tooltip_danger_rating.innerHTML = `<br>Danger Rating: <span class="danger_rating danger_rank_${Math.floor(enemy.rank)}">${danger_rank_label}</span>`;
 
 
 

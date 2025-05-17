@@ -981,7 +981,7 @@ skills["Poison resistance"] = new Skill({
         max_level: 30,
         category: "Environmental",
         get_effect_description: ()=> {
-            return `Reduces damage from poison`;
+            return `Reduces damage from poison by ${(Math.round((skills["Poison resistance"].current_level/skills["Poison resistance"].max_level)*100)*1000)/1000}% `;
         },
         max_level_bonus: 0.5
     });
@@ -1382,7 +1382,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     skills["Lockpicking"] = new Skill({skill_id: "Lockpicking", 
                                 names: {0: "Lockpicking"}, 
                                 description: "Lockpicking",
-                                base_xp_cost: 40,
+                                base_xp_cost: 50,
                                 category: "Activity",
                                 max_level: 30,
                                 xp_scaling: 1.6,
