@@ -740,17 +740,25 @@ function process_rewards({rewards = {}, source_type, source_name, is_first_clear
         });
     }
     
-    if(rewards.locations) {
-        //if(source_type === "location") {
-            for(let i = 0; i < rewards.locations.length; i++) {
-                unlock_location({location: locations[rewards.locations[i].location], skip_message: (inform_overall && rewards.locations[i].skip_message)});
-            }
-        /*} else {
-            for(let i = 0; i < rewards.locations.length; i++) {
-                unlock_location(locations[rewards.locations[i].location], rewards.locations[i].skip_message);
-            }
-        }*/
+if (rewards.locations) {
+    for (let i = 0; i < rewards.locations.length; i++) {
+        const loc_id = rewards.locations[i].location;
+        const skip_msg = rewards.locations[i].skip_message;
+
+        // Modify the location object temporarily to attach skip_message logic
+        const loc = locations[loc_id];
+
+        if (inform_overall && skip_msg) {
+            // Temporarily add unlock_text as empty to suppress message
+            const original_text = loc.unlock_text;
+            loc.unlock_text = ""; // Will suppress the message inside unlock_location
+            unlock_location(loc);
+            loc.unlock_text = original_text; // Restore original text
+        } else {
+            unlock_location(loc);
+        }
     }
+}
 
     if(rewards.flags) {
         for(let i = 0; i < rewards.flags.length; i++) {
@@ -1266,33 +1274,38 @@ if (
         }
     }
 
-for (let i = 0; i < textline.unlocks.items.length; i++) {
-    const entry = textline.unlocks.items[i];
-    let itemName, count;
+		for (let i = 0; i < textline.unlocks.items.length; i++) {
+			const entry = textline.unlocks.items[i];
+			let itemName, count, quality;
 
-    if (typeof entry === "string") {
-        itemName = entry;
-        count = 1;
-    } else {
-        itemName = entry.name;
-        count = entry.count || 1;
-    }
+			if (typeof entry === "string") {
+				itemName = entry;
+				count = 1;
+				quality = undefined;
+			} else {
+				itemName = entry.name;
+				count = entry.count || 1;
+				quality = entry.quality; // optional
+			}
 
-    const item = item_templates[itemName];
-    if (!item) {
-        console.warn(`Item "${itemName}" not found in templates.`);
-        continue;
-    }
+			const baseTemplate = item_templates[itemName];
+			if (!baseTemplate) {
+				console.warn(`Item "${itemName}" not found in templates.`);
+				continue;
+			}
 
-    log_message(`${character.name} obtained "${item.getName()}" x${count}`);
-    
-    const itemsToAdd = [];
-    for (let j = 0; j < count; j++) {
-        itemsToAdd.push({ item });
-    }
+			log_message(`${character.name} obtained "${baseTemplate.getName()}" x${count}${quality ? ` (Quality: ${quality})` : ''}`);
 
-    add_to_character_inventory(itemsToAdd);
-}
+			const itemsToAdd = [];
+			for (let j = 0; j < count; j++) {
+				const itemData = quality != null 
+					? getItem({ ...baseTemplate, quality }) 
+					: getItem({ ...baseTemplate });
+				itemsToAdd.push({ item: itemData });
+			}
+
+			add_to_character_inventory(itemsToAdd);
+		}
 
     if(textline.unlocks.money && typeof textline.unlocks.money === "number") {
         character.money += textline.unlocks.money;
@@ -5058,7 +5071,7 @@ if(save_key in localStorage || (is_on_dev() && dev_save_key in localStorage)) {
     update_displayed_xp_bonuses();
 }
 else {
-    add_to_character_inventory([{item: getItem({...item_templates["Cheap iron sword"], quality: 40})}, 
+    add_to_character_inventory([{item: getItem({...item_templates["Cheap iron dagger"], quality: 40})}, 
                                 {item: getItem({...item_templates["Cheap leather pants"], quality: 40})},
                                 {item: getItem(item_templates["Stale bread"]), count: 5},
                                 //{item: getItem(item_templates["Rat fang"]), count: 1000},

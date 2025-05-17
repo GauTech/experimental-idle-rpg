@@ -251,6 +251,16 @@ class Material extends OtherItem {
     }
 }
 
+class Junk extends OtherItem {
+    constructor(item_data) {
+        super(item_data);
+        this.item_type = "JUNK";
+        this.saturates_market = true;
+        this.price_recovers = true;
+        this.tags["junk"] = true;
+    }
+}
+
 class ItemComponent extends Item {
     constructor(item_data) {
         super(item_data);
@@ -912,6 +922,8 @@ function getItem(item_data) {
             return new Book(item_data);
         case "OTHER":
             return new OtherItem(item_data);
+		case "JUNK":
+            return new Junk(item_data);
         case "COMPONENT":
             if (item_data.tags["weapon component"])
                 return new WeaponComponent(item_data);
@@ -1353,27 +1365,24 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         price_recovers: true,
         material_type: "material",
     });
-	    item_templates["Goo"] = new Material({
+	    item_templates["Goo"] = new Junk({
         name: "Goo", 
         description: "Goo",
         value: 1,
         price_recovers: true,
-        material_type: "material",
     });
-	    item_templates["Acid"] = new Material({
+	    item_templates["Acid"] = new Junk({
         name: "Acid", 
         description: "Acid",
         value: 10,
         price_recovers: true,
-        material_type: "material",
     });
 
-	    item_templates["Burning Goo"] = new Material({
+	    item_templates["Burning Goo"] = new Junk({
         name: "Burning Goo", 
         description: "Burning Goo",
         value: 10,
         price_recovers: true,
-        material_type: "material",
     });
 	    item_templates["Platinum Shard"] = new Material({
         name: "Platinum Shard", 

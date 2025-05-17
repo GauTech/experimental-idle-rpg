@@ -1384,7 +1384,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
                                 description: "Lockpicking",
                                 base_xp_cost: 40,
                                 category: "Activity",
-                                max_level: 10,
+                                max_level: 30,
                                 xp_scaling: 1.6,
                                 max_level_coefficient: 2,
 								get_effect_description: ()=> {

@@ -998,7 +998,7 @@ location_types["thundering"] = new LocationType({
             return noises;
         },
         dialogues: ["village elder", "village guard", "old craftsman"],
-        traders: ["village trader"],
+        traders: ["peddler"],
         name: "Village", 
         crafting: {
             is_unlocked: true, 
@@ -1314,14 +1314,23 @@ location_types["thundering"] = new LocationType({
     
     locations["Catacombs"] = new Location({ 
         connected_locations: [{location: locations["Burial Chamber"], custom_text: "Return to the Burial Chamber"}],
-        description: "A dismal place full of restless dead. A giant stone door blocks one one, a horde of undead bars your way deeper into the catacombs, and a third leads through a sewer",
+		getDescription: function() {
+			if(locations["Cavern"].is_unlocked === true && locations["Wandering Undead"].enemy_groups_killed >= locations["Wandering Undead"].enemy_count) { 
+				return "A dismal place full of restless dead. A giant stone door leads into a cavern network, you've cut a path through the undead aand can now proceed deeper into the catacombs, and there's a third route that leads through a sewer. Joy.";
+			}
+			else if(locations["Cavern"].is_unlocked === true) {
+				return "A dismal place full of restless dead. A giant stone door leads into a cavern network, a horde of undead bars your way deeper into the catacombs, and a third route leads through a sewer. Joy.";
+			}
+			else if(locations["Wandering Undead"].enemy_groups_killed >= locations["Wandering Undead"].enemy_count) {
+				return "A dismal place full of restless dead. A giant stone door blocks one route, you've cut a path through the undead and can now proceed deeper into the catacombs, and there's a third route that leads through a sewer. Joy.";
+			} else {
+				return "A dismal place full of restless dead. A giant stone door blocks one route, a horde of undead bars your way deeper into the catacombs, and a third route leads through a sewer. Joy."; 
+			}
+		},
 		dialogues: ["Kon1","Chain-Saw Demon"],
         name: "Catacombs",
         is_unlocked: true,
-		        getBackgroundNoises: function() {
-            let noises = ["Grrrrrrrrrrroan", "*You hear muffled shuffling*", "*You hear a slow drip of water*" ];
-            return noises;
-        },
+		background_noises: ["Grrrrrrrrrrroan", "*You hear muffled shuffling*", "*You hear a slow drip of water*" ],
     });
 //locations["Village"].connected_locations.push({location: locations["Catacombs"]}); //link from starter village to my areas
 locations["Burial Chamber"].connected_locations.push({location: locations["Catacombs"]});
@@ -1329,7 +1338,8 @@ locations["Burial Chamber"].connected_locations.push({location: locations["Catac
     locations["Wandering Undead"] = new Combat_zone({
         description: "Deal with undead stragglers.", 
         enemy_count: 15, 
-        enemies_list: ["Shambling Corpse"],
+		enemy_groups_list: [["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie","Frail Zombie"],["Slime","Slime","Slime","Slime"],],
+        //enemies_list: ["Shambling Corpse"],
         types: [{type: "dark", stage: 1, xp_gain: 3}],
         enemy_stat_variation: 0.1,
         is_unlocked: true, 
@@ -1340,8 +1350,6 @@ locations["Burial Chamber"].connected_locations.push({location: locations["Catac
         },
         repeatable_reward: {
             xp: 5,
-			skill: 10000,
-			related_skill: "Chronomancy",
             locations: [{location: "Catacomb Beasts"},{location: "Catacomb Depths"}],
         },
     });
@@ -1349,13 +1357,23 @@ locations["Catacombs"].connected_locations.push({location: locations["Wandering 
 	
 	locations["Sewer"] = new Location({ 
         connected_locations: [{location: locations["Catacombs"]}],
+				getDescription: function() {
+			if(locations["Backstreets"].is_unlocked === true && locations["Sewer Beasts"].enemy_groups_killed >= locations["Sewer Beasts"].enemy_count) { 
+				return "It smells worse than you could have imagined. There's a pathway that leads upwards, out into city streets. There are paths deeper into the sewers as well.";
+			}
+			else if(locations["Backstreets"].is_unlocked === true) {
+				return "It smells worse than you could have imagined. There's a pathway that leads upwards, out into city streets. There are also paths deeper into the sewers but vermin bar your path.";
+			}
+			else if(locations["Sewer Beasts"].enemy_groups_killed >= locations["Sewer Beasts"].enemy_count) {
+				return "It smells worse than you could have imagined. There's a pathway that leads upwards, but it's blocked by a locked gate. There are paths deeper into the sewers as well.";
+			} else {
+				return "It smells worse than you could have imagined. There's a pathway that leads upwards, but it's blocked by a locked gate. There are paths deeper into the sewers but vermin bar your path."; 
+			}
+		},
         description: "A place of filth and sewage. The stench is horrendous.",
         name: "Sewer",
         is_unlocked: true,
-		getBackgroundNoises: function() {
-		            let noises = ["Squeeak!","*Splash!*","*You're overcome by the revolting stench*"];
-            return noises;
-        },
+		background_noises: ["Squeeak!", "*Splash!*", "*You're overcome by the revolting stench*"],	
     });
 locations["Catacombs"].connected_locations.push({location: locations["Sewer"]});
 
@@ -1373,10 +1391,7 @@ locations["Sewer"].connected_locations.push({location: locations["Deathwater Bog
         description: "Deep sewers",
         name: "Sewer Depths",
         is_unlocked: false,
-		getBackgroundNoises: function() {
-		let noises = ["Squeeak!", "*Splash!*", "*You're overcome by the revolting stench*"];
-            return noises;
-        },
+		background_noises: ["Squeeak!", "*Splash!*", "*You're overcome by the revolting stench*"],
     });
 	
 locations["Sewer"].connected_locations.push({location: locations["Sewer Depths"]});
@@ -1405,6 +1420,8 @@ locations["Sewer"].connected_locations.push({location: locations["Sewer Depths"]
         description: "Deal with sewer beasts.", 
         enemy_count: 20, 
         enemies_list: ["Plague Rat"],
+		rare_list: ["Mimic"],
+		rare_chance: 0.001,
         types: [{type: "dark", stage: 1, xp_gain: 3}, {type: "narrow", stage: 1, xp_gain: 3}],
         enemy_stat_variation: 0.1,
 		enemy_group_size: [2,3],
@@ -1426,11 +1443,9 @@ locations["Sewer"].connected_locations.push({location: locations["Sewer Depths"]
         description: "Backsteets.",
 		dialogues: ["Kon2"],
         name: "Backstreets",
-        is_unlocked: true,
-		getBackgroundNoises: function() {
-		let noises = ["Grrrrrrrrrrroan", "*You hear muffled shuffling*", "*You hear a slow drip of water*" ];
-            return noises;
-        },
+        is_unlocked: false,
+		background_noises: ["Grrrrrrrrrrroan", "*You hear muffled shuffling*", "*You hear a slow drip of water*" ],
+   
     });
 	
 locations["Sewer"].connected_locations.push({location: locations["Backstreets"]});
@@ -1458,7 +1473,7 @@ locations["Sewer Depths"].connected_locations.push({location: locations["Deep Se
         connected_locations: [{location: locations["Backstreets"]}],
         description: "Sanctuary.",
        	dialogues: ["Mad Lumberjack","Smith","Peddler","Fallen","Scholar1","Fireseeker1","Occultist"],
-        traders: ["village trader","smith trader"],
+        traders: ["peddler","smith trader"],
         name: "Sanctuary",
         sleeping: {
             text: "Rest in a vacant home",
@@ -1694,7 +1709,14 @@ locations["Castle Ramparts"].connected_locations.push({location: locations["Cast
 
 locations["Catacomb Depths"] = new Location({ 
         connected_locations: [{location: locations["Catacombs"]}],
-        description: "Catacomb Depths",
+		getDescription: function() {
+            if(locations["Strange Knight"].enemy_groups_killed >= locations["Strange Knight"].enemy_count) { 
+                return "A deeper part of the catacombs. Home to more powerful undead. Going deeper leads to the final resting place of cherished champions.";
+            }
+			else {
+                return "A deeper part of the catacombs. Home to more powerful undead. A powerful undead knight prevents you from travelling futher."; 
+            }
+        },
 		dialogues: ["Slayer1"],
         name: "Catacomb Depths",
         is_unlocked: false,
@@ -1849,7 +1871,7 @@ locations["Grave of Heroes"] = new Location({
         description: "Grave of Heroes",
 		dialogues: ["Slayer2"],
         name: "Grave of Heroes",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Burrows"].connected_locations.push({location: locations["Grave of Heroes"]});
 locations["Catacomb Depths"].connected_locations.push({location: locations["Grave of Heroes"]});
@@ -2188,6 +2210,7 @@ locations["Strange Knight"] = new Challenge_zone({
             xp: 10,
 			skill: 1000,
 			related_skill: "Fate Mastery",
+			locations: [{location: "Grave of Heroes"}],
         }
     });
 locations["Catacomb Depths"].connected_locations.push({location: locations["Strange Knight"]});
@@ -2251,6 +2274,7 @@ locations["Silent Knight"] = new Challenge_zone({
             xp: 10,
 			skill: 1000,
 			related_skill: "Fate Mastery",
+			
         }
     });
 locations["Grave of Heroes"].connected_locations.push({location: locations["Silent Knight"]});
@@ -2898,7 +2922,7 @@ locations["Bone Tournament"] = new Challenge_zone({
         enemy_count: 5, 
         enemy_group_size: [1,1],
         enemy_stat_variation: 0.0,
-        is_unlocked: true,
+        is_unlocked: false,
         name: "Bone Tournament", 
         parent_location: locations["Grave of Heroes"],
         first_reward: {
@@ -3484,7 +3508,7 @@ function get_all_main_locations() {
             ],
             attempt_duration: 10,
             success_chances: [1],
-            rewards: {
+          rewards: {
 				locations: [{location: "Cavern"}],
 			 },
         }),
@@ -3517,11 +3541,12 @@ function get_all_main_locations() {
                 }
             ],
             attempt_duration: 1,
-            success_chances: [0.2],
+            success_chances: [0.2,0.6],
             rewards: {
 								       skill_xp: {
             "Lockpicking": 100,
-        }
+        },
+		locations: [{location: "Backsteets"}],
 
 			 },
 			            loss_rewards: {
@@ -3529,6 +3554,40 @@ function get_all_main_locations() {
             "Lockpicking": 10,
         }
 
+			 },
+        }),
+	}
+})();
+
+(function(){
+    locations["Grave of Heroes"].actions = {
+        "sign": new LocationAction({
+            action_id: "sign",
+            starting_text: "Read the sign",
+            description: "A barely legi",
+            action_text: "Deciphering",
+            success_text: "Aha. 'Bone Tournament' this way. \n\n What's that about?",
+            failure_texts: {
+                random_loss: ["Learn to read dumby!"],
+				conditional_loss: ["Learn to read dumby!"],
+            },
+          conditions: [
+                {
+                        
+                    skills: {
+                            "Literacy": -1,
+                        },
+                },
+                {
+                        skills: {
+                            "Literacy": 4,
+                        },
+                }
+            ],
+            attempt_duration: 1,
+            success_chances: [0.2,0.6],
+            rewards: {
+				locations: [{location: "Bone Tournament"}],
 			 },
         }),
 	}

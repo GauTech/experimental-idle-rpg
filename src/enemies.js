@@ -345,7 +345,7 @@ Platinum Slime
         rank: 1,
         size: "small",
         tags: ["amorphous"],
-        stats: {health: 20, attack: 4, agility: 2, dexterity: 1, magic: 0, intuition: 1, attack_speed: 0.8, defense: 0}, //stat_total = 20 (discount atk speed, HP/10)
+        stats: {health: 20, attack: 2, agility: 2, dexterity: 1, magic: 0, intuition: 1, attack_speed: 0.8, defense: 0}, //stat_total = 20 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Goo", chance: 0.20},
         ],
@@ -353,10 +353,10 @@ Platinum Slime
 	
 	    enemy_templates["Voluminous Slime"] = new Enemy({
         name: "Voluminous Slime", 
-        description: "Voluminous Slime",
+        description: "A massive, quivering blob that smothers prey in its suffocating bulk.",
 		xp_value: 3, 
         rank: 2,
-        size: "medium",
+        size: "large",
         tags: ["amorphous"],
         stats: {health: 40, attack: 8, agility: 4, dexterity: 2, magic: 0, intuition: 2, attack_speed: 0.9, defense: 0}, 
         loot_list: [
@@ -366,7 +366,7 @@ Platinum Slime
 	
 	    enemy_templates["Acid Slime"] = new Enemy({
         name: "Acid Slime", 
-        description: "Acid Slime",
+        description: "Its gel burns flesh and melts weapons. It can even seep through armour.",
 		xp_value: 9, 
         rank: 3,
         size: "small",
@@ -381,7 +381,7 @@ Platinum Slime
 
 	    enemy_templates["Toxic Slime"] = new Enemy({
         name: "Toxic Slime", 
-        description: "Toxic Slime",
+        description: "A poison-filled menace that expels toxic fumes.",
 		xp_value: 27, 
         rank: 4,
         size: "small",
@@ -395,7 +395,7 @@ Platinum Slime
 	
 	    enemy_templates["Plasma Slime"] = new Enemy({
         name: "Plasma Slime", 
-        description: "Plasma Slime",
+        description: "Crackling with energy, it explodes in violent arcs of lightning.",
 		xp_value: 81, 
         rank: 5,
         size: "small",
@@ -408,7 +408,7 @@ Platinum Slime
 
 	    enemy_templates["Magma Slime"] = new Enemy({
         name: "Magma Slime", 
-        description: "Magma Slime",
+        description: "A ball of living magma. Sorching hot and prone to explode when critically injured.",
 		xp_value: 81, 
         rank: 6,
         size: "large",
@@ -422,12 +422,12 @@ Platinum Slime
 	});
 	    enemy_templates["Platinum Slime"] = new Enemy({
         name: "Platinum Slime", 
-        description: "Platinum Slime",
+        description: "The pinnacle of slimekind. Uses it's dazzling speed to great effect.",
 		xp_value: 1000, 
         rank: 8,
         size: "small",
         tags: ["amorphous"],
-        stats: {health: 20, attack: 20, agility: 1000, dexterity: 140, magic: 0, intuition: 100, attack_speed: 3, defense: 20}, 
+        stats: {health: 200, attack: 20, agility: 1000, dexterity: 140, magic: 0, intuition: 100, attack_speed: 3, defense: 20}, 
         loot_list: [
             {item_name: "Platinum Shard", chance: 1, count: 1},
         ],
@@ -611,6 +611,7 @@ enemy_templates["Ant Queen"] = new Enemy({
         {item_name: "Royal Jelly", chance: 0.40},
         {item_name: "Ant Core", chance: 0.30},
         {item_name: "Chitin Plate", chance: 0.25},
+		{item_name: "Shoddy Treasure Chest", chance: 0.20},
     ],
 });
 
@@ -687,44 +688,55 @@ enemy_templates["Ant Queen"] = new Enemy({
         ],
     });		
 
+/// mimic
+    enemy_templates["Mimic"] = new Enemy({
+        name: "Mimic", 
+        description: "An elusive creature that occasionally yields treasure.",
+		xp_value: 50, 
+        rank: 3,
+        size: "medium",
+        tags: ["beast"],
+        stats: {health: 400, attack: 24, agility: 4, dexterity: 4, magic: 0, intuition: 2, attack_speed: 1, defense: 2}, 
+        loot_list: [
+            {item_name: "Shoddy Treasure Chest", chance: 0.20},
+        ],
+    });
 
 //rank 1s
     enemy_templates["Shambling Corpse"] = new Enemy({
         name: "Shambling Corpse", 
-        description: "Shambling Corpse",
+        description: "A slow and plodding zombie. Packs a decent punch if it hits. IF.",
 		xp_value: 1, 
         rank: 1,
         size: "medium",
         tags: ["undead","humanoid"],
 		on_strike: {bark: ["Grooooan","Braaains"]},
 		on_death: {
-		bark: "The monster lets out a final shriek!",
+		bark: "The monster lets out a final shriek and falls silent!",
 
 },
         stats: {health: 20, attack: 12, agility: 2, dexterity: 2, magic: 0, intuition: 1, attack_speed: 0.8, defense: 1}, //stat_total = 20 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Rotten Flesh", chance: 0.20},
-			{item_name: "Shoddy Treasure Chest", chance: 0.20},
-			{item_name: "Sparkling Treasure Chest", chance: 1.20},
         ],
     });
 	
     enemy_templates["Zombie Rat"] = new Enemy({
         name: "Zombie Rat", 
-        description: "Zombie Rat",
+        description: "The perfect union of Zombie and Rat. Weak but annoying.",
 		xp_value: 1, 
         rank: 1,
         size: "small",
         tags: ["undead","beast"],
         stats: {health: 10, attack: 6, agility: 5, dexterity: 5, magic: 0, intuition: 3, attack_speed: 0.9, defense: 0}, //stat_total = 20
         loot_list: [
-            {item_name: "Rotten Flesh", chance: 0.20},
+            {item_name: "Rotten Flesh", chance: 0.20}, {item_name: "Rat fang", chance: 0.40}
         ],
     });
 	
     enemy_templates["Bat"] = new Enemy({
         name: "Bat", 
-        description: "Bat",
+        description: "Rats with wings.",
 		xp_value: 1, 
         rank: 1,
         size: "small",
@@ -735,16 +747,16 @@ enemy_templates["Ant Queen"] = new Enemy({
         ],
     });
 
-    enemy_templates["Zombie Rat"] = new Enemy({
-        name: "Zombie Rat", 
-        description: "Zombie Rat",
+    enemy_templates["Frail Zombie"] = new Enemy({
+        name: "Frail Zombie", 
+        description: "It could fall apart at any moment. Especially if takes a hit or two.",
 		xp_value: 1, 
         rank: 1,
-        size: "small",
+        size: "medium",
         tags: ["beast", "undead"],
-        stats: {health: 10, attack: 6, agility: 5, dexterity: 5, magic: 0, intuition: 3, attack_speed: 0.9, defense: 0}, //stat_total = 20
+        stats: {health: 10, attack: 6, agility: 5, dexterity: 5, magic: 0, intuition: 2, attack_speed: 0.9, defense: 0}, //stat_total = 20
         loot_list: [
-            {item_name: "Rotten Flesh", chance: 0.20}, {item_name: "Rat fang", chance: 0.40}
+            {item_name: "Rotten Flesh", chance: 0.20},
         ],
     });
 	
@@ -768,7 +780,7 @@ enemy_templates["Ant Queen"] = new Enemy({
 
     enemy_templates["Skeleton"] = new Enemy({
         name: "Skeleton", 
-        description: "Skeleton",
+        description: "Basic undead. Bone variety.",
 		xp_value: 5, 
         rank: 2,
         size: "medium",
@@ -781,7 +793,7 @@ enemy_templates["Ant Queen"] = new Enemy({
 	
     enemy_templates["Zombie"] = new Enemy({
         name: "Zombie", 
-        description: "Zombie",
+        description: "Run of the mill undead. Slow and clumsy, but still dangerous when massed.",
 		xp_value: 5, 
         rank: 2,
         size: "medium",

@@ -69,6 +69,15 @@ class Textline {
 		this.unlocks.allies = unlocks.allies || [];
 		this.unlocks.expels = unlocks.expels || [];
         this.unlocks.items = unlocks.items || []; //not so much unlocks as simply items that player will receive
+		
+		
+			/*	Can handles just the item name, or name+ count or name+quality.e.g.
+		
+					"Old pickaxe",
+					{ name: "Turtle Soup", count: 50 },
+					{ name: "Cheap iron dagger", quality: 40 },
+			*/
+
         
         this.required_flags = required_flags;
 
@@ -1199,9 +1208,13 @@ dialogues["Kon1"] = new Dialogue({
 			"Kon1Final": new Textline({ 
 				is_unlocked: false,
                 name: "Goodbye",
-                text: "Well, adventure calls. Hopefully neither of us stumbles into an early grave! Hah.",
+                text: "Well, adventure calls. Hopefully neither of us stumbles into an early grave! Hah. \n\n Oh and perhaps you'll find some use for this. A parting gift!",
 				unlocks: {
 					dialogues: ["Kon2"],
+					items: [
+					{ name: "Cheap iron sword", quality: 50 },
+					
+				],
                 },
             locks_lines: ["Kon1","Kon1What","Kon1Who","Kon1Final","Kon1Advice","Kon1Cause"],
             }),

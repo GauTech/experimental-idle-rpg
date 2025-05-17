@@ -136,7 +136,7 @@ class TradeItem {
 
 //create traders
 (function(){
-    traders["village trader"] = new Trader({
+    traders["peddler"] = new Trader({
         name: "Peddler",
         inventory_template: "General",
         is_unlocked: false,
