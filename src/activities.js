@@ -173,7 +173,7 @@ class Gathering extends Training {
         description: "Look for any useful plants and mushrooms",
         base_skills_names: ["Herbalism"],
         is_unlocked: true,
-        required_tool_type: "herb sickle",
+        required_tool_type: "sickle",
     });
 	
     activities["fishing"] = new Gathering({

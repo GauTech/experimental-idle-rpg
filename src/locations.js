@@ -85,6 +85,7 @@ class Combat_zone {
                  is_unlocked = true, 
                  is_finished = false,
                  types = [], //{type, xp_gain}
+				 enemy_groups_sequence = [],
                  enemy_groups_list = [],
                  enemies_list = [], 
                  enemy_group_size = [1,1],
@@ -112,12 +113,13 @@ class Combat_zone {
         this.is_unlocked = is_unlocked;
         this.is_finished = is_finished;
         this.types = types; //special properties of the location, e.g. "narrow" or "dark"
+		this.enemy_groups_sequence = enemy_groups_sequence; //predefined enemy teams, in a set order. names only. Will repeat last entry in the sequence if enemy count exceeds sequence length.
         this.enemy_groups_list = enemy_groups_list; //predefined enemy teams, names only
         this.enemies_list = enemies_list; //possible enemies (to be used if there's no enemy_groups_list), names only
         this.enemy_group_size = enemy_group_size; // [min, max], used only if enemy_groups_list is not provided
-		this.rare_list = rare_list;
-		this.rare_chance = rare_chance;
-		this.boss_list = boss_list;
+		this.rare_list = rare_list; // rare enemies.
+		this.rare_chance = rare_chance; // chance of rare.
+		this.boss_list = boss_list; // boss enemies. spawn on last wave of a zone.
         if(!this.enemy_groups_list){
             if(this.enemy_group_size[0] < 1) {
                 this.enemy_group_size[0] = 1;
@@ -138,7 +140,7 @@ class Combat_zone {
         }
         this.enemy_count = enemy_count; //how many enemy groups need to be killed for the clearing reward
 
-        if(this.enemy_groups_list.length == 0 && this.enemies_list.length == 0 ) {
+        if(this.enemy_groups_list.length == 0 && this.enemies_list.length == 0 & this.enemy_groups_sequence.length == 0 ) {
             throw new Error(`No enemies provided for zone "${this.name}"`);
         }
 
@@ -185,14 +187,38 @@ class Combat_zone {
     const enemies = [];
     let enemy_group = [];
 
-    if (this.enemy_groups_list.length > 0) {
+    // 1. Check for predefined enemy groups for a set sequence of fights.
+    if (Array.isArray(this.enemy_groups_sequence) && this.enemy_groups_sequence.length > 0) {
+        const index = Math.min(this.enemy_groups_killed, this.enemy_groups_sequence.length - 1);
+        enemy_group = this.enemy_groups_sequence[index];
+    }
+
+    // 2. Check for random roll of predefined enemy groups
+    else if (this.enemy_groups_list.length > 0) {
         const index = Math.floor(Math.random() * this.enemy_groups_list.length);
-        enemy_group = this.enemy_groups_list[index]; // names
-    } else if (Array.isArray(this.boss_list) && this.boss_list.length > 0 && (this.enemy_groups_killed % this.enemy_count == (this.enemy_count - 1))) {
+        enemy_group = this.enemy_groups_list[index];
+    }
+
+    // 3. Boss spawn logic
+    else if (
+        Array.isArray(this.boss_list) &&
+        this.boss_list.length > 0 &&
+        (this.enemy_groups_killed % this.enemy_count == (this.enemy_count - 1))
+    ) {
         enemy_group = this.boss_list;
-    } else if (Array.isArray(this.rare_list) && this.rare_list.length > 0 && Math.random() < this.rare_chance) {
+    }
+
+    // 4. Rare enemy group logic
+    else if (
+        Array.isArray(this.rare_list) &&
+        this.rare_list.length > 0 &&
+        Math.random() < this.rare_chance
+    ) {
         enemy_group = this.rare_list;
-    } else {
+    }
+
+    // 5. Default random group
+    else {
         const group_size = this.enemy_group_size[0] + Math.floor(Math.random() * (this.enemy_group_size[1] - this.enemy_group_size[0]));
         enemy_group = [];
         for (let i = 0; i < group_size; i++) {
@@ -297,6 +323,7 @@ class Challenge_zone extends Combat_zone {
         getDescription,
         is_unlocked = true, 
         types = [], //{type, xp_gain}
+		enemy_groups_sequence = [],
         enemy_groups_list = [],
         enemies_list = [], 
         enemy_group_size = [1,1],
@@ -320,6 +347,7 @@ class Challenge_zone extends Combat_zone {
                 getDescription, 
                 is_unlocked, 
                 types, 
+				enemy_groups_sequence, 
                 enemy_groups_list, 
                 enemies_list, 
                 enemy_group_size, 
@@ -2862,6 +2890,29 @@ locations["Storm Enemies3"] = new Combat_zone({
     });
 locations["The Maelstrom"].connected_locations.push({location: locations["Storm Enemies3"], custom_text: "Storm Enemies3"});
 
+locations["Bone Tournament"] = new Challenge_zone({
+        description: "Bone Tournament", 
+		types: [],
+		enemy_groups_sequence: [["Sir Bones"],["Randall Lionheart Esquire (Deceased)"],["Randall Lionheart Esquire Jnr (Deceased)"],["Skele-Tony"],["Morbid Champion"]],
+		//enemy_groups_list: [["Sir Bones"],["Skele-Tony"]],
+        enemy_count: 5, 
+        enemy_group_size: [1,1],
+        enemy_stat_variation: 0.0,
+        is_unlocked: true,
+        name: "Bone Tournament", 
+        parent_location: locations["Grave of Heroes"],
+        first_reward: {
+            xp: 10000,
+        },
+        repeatable_reward: {
+            xp: 2000,
+            skill: 1000,
+			related_skill: "Battling",
+			finish_location: "Bone Tournament",
+        }
+    });
+
+locations["Grave of Heroes"].connected_locations.push({location: locations["Bone Tournament"], custom_text: "Enter the Bone Tournament"});
 //special
 
 locations["Time Demon"] = new Challenge_zone({

@@ -49,6 +49,17 @@ const rarity_multipliers = {
 
 const item_templates = {};
 
+
+///chance is handled in rolling the loot_pool in the first place, so these should always have 100% chance.
+const loot_pools = {
+    magic_spellbooks_pool: [
+        { item_id: "TRUE ULTIMATE POWER", chance: 100, min_count: 1, max_count: 1 },
+        { item_id: "Old combat manual", chance: 100, min_count: 1, max_count: 1 },
+        { item_id: "ABC for kids", chance: 100, min_count: 1, max_count: 1 },
+    ],
+    // other pools...
+};
+
 let loot_sold_count = {};
 
 function setLootSoldCount(data) {
@@ -863,6 +874,7 @@ function getAdjustedReadingTime(bookTitle) {
 class LootChestItem extends UsableItem {
     constructor(item_data) {
         super(item_data);
+		this.loot_pool = item_data.loot_pool;
         this.loot = item_data.loot || []; // Array of { item_id, chance, min_count, max_count }
         this.tags["loot_chest"] = true;
     }
@@ -3030,13 +3042,44 @@ item_templates["Stale bread"] = new UsableItem({
     });
 })();
 
-item_templates["Small Treasure Chest"] = new LootChestItem({
-    name: "Small Treasure Chest",
-    description: "A wooden chest containing random valuables.",
+
+
+item_templates["Shoddy Treasure Chest"] = new LootChestItem({
+    name: "Shoddy Treasure Chest",
+    description: "A shoddy wooden chest. You doubt it contains much of value.",
     value: 50,
-    gluttony_value: 0,
     item_type: "USABLE",
     tags: { loot_chest: true },
+    loot: [
+        { item_id: "Weak healing powder", chance: 100, min_count: 5, max_count: 15 },
+		{ money: true, chance: 100, min_amount: 50, max_amount: 120 }
+    ],
+});
+
+item_templates["Small Treasure Chest"] = new LootChestItem({
+    name: "Small Treasure Chest",
+    description: "A shoddy wooden chest. You doubt it contains much of value.",
+    value: 50,
+    item_type: "USABLE",
+    tags: { loot_chest: true },
+    loot: [
+        { item_id: "Weak healing powder", chance: 100, min_count: 5, max_count: 15 },
+		{ money: true, chance: 100, min_amount: 50, max_amount: 120 }
+    ],
+});
+
+item_templates["Sparkling Treasure Chest"] = new LootChestItem({
+    name: "Sparkling Treasure Chest",
+    description: "A sparkling ornate chest. It glimmers with promise.",
+    value: 50,
+    item_type: "USABLE",
+    tags: { loot_chest: true },
+	loot_pool: {
+    name: "magic_spellbooks_pool",
+    rolls: 2,
+    count: 1,
+    chance: 100
+		},
     loot: [
         { item_id: "Weak healing powder", chance: 100, min_count: 5, max_count: 15 },
 		{ money: true, chance: 100, min_amount: 50, max_amount: 120 }
@@ -3056,5 +3099,6 @@ export {
     book_stats, loot_sold_count,
     rarity_multipliers,
 	getItemRarity, getItemFromKey,
-	getAdjustedReadingTime
+	getAdjustedReadingTime,
+	loot_pools
 };

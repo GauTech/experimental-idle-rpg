@@ -1,7 +1,7 @@
 "use strict";
 
 import { current_game_time } from "./game_time.js";
-import { item_templates, getItem, book_stats, setLootSoldCount, loot_sold_count, recoverItemPrices, rarity_multipliers, getArmorSlot} from "./items.js";
+import { item_templates, getItem, book_stats, setLootSoldCount, loot_sold_count, recoverItemPrices, rarity_multipliers, getArmorSlot, loot_pools} from "./items.js";
 import { locations, get_all_main_locations } from "./locations.js";
 import { skills, weapon_type_to_skill, which_skills_affect_skill} from "./skills.js";
 import { dialogues } from "./dialogues.js";
@@ -3362,8 +3362,8 @@ function use_item(item_key) {
 function open_loot_chest(item_key) {
     const { id } = JSON.parse(item_key);
     const chest = item_templates[id];
-
-    if (!chest || !Array.isArray(chest.loot)) {
+	console.log("loot_chest logic started");
+    if (!chest || (!Array.isArray(chest.loot) && !chest.loot_pool)) {
         console.error(`Invalid loot chest: ${id}`);
         return;
     }
@@ -3372,7 +3372,21 @@ function open_loot_chest(item_key) {
     const lootMap = new Map(); // Map<item_id, { item, count }>
     let totalMoney = 0;
 
-    for (const lootEntry of chest.loot) {
+	let finalLoot = [...(chest.loot || [])];
+
+	// Handle loot pool (if exists)
+	if (chest.loot_pool) {
+		console.log("loot_chest_pool logic started");
+		const poolResult = roll_loot_pool(chest.loot_pool);
+		if (poolResult.length > 0) {
+			console.log("loot_chest_pool roll success");
+			console.log(poolResult);
+			finalLoot = [...finalLoot, ...poolResult]; // append without mutating chest
+		}
+	}
+
+    // Regular loot
+    for (const lootEntry of finalLoot) {
         const roll = Math.random() * 100;
         if (roll > lootEntry.chance) continue;
 
@@ -3416,10 +3430,8 @@ function open_loot_chest(item_key) {
     // Award Money
     if (totalMoney > 0) {
         add_money_to_character(totalMoney);
-
-        
-			log_message(`${character.name} earned ${format_money(totalMoney)}`);
-        }
+        log_message(`${character.name} earned ${format_money(totalMoney)}`);
+    }
 
     // Log result
     if (lootMap.size > 0) {
@@ -3431,6 +3443,35 @@ function open_loot_chest(item_key) {
 
     remove_from_character_inventory([{ item_key }]);
 }
+
+function roll_loot_pool({ name, rolls, count, chance }) {
+    const pool = loot_pools[name];
+    if (!Array.isArray(pool)) {
+        console.error(`Loot pool "${name}" not found or invalid.`);
+        return [];
+    }
+
+    const additionalLoot = [];
+
+    for (let i = 0; i < rolls; i++) {
+        if (Math.random() * 100 > chance) continue;
+
+        const entry = pool[Math.floor(Math.random() * pool.length)];
+        if (!entry || !entry.item_id || !entry.chance) continue;
+
+        if (Math.random() * 100 > entry.chance) continue;
+
+        additionalLoot.push({
+            item_id: entry.item_id,
+            chance: 100,
+            min_count: count,
+            max_count: count
+        });
+    }
+
+    return additionalLoot;
+}
+
 
 function get_date() {
     const date = new Date();

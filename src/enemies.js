@@ -614,6 +614,79 @@ enemy_templates["Ant Queen"] = new Enemy({
     ],
 });
 
+//bone tournament
+
+
+    enemy_templates["Sir Bones"] = new Enemy({
+        name: "Sir Bones", 
+        description: "Sir Bones",
+		add_to_bestiary: false,
+		xp_value: 500, 
+        rank: 4,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 240, attack: 60, agility: 15, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });
+
+    enemy_templates["Randall Lionheart Esquire (Deceased)"] = new Enemy({
+        name: "Randall Lionheart Esquire (Deceased)", 
+        description: "Randall Lionheart Esquire (Deceased)",
+		add_to_bestiary: false,
+		xp_value: 700, 
+        rank: 4,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 180, attack: 70, agility: 25, dexterity: 66, magic: 0, intuition: 8, attack_speed: 1.3, defense: 12}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });
+	
+    enemy_templates["Randall Lionheart Esquire Jnr (Deceased)"] = new Enemy({
+        name: "Randall Lionheart Esquire Jnr (Deceased)", 
+        description: "Randall Lionheart Esquire Jnr (Deceased)",
+		add_to_bestiary: false,
+		xp_value: 1000, 
+        rank: 5,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 180, attack: 70, agility: 50, dexterity: 136, magic: 0, intuition: 8, attack_speed: 1.5, defense: 22}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });
+	
+    enemy_templates["Skele-Tony"] = new Enemy({
+        name: "Skele-Tony", 
+        description: "Skele-Tony",
+		add_to_bestiary: false,
+		xp_value: 1500, 
+        rank: 5,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 240, attack: 270, agility: 20, dexterity: 116, magic: 0, intuition: 8, attack_speed: 1.5, defense: 32}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });	
+	
+    enemy_templates["Morbid Champion"] = new Enemy({
+        name: "Morbid Champion", 
+        description: "Morbid Champion",
+		add_to_bestiary: false,
+		xp_value: 2000, 
+        rank: 5,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 340, attack: 270, agility: 40, dexterity: 136, magic: 5, intuition: 8, attack_speed: 1.3, defense: 52}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });		
+
 
 //rank 1s
     enemy_templates["Shambling Corpse"] = new Enemy({
@@ -631,7 +704,8 @@ enemy_templates["Ant Queen"] = new Enemy({
         stats: {health: 20, attack: 12, agility: 2, dexterity: 2, magic: 0, intuition: 1, attack_speed: 0.8, defense: 1}, //stat_total = 20 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Rotten Flesh", chance: 0.20},
-			{item_name: "Small Treasure Chest", chance: 0.20},
+			{item_name: "Shoddy Treasure Chest", chance: 0.20},
+			{item_name: "Sparkling Treasure Chest", chance: 1.20},
         ],
     });
 	
