@@ -1839,7 +1839,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Purest Darkness"] = new OtherItem({
         name: "Purest Darkness", 
         description: "Purest Darkness",
-        value: 5000, 
+        value: 1, 
     });
 }());
 
@@ -2198,7 +2198,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Wolf leather helmet armor", 
         description: "Strenghtened wolf leather, ready to be used as a part of a helmet",
         component_type: "helmet exterior",
-        value: 300,
+        value: 600,
         component_tier: 2,
         full_armor_name: "Wolf leather helmet",
         defense_value: 2,
@@ -2213,7 +2213,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Boar leather helmet armor", 
         description: "Strong boar leather, ready to be used as a part of a helmet",
         component_type: "helmet exterior",
-        value: 500,
+        value: 1000,
         component_tier: 3,
         full_armor_name: "Boar leather helmet",
         defense_value: 3,
@@ -2229,7 +2229,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Wolf leather cuirass",
         description: "Simple cuirass made of solid wolf leather, all it needs now is something softer to wear under it.",
         component_type: "chestplate exterior",
-        value: 600,
+        value: 1200,
         component_tier: 2,
         full_armor_name: "Wolf leather armor",
         defense_value: 4,
@@ -2244,7 +2244,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Boar leather cuirass",
         description: "String cuirass made of boar leather.",
         component_type: "chestplate exterior",
-        value: 1000,
+        value: 2000,
         component_tier: 3,
         full_armor_name: "Boar leather armor",
         defense_value: 6,
@@ -2258,7 +2258,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Wolf leather greaves",
         description: "Greaves made of wolf leather. Just attach them onto some pants and you are ready to go.",
         component_type: "leg armor exterior",
-        value: 300,
+        value: 600,
         component_tier: 2,
         full_armor_name: "Wolf leather armored pants",
         defense_value: 2,
@@ -2273,7 +2273,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Boar leather greaves",
         description: "Greaves made of thick boar leather. Just attach them onto some pants and you are ready to go.",
         component_type: "leg armor exterior",
-        value: 500,
+        value: 1000,
         component_tier: 3,
         full_armor_name: "Boar leather armored pants",
         defense_value: 3,
@@ -2287,7 +2287,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Wolf leather glove armor",
         description: "Pieces of wolf leather shaped for gloves.",
         component_type: "glove exterior",
-        value: 300,
+        value: 600,
         component_tier: 2,
         full_armor_name: "Wolf leather gloves",
         defense_value: 2,
@@ -2297,7 +2297,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Boar leather glove armor",
         description: "Pieces of boar leather shaped for gloves.",
         component_type: "glove exterior",
-        value: 500,
+        value: 1000,
         component_tier: 3,
         full_armor_name: "Boar leather gloves",
         defense_value: 3,
@@ -2307,7 +2307,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Wolf leather shoe armor",
         description: "Pieces of wolf leather shaped for shoes.",
         component_type: "shoes exterior",
-        value: 300,
+        value: 600,
         component_tier: 2,
         full_armor_name: "Wolf leather shoes",
         defense_value: 2,
@@ -2317,7 +2317,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Boar leather shoe armor",
         description: "Pieces of boar leather shaped for shoes.",
         component_type: "shoes exterior",
-        value: 500,
+        value: 1000,
         component_tier: 3,
         full_armor_name: "Boar leather shoes",
         defense_value: 3,
@@ -2327,7 +2327,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Iron chainmail helmet armor",
         description: "Best way to keep your head in one piece",
         component_type: "helmet exterior",
-        value: 400,
+        value: 800,
         component_tier: 2,
         full_armor_name: "Iron chainmail helmet",
         defense_value: 4,
@@ -2344,7 +2344,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Iron chainmail vest",
         description: "Basic iron chainmail. Nowhere near as strong as a plate armor",
         component_type: "chestplate exterior",
-        value: 800,
+        value: 1600,
         component_tier: 2,
         full_armor_name: "Iron chainmail armor",
         defense_value: 8,
@@ -2361,7 +2361,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Iron chainmail greaves",
         description: "Greaves made of iron chainmail. Just attach them onto some pants and you are ready to go.",
         component_type: "leg armor exterior",
-        value: 400,
+        value: 800,
         component_tier: 2,
         full_armor_name: "Iron chainmail pants",
         defense_value: 4,
@@ -2378,7 +2378,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Iron chainmail glove",
         description: "Iron chainmail in a form ready to be applied onto a glove.",
         component_type: "glove exterior",
-        value: 400,
+        value: 800,
         component_tier: 2,
         full_armor_name: "Iron chainmail gloves",
         defense_value: 4,
@@ -2396,7 +2396,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Iron chainmail shoes",
         description: "Iron chainmail in a form ready to be applied onto a pair of shoes.",
         component_type: "shoes exterior",
-        value: 400,
+        value: 800,
         component_tier: 2,
         full_armor_name: "Iron chainmail boots",
         defense_value: 4,
@@ -2426,7 +2426,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Leather vest"] = new Armor({
         name: "Leather vest", 
         description: "Comfortable leather vest, offering a low protection.", 
-        value: 300,
+        value: 600,
         component_type: "chestplate interior",
         base_defense: 2,
         component_tier: 2,
@@ -2448,7 +2448,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Leather pants"] = new Armor({
         name: "Leather pants", 
         description: "Solid leather pants.", 
-        value: 300,
+        value: 600,
         component_type: "leg armor interior",
         base_defense: 2,
         component_tier: 2,
@@ -2471,7 +2471,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Leather hat"] = new Armor({
         name: "Leather hat", 
         description: "A nice leather hat to protect your head.", 
-        value: 300,
+        value: 600,
         component_type: "helmet interior",
         base_defense: 2,
         component_tier: 2,
@@ -2480,7 +2480,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Leather gloves"] = new Armor({
         name: "Leather gloves", 
         description: "Strong leather gloves, perfect for handling rough and sharp objects.", 
-        value: 300,
+        value: 600,
         component_type: "glove interior",
         base_defense: 1,
         component_tier: 2,
@@ -2502,7 +2502,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Leather shoes"] = new Armor({
         name: "Leather shoes", 
         description: "Solid shoes made of leather, a must have for any traveler", 
-        value: 300,
+        value: 600,
         component_type: "shoes interior",
         base_defense: 1,
         component_tier: 2,
@@ -2519,7 +2519,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Wool shirt"] = new Armor({
         name: "Wool shirt",
         description: "It's thick enough to weaken a blow, but you shouldn't hope for much. On the plus side, it's light and doesn't block your moves.", 
-        value: 300,
+        value: 600,
         component_type: "chestplate interior",
         base_defense: 1,
         component_tier: 2,
@@ -2536,7 +2536,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Wool pants"] = new Armor({
         name: "Wool pants", 
         description: "Nice woollen pants. Slightly itchy.",
-        value: 100,
+        value: 600,
         component_type: "leg armor interior",
         base_defense: 1,
         component_tier: 2,
@@ -2545,7 +2545,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Wool hat"] = new Armor({
         name: "Wool hat", 
         description: "Simple woollen hat to protect your head.",
-        value: 300,
+        value: 600,
         component_type: "helmet interior",
         base_defense: 1,
         component_tier: 2,
@@ -2562,7 +2562,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Wool gloves"] = new Armor({
         name: "Wool gloves",
         description: "Warm and comfy, but they don't provide much protection.",
-        value: 300,
+        value: 600,
         component_type: "glove interior",
         base_defense: 1,
         component_tier: 2,
@@ -2836,28 +2836,28 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Upstart pickaxe"] = new Tool({
         name: "Upstart pickaxe",
         description: "Upstart rod. +10% Tool Bonus",
-        value: 100,
+        value: 1000,
 		tool_bonus: 10,
         equip_slot: "pickaxe",
     });
 	    item_templates["Upstart axe"] = new Tool({
         name: "Upstart axe",
         description: "Upstart rod. +10% Tool Bonus",
-        value: 100,
+        value: 1000,
 		tool_bonus: 10,
         equip_slot: "axe",
     });
     item_templates["Upstart sickle"] = new Tool({
         name: "Upstart sickle",
         description: "Upstart rod. +10% Tool Bonus",
-        value: 100,
+        value: 1000,
 		tool_bonus: 10,
         equip_slot: "sickle",
     });
 	    item_templates["Upstart rod"] = new Tool({
         name: "Upstart rod",
         description: "Upstart rod. +10% Tool Bonus",
-        value: 100,
+        value: 1000,
 		tool_bonus: 10,
         equip_slot: "rod",
     });	
@@ -2865,84 +2865,84 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Journeyman pickaxe"] = new Tool({
         name: "Journeyman pickaxe",
         description: "Journeyman rod. +20% Tool Bonus",
-        value: 1000,
+        value: 10000,
 		tool_bonus: 20,
         equip_slot: "pickaxe",
     });
 	    item_templates["Journeyman axe"] = new Tool({
         name: "Journeyman axe",
         description: "Journeyman rod. +20% Tool Bonus",
-        value: 1000,
+        value: 10000,
 		tool_bonus: 20,
         equip_slot: "axe",
     });
     item_templates["Journeyman sickle"] = new Tool({
         name: "Journeyman sickle",
         description: "Journeyman rod. +20% Tool Bonus",
-        value: 1000,
+        value: 10000,
 		tool_bonus: 20,
         equip_slot: "sickle",
     });
 	    item_templates["Journeyman rod"] = new Tool({
         name: "Journeyman rod",
         description: "Journeyman rod. +20% Tool Bonus",
-        value: 1000,
+        value: 10000,
 		tool_bonus: 20,
         equip_slot: "rod",
     });
     item_templates["Expert pickaxe"] = new Tool({
         name: "Expert pickaxe",
         description: "Expert rod. +35% Tool Bonus",
-        value: 5000,
+        value: 50000,
 		tool_bonus: 35,
         equip_slot: "pickaxe",
     });
 	    item_templates["Expert axe"] = new Tool({
         name: "Expert axe",
         description: "Expert rod. +35% Tool Bonus",
-        value: 5000,
+        value: 50000,
 		tool_bonus: 35,
         equip_slot: "axe",
     });
     item_templates["Expert sickle"] = new Tool({
         name: "Expert sickle",
         description: "Expert rod. +35% Tool Bonus",
-        value: 5000,
+        value: 50000,
 		tool_bonus: 35,
         equip_slot: "sickle",
     });
 	    item_templates["Expert rod"] = new Tool({
         name: "Expert rod",
         description: "Expert rod. +35% Tool Bonus",
-        value: 5000,
+        value: 50000,
 		tool_bonus: 35,
         equip_slot: "rod",
     });
     item_templates["Super pickaxe"] = new Tool({
         name: "Super pickaxe",
         description: "A pickaxe so powerful it may well have been forged by the gods themselves. +50% Tool Bonus",
-        value: 10000,
+        value: 100000,
 		tool_bonus: 50,
         equip_slot: "pickaxe",
     });
 	    item_templates["Super axe"] = new Tool({
         name: "Super axe",
         description: "An axe so powerful it may well have been forged by the gods themselves. +50% Tool Bonus",
-        value: 10000,
+        value: 100000,
 		tool_bonus: 50,
         equip_slot: "axe",
     });
     item_templates["Super sickle"] = new Tool({
         name: "Super sickle",
         description: "A herb sickle so powerful it may well have been forged by the gods themselves. +50% Tool Bonus",
-        value: 10000,
+        value: 100000,
 		tool_bonus: 50,
         equip_slot: "sickle",
     });
 	    item_templates["Super rod"] = new Tool({
         name: "Super rod",
         description: "A fishing rod so powerful it may well have been forged by the gods themselves. +50% Tool Bonus",
-        value: 10000,
+        value: 100000,
 		tool_bonus: 50,
         equip_slot: "rod",
     });

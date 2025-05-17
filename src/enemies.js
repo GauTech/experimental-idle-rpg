@@ -194,32 +194,7 @@ get_loot() {
         ]
     });
 
-    enemy_templates["Starving wolf"] = new Enemy({
-        name: "Starving wolf", description: "A large, wild and hungry canine", 
-        xp_value: 3, 
-        rank: 2,
-        tags: ["living", "beast"],
-        stats: {health: 150, attack: 25, agility: 34, dexterity: 34, intuition: 32, magic: 0, attack_speed: 1, defense: 12}, 
-        loot_list: [
-            {item_name: "Wolf fang", chance: 0.03},
-            {item_name: "Wolf pelt", chance: 0.01},
-        ],
-        size: "medium",
-    });
 
-    enemy_templates["Young wolf"] = new Enemy({
-        name: "Young wolf", 
-        description: "A small, wild canine", 
-        xp_value: 3, 
-        rank: 2,
-        tags: ["living", "beast"],
-        stats: {health: 120, attack: 25, agility: 34, dexterity: 30, intuition: 24, magic: 0, attack_speed: 1.4, defense: 6}, 
-        loot_list: [
-            {item_name: "Wolf fang", chance: 0.03},
-            {item_name: "Wolf pelt", chance: 0.01},
-        ],
-        size: "small",
-    });
 
     enemy_templates["Wolf"] = new Enemy({
         name: "Wolf", 
@@ -408,7 +383,7 @@ Platinum Slime
 
 	    enemy_templates["Magma Slime"] = new Enemy({
         name: "Magma Slime", 
-        description: "A ball of living magma. Sorching hot and prone to explode when critically injured.",
+        description: "A ball of living magma. Scalding hot, and prone to explode when critically injured.",
 		xp_value: 81, 
         rank: 6,
         size: "large",
@@ -422,7 +397,7 @@ Platinum Slime
 	});
 	    enemy_templates["Platinum Slime"] = new Enemy({
         name: "Platinum Slime", 
-        description: "The pinnacle of slimekind. Uses it's dazzling speed to great effect.",
+        description: "The pinnacle of slimekind. Uses its dazzling speed to deftly avoid incoming attacks.",
 		xp_value: 1000, 
         rank: 8,
         size: "small",
@@ -479,7 +454,7 @@ enemy_templates["Venomous Spider"] = new Enemy({
         {item_name: "Venom Gland", chance: 0.50},
         {item_name: "Spider Fang", chance: 0.40},
     ],
-	on_strike: {poison: 200},
+	on_connectedstrike: {poison: 200},
 });
 
 enemy_templates["Heavyweight Spider"] = new Enemy({
@@ -489,7 +464,7 @@ enemy_templates["Heavyweight Spider"] = new Enemy({
     rank: 4,
     size: "medium",
     tags: ["arthropod"],
-    stats: {health: 130, attack: 38, agility: 12, dexterity: 18, magic: 0, intuition: 6, attack_speed: 0.9, defense: 27},
+    stats: {health: 130, attack: 45, agility: 12, dexterity: 18, magic: 0, intuition: 6, attack_speed: 0.7, defense: 27},
     loot_list: [
         {item_name: "Chitin Plate", chance: 0.50},
         {item_name: "Spider Fang", chance: 0.20},
@@ -498,13 +473,13 @@ enemy_templates["Heavyweight Spider"] = new Enemy({
 
 enemy_templates["Death-With-Legs"] = new Enemy({
     name: "Death-With-Legs", 
-    description: "A horrific predator spider that brings swift death.",
+    description: "A viscous predator. Strikes with deadly precision.",
 	xp_value: 625, 
     rank: 5,
     size: "large",
     tags: ["arthropod"],
 	on_strike: {pierce: 5},
-    stats: {health: 260, attack: 80, agility: 40, dexterity: 64, magic: 0, intuition: 16, attack_speed: 1.3, defense: 34},
+    stats: {health: 260, attack: 80, agility: 40, dexterity: 124, magic: 0, intuition: 16, attack_speed: 1.3, defense: 34},
     loot_list: [
         {item_name: "Venom Gland", chance: 0.60},
         {item_name: "Chitin Plate", chance: 0.40},
@@ -524,6 +499,7 @@ enemy_templates["Spider Queen"] = new Enemy({
         {item_name: "Spider Core", chance: 0.60},
         {item_name: "Royal Silk", chance: 0.40},
         {item_name: "Venom Gland", chance: 0.30},
+		{item_name: "Shoody Treasure Chest", chance: 0.30},
     ],
 });
 // ant family
@@ -687,6 +663,20 @@ enemy_templates["Ant Queen"] = new Enemy({
             {item_name: "Bones", chance: 1},
         ],
     });		
+	
+	    enemy_templates["The Bone Prince"] = new Enemy({
+        name: "The Bone Prince", 
+        description: "The Bone Prince",
+		add_to_bestiary: false,
+		xp_value: 2400, 
+        rank: 6,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 440, attack: 370, agility: 140, dexterity: 236, magic: 1, intuition: 22, attack_speed: 1.3, defense: 42}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });	
 
 /// mimic
     enemy_templates["Mimic"] = new Enemy({
@@ -805,10 +795,10 @@ enemy_templates["Ant Queen"] = new Enemy({
         ],
     });
 
-///
+/// rank 2 boss
     enemy_templates["Royal Rat"] = new Enemy({
-        name: "Plague Rat", 
-        description: "Scurrying little disease vectors.",
+        name: "Royal Rat", 
+        description: "The king of the sewers.",
 		xp_value: 50, 
         rank: 2,
         size: "medium",
@@ -826,11 +816,12 @@ enemy_templates["Ant Queen"] = new Enemy({
 /// rank 3s
     enemy_templates["Skeleton Archer"] = new Enemy({
         name: "Skeleton Archer", 
-        description: "Skeleton Archer",
+        description: "A skeleton that specialises in ranged ambushes.",
 		xp_value: 25, 
         rank: 3,
         size: "medium",
         tags: ["undead","humanoid"],
+		on_entry: { hero_damage: 1,},
         stats: {health: 70, attack: 34, agility: 4, dexterity: 28, magic: 0, intuition: 4, attack_speed: 1.2, defense: 3}, //stat_total = 80 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Bones", chance: 0.60},
@@ -839,7 +830,7 @@ enemy_templates["Ant Queen"] = new Enemy({
 	
     enemy_templates["Blighted One"] = new Enemy({
         name: "Blighted One", 
-        description: "Blighted One",
+        description: "A cursed undead.",
 		xp_value: 25, 
         rank: 3,
         size: "medium",
@@ -852,7 +843,7 @@ enemy_templates["Ant Queen"] = new Enemy({
 	
     enemy_templates["Decrepit Construct"] = new Enemy({
         name: "Decrepit Construct", 
-        description: "Decrepit Construct",
+        description: "An abandoned rogue construct. Robust but clumsy.",
 		xp_value: 25, 
         rank: 3,
         size: "large",
@@ -862,6 +853,35 @@ enemy_templates["Ant Queen"] = new Enemy({
             {item_name: "Magic Stone", chance: 0.2},
         ],
     });
+
+    enemy_templates["Starving wolf"] = new Enemy({
+        name: "Starving wolf", 
+		description: "A large, wild and hungry canine", 
+        xp_value: 25, 
+        rank: 3,
+        tags: ["living", "beast"],
+        stats: {health: 150, attack: 20, agility: 27, dexterity: 27, intuition: 32, magic: 0, attack_speed: 1, defense: 12}, 
+        loot_list: [
+            {item_name: "Wolf fang", chance: 0.03},
+            {item_name: "Wolf pelt", chance: 0.01},
+        ],
+        size: "medium",
+    });
+
+    enemy_templates["Young wolf"] = new Enemy({
+        name: "Young wolf", 
+        description: "A small, wild canine", 
+        xp_value: 25, 
+        rank: 3,
+        tags: ["living", "beast"],
+        stats: {health: 120, attack: 20, agility: 27, dexterity: 25, intuition: 24, magic: 0, attack_speed: 1.4, defense: 6}, 
+        loot_list: [
+            {item_name: "Wolf fang", chance: 0.03},
+            {item_name: "Wolf pelt", chance: 0.01},
+        ],
+        size: "small",
+    });
+
 
 
 
@@ -915,6 +935,20 @@ Umbral Knight*/
         ],
     });
 	
+    enemy_templates["Frostbitten Knight"] = new Enemy({
+        name: "Frostbitten Knight", 
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
+		xp_value: 400, 
+        rank: 4.1,
+        size: "medium",
+        tags: ["undead","humanoid"],
+		on_connectedstrike: { freeze: { duration: 20, chance: 0.5 } }, 
+        stats: {health: 160, attack: 60, agility: 15, dexterity: 112, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
+        loot_list: [
+            {item_name: "Order Badge", chance: 1},
+        ],
+    });
+	
     enemy_templates["Silent Knight"] = new Enemy({
         name: "Silent Knight", 
         description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
@@ -935,6 +969,7 @@ Umbral Knight*/
         rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
+		on_connectedstrike: { burn: { duration: 20, chance: 0.5 } }, 
         stats: {health: 160, attack: 120, agility: 15, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
         loot_list: [
             {item_name: "Order Badge", chance: 1},

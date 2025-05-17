@@ -1402,7 +1402,7 @@ locations["Sewer"].connected_locations.push({location: locations["Putrid Bog"]})
 
 	locations["Sewer Depths"] = new Location({ 
         connected_locations: [{location: locations["Sewer"]}],
-        description: "Same great sewer, same awful smell. The vermin problem is worse here.",
+        description: "Same great sewer, same awful smell. The vermin problem is even worse here.",
         name: "Sewer Depths",
         is_unlocked: false,
 		background_noises: ["Squeeak!", "*Splash!*", "*You're overcome by the revolting stench*"],
@@ -1470,6 +1470,8 @@ locations["Sewer"].connected_locations.push({location: locations["Backstreets"]}
         enemies_list: ["Plague Rat"],
         types: [{type: "dark", stage: 2, xp_gain: 5},{type: "noxious", stage: 1, xp_gain: 3} ],
 		enemy_group_size: [3,5],
+		rare_list: ["Mimic"],
+		rare_chance: 0.001,
         enemy_stat_variation: 0.1,
         is_unlocked: true, 
         name: "Deep Sewer Beasts", 
@@ -1487,10 +1489,11 @@ locations["Sewer Depths"].connected_locations.push({location: locations["Deep Se
 	
 	locations["Sanctuary"] = new Location({ 
         connected_locations: [{location: locations["Backstreets"]}],
-        description: "Sanctuary.",
+        description: "A modest settlement occupying the city ruins. It's even gtowing its own crops.",
        	dialogues: ["Mad Lumberjack","Smith","Peddler","Fallen","Scholar1","Fireseeker1","Occultist"],
         traders: ["peddler","smith trader"],
         name: "Sanctuary",
+		background_noises: ["Fresh bread. Get your fresh bread! And less than fresh bread too.", "Another one disappeared in the depths this week. Shame.", "*You hear the hammering of iron.*" ],
         sleeping: {
             text: "Rest in a vacant home",
             xp: 3},		
@@ -1514,7 +1517,7 @@ locations["Courtyard"] = new Location({
         description: "Courtyard",
         name: "Courtyard",
 		dialogues: ["Kon3"],
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Backstreets"].connected_locations.push({location: locations["Courtyard"]});
@@ -1776,7 +1779,7 @@ locations["Burrows"] = new Location({
         description: "Burrows",
 		dialogues: ["Fireseeker3","Anthropologist"],
         name: "Burrows",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Cavern"].connected_locations.push({location: locations["Burrows"]});
 
@@ -1808,9 +1811,9 @@ locations["Burrows"].connected_locations.push({location: locations["Ant Hive"]})
 locations["Mines"] = new Location({ 
         connected_locations: [{location: locations["Cavern"]}],
 		dialogues: ["Mad Miner"],
-        description: "Mines",
+        description: "A run down mine. Crude iron veins line the walls.",
         name: "Mines",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Cavern"].connected_locations.push({location: locations["Mines"]});
 
@@ -1818,7 +1821,7 @@ locations["Motherlode"] = new Location({
         connected_locations: [{location: locations["Mines"]}],
         description: "Motherlode",
         name: "Motherlode",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Mines"].connected_locations.push({location: locations["Motherlode"]});
 
@@ -1826,7 +1829,7 @@ locations["The Platinum Pile"] = new Location({
         connected_locations: [{location: locations["Mines"]}],
         description: "The Platinum Pile",
         name: "The Platinum Pile",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Mines"].connected_locations.push({location: locations["The Platinum Pile"]});
 
@@ -1953,12 +1956,34 @@ locations["Cathedral of the Damned"].connected_locations.push({location: locatio
 locations["Escaped Slimes"] = new Combat_zone({
         description: "Escaped Slimes", 
         enemy_count: 25, 
-        types: [{type: "narrow", stage: 1,  xp_gain: 3}],
+        types: [{type: "bright", stage: 1,  xp_gain: 3}],
         enemies_list: ["Slime","Voluminous Slime", "Acid Slime", "Toxic Slime","Plasma Slime", "Magma Slime"],
         enemy_group_size: [6,8],
         enemy_stat_variation: 0.2,
 		rare_list: ["Platinum Slime"],
 		rare_chance: 0.01,
+        is_unlocked: true, 
+        name: "Escaped Slimes", 
+        leave_text: "Go back to entrance",
+        parent_location: locations["Laboratory"],
+        first_reward: {
+            xp: 2000,
+        },
+        repeatable_reward: {
+            xp: 1000,
+        }
+    });
+locations["Laboratory"].connected_locations.push({location: locations["Escaped Slimes"]});
+
+locations["Mine Dwellers"] = new Combat_zone({
+        description: "Mine Dwellers", 
+        enemy_count: 25, 
+        types: [{type: "narrow", stage: 1,  xp_gain: 3},{type: "dark", stage: 1,  xp_gain: 3}],
+        enemies_list: ["Decrepit Construct","Blighted One", "Skeleton Archer"],
+        enemy_group_size: [1,3],
+        enemy_stat_variation: 0.2,
+		rare_list: ["Mimic"],
+		rare_chance: 0.001,
         is_unlocked: true, 
         name: "Escaped Slimes", 
         leave_text: "Go back to entrance",
@@ -1969,9 +1994,11 @@ locations["Escaped Slimes"] = new Combat_zone({
         repeatable_reward: {
             xp: 100,
             activities: [{location:"Mines", activity:"mining"}],
+			locations: [{location:"Motherlode"},{location:"The Platinum Pile"}],
         }
     });
-locations["Mines"].connected_locations.push({location: locations["Escaped Slimes"]});
+locations["Mines"].connected_locations.push({location: locations["Mine Dwellers"]});
+
 
 
 locations["Massed Undead"] = new Combat_zone({
@@ -2220,10 +2247,10 @@ locations["Strange Knight"] = new Challenge_zone({
         name: "Strange Knight",
         parent_location: locations["Catacomb Depths"],
         first_reward: {
-            xp: 20,
+            xp: 200,
         },
         repeatable_reward: {
-            xp: 10,
+            xp: 100,
 			skill: 1000,
 			related_skill: "Fate Mastery",
 			locations: [{location: "Grave of Heroes"}],
@@ -2242,15 +2269,38 @@ locations["Famine Knight"] = new Challenge_zone({
         name: "Famine Knight",
         parent_location: locations["The Midden"],
         first_reward: {
-            xp: 20,
+            xp: 200,
         },
         repeatable_reward: {
-            xp: 10,
+            xp: 100,
 			skill: 1000,
 			related_skill: "Fate Mastery",
         }
     });
 locations["The Midden"].connected_locations.push({location: locations["Famine Knight"]});
+
+locations["Frostbitten Knight"] = new Challenge_zone({
+        description: "Frostbitten Knight", 
+        enemy_count: 1, 
+        types: [],
+        enemies_list: ["Bloody Knight"],
+        enemy_group_size: [1,1],
+        enemy_stat_variation: 0.2,
+        is_unlocked: true, 
+        name: "Frostbitten Knight",
+        parent_location: locations["Backstreets"],
+        first_reward: {
+            xp: 200,
+        },
+        repeatable_reward: {
+            xp: 100,
+			skill: 1000,
+			related_skill: "Fate Mastery",
+			locations: [{location: "Courtyard"}],
+        }
+    });
+locations["Backstreets"].connected_locations.push({location: locations["Frostbitten Knight"]});
+
 
 locations["Plague Knight"] = new Challenge_zone({
         description: "Plague Knight", 
@@ -2263,10 +2313,10 @@ locations["Plague Knight"] = new Challenge_zone({
         name: "Plague Knight",
         parent_location: locations["Sewer Depths"],
         first_reward: {
-            xp: 20,
+            xp: 200,
         },
         repeatable_reward: {
-            xp: 10,
+            xp: 100,
 			skill: 1000,
 			related_skill: "Fate Mastery",
         }
@@ -2284,10 +2334,10 @@ locations["Silent Knight"] = new Challenge_zone({
         name: "Silent Knight",
         parent_location: locations["Grave of Heroes"],
         first_reward: {
-            xp: 20,
+            xp: 200,
         },
         repeatable_reward: {
-            xp: 10,
+            xp: 100,
 			skill: 1000,
 			related_skill: "Fate Mastery",
 			
@@ -2306,10 +2356,10 @@ locations["Ash Knight"] = new Challenge_zone({
         name: "Ash Knight",
         parent_location: locations["Fire Pit"],
         first_reward: {
-            xp: 20,
+            xp: 200,
         },
         repeatable_reward: {
-            xp: 10,
+            xp: 100,
 			skill: 1000,
 			related_skill: "Fate Mastery",
         }
@@ -2327,10 +2377,10 @@ locations["Storm Knight"] = new Challenge_zone({
         name: "Storm Knight",
         parent_location: locations["The Maelstrom"],
         first_reward: {
-            xp: 20,
+            xp: 200,
         },
         repeatable_reward: {
-            xp: 10,
+            xp: 100,
 			skill: 1000,
 			related_skill: "Fate Mastery",
         }
@@ -2348,10 +2398,10 @@ locations["Umbral Knight"] = new Challenge_zone({
         name: "Umbral Knight",
         parent_location: locations["Well of Souls"],
         first_reward: {
-            xp: 20,
+            xp: 200,
         },
         repeatable_reward: {
-            xp: 10,
+            xp: 100,
 			skill: 1000,
 			related_skill: "Fate Mastery",
         }
@@ -2934,16 +2984,16 @@ locations["The Maelstrom"].connected_locations.push({location: locations["Storm 
 locations["Bone Tournament"] = new Challenge_zone({
         description: "Bone Tournament", 
 		types: [],
-		enemy_groups_sequence: [["Sir Bones"],["Randall Lionheart Esquire (Deceased)"],["Randall Lionheart Esquire Jnr (Deceased)"],["Skele-Tony"],["Morbid Champion"]],
+		enemy_groups_sequence: [["Sir Bones"],["Randall Lionheart Esquire (Deceased)"],["Randall Lionheart Esquire Jnr (Deceased)"],["Skele-Tony"],["Morbid Champion"],["The Bone Prince"]],
 		//enemy_groups_list: [["Sir Bones"],["Skele-Tony"]],
-        enemy_count: 5, 
+        enemy_count: 6, 
         enemy_group_size: [1,1],
         enemy_stat_variation: 0.0,
         is_unlocked: false,
         name: "Bone Tournament", 
         parent_location: locations["Grave of Heroes"],
         first_reward: {
-            xp: 10000,
+            xp: 4000,
         },
         repeatable_reward: {
             xp: 2000,
@@ -3479,7 +3529,7 @@ locations["Ruined Kingdom"].activities = {
         "patrolling": new LocationActivity({
             activity_name: "patrolling",
             starting_text: "Patrol the Ruined Kingdom.",
-            get_payment: () => {return 60},
+            get_payment: () => {return 600},
             is_unlocked: true,
             infinite: true,
             working_period: 60*2,
@@ -3519,7 +3569,7 @@ function get_all_main_locations() {
             conditions: [
                 {
                     stats: {
-                        strength: 70,
+                        strength: 25,
                     }
                 }
             ],
@@ -3581,18 +3631,18 @@ function get_all_main_locations() {
         "sign": new LocationAction({
             action_id: "sign",
             starting_text: "Read the sign",
-            description: "A barely legi",
+            description: "Barely legible writing scratched into a wooden post",
             action_text: "Deciphering",
             success_text: "Aha. 'Bone Tournament' this way. \n\n What's that about?",
             failure_texts: {
-                random_loss: ["Learn to read dumby!"],
-				conditional_loss: ["Learn to read dumby!"],
+                random_loss: ["You struggle to make out anything. Perhaps with a little more time."],
+				conditional_loss: ["Learn to read dummy!"],
             },
           conditions: [
                 {
                         
                     skills: {
-                            "Literacy": -1,
+                            "Literacy": 2,
                         },
                 },
                 {
@@ -3609,6 +3659,41 @@ function get_all_main_locations() {
         }),
 	}
 })();
+
+(function(){
+    locations["Cavern"].actions = {
+        "sign": new LocationAction({
+            action_id: "sign",
+            starting_text: "Explore the cavern network",
+            description: "Navigate the dark caverns.",
+            action_text: "Exploring",
+            success_text: "You manage to find paths deeper into the cavern network.",
+            failure_texts: {
+                random_loss: ["random loss text"],
+				conditional_loss: ["You're unable to nagivate the darkness. You'll need to improve your skills to succeed."],
+            },
+          conditions: [
+                {
+                        
+                    skills: {
+                            "Night vision": 4,
+                        },
+                },
+                {
+                        skills: {
+                            "Night vision": 4,
+                        },
+                }
+            ],
+            attempt_duration: 1,
+            success_chances: [1],
+            rewards: {
+				locations: [{location: "Mines"},{location: "Burrows"}],
+			 },
+        }),
+	}
+})();
+
 
 
 export {locations, location_types, get_location_type_penalty, get_all_main_locations};

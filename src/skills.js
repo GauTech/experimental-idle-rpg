@@ -1381,14 +1381,14 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
 
     skills["Lockpicking"] = new Skill({skill_id: "Lockpicking", 
                                 names: {0: "Lockpicking"}, 
-                                description: "Lockpicking",
+                                description: "Improves your ability to pick locks",
                                 base_xp_cost: 50,
                                 category: "Activity",
                                 max_level: 30,
                                 xp_scaling: 1.6,
                                 max_level_coefficient: 2,
 								get_effect_description: ()=> {
-                                    return `Pick locks`;
+                                    return `Increases ability to pick locks`;
                                 },
 	});		
 								
