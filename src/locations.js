@@ -1380,8 +1380,8 @@ locations["Burial Chamber"].connected_locations.push({location: locations["Catac
     locations["Wandering Undead"] = new Combat_zone({
         description: "Deal with undead stragglers.", 
         enemy_count: 15, 
-		enemy_groups_list: [["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie","Frail Zombie"],["Slime","Slime","Slime","Slime"],],
-        //enemies_list: ["Pinata"],//debug enemy to level quick and test
+		//enemy_groups_list: [["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie","Frail Zombie"],["Slime","Slime","Slime","Slime"],],
+        enemies_list: ["Pinata"],//debug enemy to level quick and test
         types: [{type: "dark", stage: 1, xp_gain: 3}],
         enemy_stat_variation: 0.1,
         is_unlocked: true, 
@@ -1545,7 +1545,7 @@ locations["Backstreets"].connected_locations.push({location: locations["Sanctuar
 
 locations["Courtyard"] = new Location({ 
         connected_locations: [{location: locations["Backstreets"]}],
-        description: "Courtyard",
+        description: "An open plaza with paths that lead in several different directions. A great tower, a castle and a harbour area are the things that stand out the most.",
         name: "Courtyard",
 		dialogues: ["Kon3"],
         is_unlocked: false,

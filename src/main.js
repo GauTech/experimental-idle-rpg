@@ -1859,13 +1859,13 @@ for (const effect_name of status_effects) {
             switch (effect_name) {
 					case "poison":
 						stats = {
-							health_regeneration_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
 						};
 						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 3});
 						break;
 						  case "toxic":
 						stats = {
-							health_regeneration_flat: { flat: (Math.round(-5 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+							health_loss_flat: { flat: (Math.round(-5 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
 						};
 						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 20});
 						break;
@@ -1877,7 +1877,7 @@ for (const effect_name of status_effects) {
 						break;
 					case "burn":
 						stats = {
-							health_regeneration_flat: { flat: (Math.round(-2 * (1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))*10))/10 },
+							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))*10))/10 },
 						};
 						add_xp_to_skill({skill: skills["Heat resistance"], xp_to_add: 3});
 						break;
@@ -1963,13 +1963,13 @@ function apply_on_connectedstrike_effects(attacker) {
 					switch (effect_name) {
 					case "poison":
 						stats = {
-							health_regeneration_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
 						};
 						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 3});
 						break;
 						  case "toxic":
 						stats = {
-							health_regeneration_flat: { flat: (Math.round(-5 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+							health_loss_flat: { flat: (Math.round(-5 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
 						};
 						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 20});
 						break;
@@ -1981,7 +1981,7 @@ function apply_on_connectedstrike_effects(attacker) {
 						break;
 					case "burn":
 						stats = {
-							health_regeneration_flat: { flat: (Math.round(-2 * (1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))*10))/10 },
+							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))*10))/10 },
 						};
 						add_xp_to_skill({skill: skills["Heat resistance"], xp_to_add: 3});
 						break;

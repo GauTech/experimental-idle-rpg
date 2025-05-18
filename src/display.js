@@ -66,6 +66,19 @@ const enemy_count_div = document.getElementById("enemy_count_div");
 const current_health_value_div = document.getElementById("character_health_value");
 const current_health_bar = document.getElementById("character_healthbar_current");
 
+const healthDiv = document.getElementById("character_health_div");
+
+// Hook into hover
+healthDiv.addEventListener("mouseenter", () => {
+    update_stat_description("max_health");
+});
+
+// Optional: cleanup if needed
+healthDiv.addEventListener("mouseleave", () => {
+    // clear tooltip if desired
+});
+
+
 //character stamina display
 const current_stamina_value_div = document.getElementById("character_stamina_value");
 const current_stamina_bar = document.getElementById("character_stamina_bar_current");
@@ -2802,6 +2815,7 @@ function update_gathering_tooltip(current_activity) {
 function update_displayed_health() { //call it when using healing items, resting or getting hit
     current_health_value_div.innerText = Math.ceil(character.stats.full.health) + "/" + Math.ceil(character.stats.full.max_health) + " hp";
     current_health_bar.style.width = (character.stats.full.health*100/character.stats.full.max_health).toString() +"%";
+	update_stat_description(character.stats.full.max_health);
 }
 function update_displayed_stamina() { //call it when eating, resting or fighting
     current_stamina_value_div.innerText = Math.round(character.stats.full.stamina) + "/" + Math.round(character.stats.full.max_stamina) + " stamina";
@@ -2964,52 +2978,96 @@ function update_stat_description(stat) {
         target = stats_divs[stat].parentNode.children[2].children[1];
     } else if(other_combat_divs[stat] && stat !== "defensive_action") {
         target = other_combat_divs[stat].parentNode.children[2].children[1]; 
-    } else {
-        return;
-    }
-	
-	
+		} else if(stat === "max_health") {
+			target = document.querySelector("#character_health_div .stat_tooltip .stat_breakdown");
+			if (!target) return;
+		} else {
+			return;
+		}
 
+    // Custom breakdown for known stats
     if(stat === "attack_power") {
         target.innerHTML = 
         `<br>Breakdown:
-        <br>Base value (weapon * str/10): ${Math.round(100* character.stats.total_flat.attack_power)/100}`;
-    } else if (stat === "magic_power"){
+        <br>Base value (weapon * str/10): ${Math.round(100 * character.stats.total_flat.attack_power) / 100}`;
+    } else if (stat === "magic_power") {
         target.innerHTML = 
         `<br>Breakdown:
-        <br>Base value (mgc * 10): ${Math.round(100* character.stats.total_flat.magic_power)/100}`;
-    }else if (stat === "attack_points"){
+        <br>Base value (mgc * 10): ${Math.round(100 * character.stats.total_flat.magic_power) / 100}`;
+    } else if (stat === "attack_points") {
         target.innerHTML = 
         `<br>Breakdown:
-        <br>Base value: ${Math.round(100* character.stats.total_flat.attack_points)/100}`;
-    } else if(stat === "defensive_points"){
-        if(character.equipment["off-hand"] != null && character.equipment["off-hand"].offhand_type === "shield") {
+        <br>Base value: ${Math.round(100 * character.stats.total_flat.attack_points) / 100}`;
+    } else if (stat === "defensive_points") {
+        if (character.equipment["off-hand"] != null && character.equipment["off-hand"].offhand_type === "shield") {
             stat = "block_chance";
         } else {
             stat = "evasion_points";
         }
         target.innerHTML = 
-            `<br>Breakdown:
-            <br>Base value: ${Math.round(100 * character.stats.total_flat[stat])/100}`;
-    } else {
+        `<br>Breakdown:
+        <br>Base value: ${Math.round(100 * character.stats.total_flat[stat]) / 100}`;
+	} else if (stat === "max_health") {
+		target.innerHTML = 
+		`<br>Breakdown:
+		<br>Base value: ${Math.round(100 * character.base_stats.max_health) / 100}`;
+
+		// Add flat modifiers
+		Object.keys(character.stats.flat).forEach(stat_type => {
+			if (character.stats.flat[stat_type][stat] && character.stats.flat[stat_type][stat] !== 0) {
+				target.innerHTML += `<br>${capitalize_first_letter(stat_type.replace("_", " "))}: +${Math.round(100 * character.stats.flat[stat_type][stat]) / 100}`;
+			}
+		});
+
+		// Add multipliers
+		Object.keys(character.stats.multiplier).forEach(stat_type => {
+			if (character.stats.multiplier[stat_type][stat] && character.stats.multiplier[stat_type][stat] !== 1) {
+				target.innerHTML += `<br>${capitalize_first_letter(stat_type.replace("_", " "))}: x${Math.round(100 * character.stats.multiplier[stat_type][stat]) / 100}`;
+			}
+		});
+		target.innerHTML += `<br>`
+
+		// Append HP regen/loss at the bottom
+		const extras = [
+			{ key: "health_regeneration_flat", label: "HP Regen: {val} (flat)" },
+			{ key: "health_regeneration_percent", label: "HP Regen: {val}% (percent)" },
+			{ key: "health_loss_flat", label: "HP Loss: {val} (flat)" },
+			{ key: "health_loss_percent", label: "HP Loss: {val}% (percent)" }
+		];
+
+		extras.forEach(extra => {
+			const val = character.stats.total_flat[extra.key];
+			if (val && val != 0) {
+				const formatted = Math.round(100 * val) / 100;
+				const label = extra.label.replace("{val}", formatted);
+				target.innerHTML += `<br>${label}`;
+			}
+		});
+	return;	
+	} else {
+        // Default case
         target.innerHTML = 
         `<br>Breakdown:
-        <br>Base value: ${Math.round(100*character.base_stats[stat])/100}`;
+        <br>Base value: ${Math.round(100 * character.base_stats[stat]) / 100}`;
     }
 
+    // Flat modifiers
     Object.keys(character.stats.flat).forEach(stat_type => {
-        if(character.stats.flat[stat_type][stat] && character.stats.flat[stat_type][stat] !== 0) {
-            target.innerHTML += `<br>${capitalize_first_letter(stat_type.replace("_"," "))}: +${Math.round(100*character.stats.flat[stat_type][stat])/100}`;
+        if (character.stats.flat[stat_type][stat] && character.stats.flat[stat_type][stat] !== 0) {
+            target.innerHTML += `<br>${capitalize_first_letter(stat_type.replace("_", " "))}: +${Math.round(100 * character.stats.flat[stat_type][stat]) / 100}`;
         }
     });
+
+    // Multipliers
     Object.keys(character.stats.multiplier).forEach(stat_type => {
-        if(character.stats.multiplier[stat_type][stat] && character.stats.multiplier[stat_type][stat] !== 1) {
-            target.innerHTML += `<br>${capitalize_first_letter(stat_type.replace("_"," "))}: x${Math.round(100*character.stats.multiplier[stat_type][stat])/100}`;
+        if (character.stats.multiplier[stat_type][stat] && character.stats.multiplier[stat_type][stat] !== 1) {
+            target.innerHTML += `<br>${capitalize_first_letter(stat_type.replace("_", " "))}: x${Math.round(100 * character.stats.multiplier[stat_type][stat]) / 100}`;
         }
     });
-    
+
     return;
 }
+
 
 function update_displayed_effects() {
     const effect_count = Object.keys(active_effects).length;

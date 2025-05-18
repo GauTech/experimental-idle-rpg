@@ -54,13 +54,74 @@ effect_templates["Cheap meat meal"] = new ActiveEffect({
         }
     }
 });
+
+effect_templates["Cheap fish dish"] = new ActiveEffect({
+    name: "Cheap fish dish",
+    effects: {
+        stats: {
+            stamina_regeneration_flat: {flat: 2},
+        }
+    }
+});
+
+effect_templates["Simple fish dish"] = new ActiveEffect({
+    name: "Simple fish dish",
+    effects: {
+        stats: {
+            stamina_regeneration_flat: {flat: 3},
+			ealth_regeneration_flat: {flat: 1},
+        }
+    }
+});
+
+effect_templates["Simple fish dish"] = new ActiveEffect({
+    name: "Simple fish dish",
+    effects: {
+        stats: {
+            stamina_regeneration_flat: {flat: 3},
+			ealth_regeneration_flat: {flat: 1},
+        }
+    }
+});
+
+effect_templates["Ordinary fish dish"] = new ActiveEffect({
+    name: "Ordinary fish dish",
+    effects: {
+        stats: {
+            stamina_regeneration_flat: {flat: 6},
+			ealth_regeneration_flat: {flat: 2},
+        }
+    }
+});
+
+effect_templates["Superior fish dish"] = new ActiveEffect({
+    name: "Superior fish dish",
+    effects: {
+        stats: {
+            stamina_regeneration_flat: {flat: 8},
+			ealth_regeneration_flat: {flat: 4},
+        }
+    }
+});
+
+effect_templates["Luxury fish dish"] = new ActiveEffect({
+    name: "Luxury fish dish",
+    effects: {
+        stats: {
+            stamina_regeneration_flat: {flat: 15},
+			ealth_regeneration_flat: {flat: 7},
+        }
+    }
+});
+
+
 effect_templates["Slight food poisoning"] = new ActiveEffect({
     name: "Slight food poisoning",
     effects: {
         stats: {
-            health_regeneration_flat: {flat: -5},
+            health_loss_flat: {flat: -0.5},
         }
-    }
+    },
 });
 
 effect_templates["Minor strength boost"] = new ActiveEffect({
@@ -77,6 +138,15 @@ effect_templates["Minor magic boost"] = new ActiveEffect({
     effects: {
         stats: {
             magic: {flat: 5},
+        }
+    }
+});
+
+effect_templates["Minor defense boost"] = new ActiveEffect({
+    name: "Minor defense boost",
+    effects: {
+        stats: {
+            defense: {flat: 2},
         }
     }
 });

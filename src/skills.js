@@ -1881,7 +1881,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
 		},
 		get_effect_description: ()=> {
                                     return `Multiplies strength, agility and stamina by ${Math.round(skills["Breathing"].get_coefficient("multiplicative")*1000)/1000}<br>
-									Reduces environmental penalty in open areas by ${Math.round((1-((1-(skills["Breathing"].current_level/skills["Breathing"].max_level))))*1000)/10}%`;
+									Reduces environmental penalty in thin air areas by ${Math.round((1-((1-(skills["Breathing"].current_level/skills["Breathing"].max_level))))*1000)/10}%`;
         },
     });  
 	
