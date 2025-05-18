@@ -526,7 +526,7 @@ dialogues["Peddler"] = new Dialogue({
 				+ "\n\nLife saving supplies, at reasonable prices. Ask about our “Don't Die Discount” today! Because an alive customer is a repeat customer!\n\n And if you're looking for something to do there's always need for farmhands.",
                 unlocks: {
 					traders: ["peddler"],
-					activities: [{location: "Sacntuary", activity: "fieldwork"}]
+					activities: [{location: "Sanctuary", activity: "fieldwork"}]
                 },
                 locks_lines: ["Peddler"],
             }),
@@ -1256,6 +1256,7 @@ dialogues["Kon3"] = new Dialogue({
         "Kon3_help": new Textline({
             name: "This may help. (Give 5 stale bread)",
             text: "You really have supplies to spare? Very well, I accept.\n\n Now let's see what I can do to earn my keep. \n\n Aha! Let me acompany you for a time, and I'll instruct you in the ways of knightly combar. After all, we're comrades that have broken bread together.",
+			is_unlocked: false,
             requires_items: {
                 item_template_key: "Stale bread",
                 quantity: 5
@@ -1270,6 +1271,7 @@ dialogues["Kon3"] = new Dialogue({
 		        "Kon3_nohelp": new Textline({ 
             name: "Need some help?",
             text: "Frankly yes. But it's mainly supplies I need. Even stale bread will do at this point.",
+			is_unlocked: false,
         }),
 	}
     });
@@ -1345,7 +1347,7 @@ dialogues["Shadow"] = new Dialogue({
                 text: "Your struggle is futile, your efforts are pointless. \n\nThere are forces here that are forever beyond you. Accept the mercy of crushing defeat.",
                 required_flags: {yes: ["is_hero_level20"]},
 				unlocks: {
-                    locations: ["Shadow2","Saw Demon","Chain Demon"],
+                    locations: ["Shadow2",],
                 },
                 locks_lines: ["Shadow2"],
 							}),
@@ -1370,9 +1372,10 @@ dialogues["Shadow"] = new Dialogue({
 			"Shadow5": new Textline({
                 name: "?",
                 is_unlocked: false,
+				required_flags: {yes: ["is_hero_level50"]},
                 text: "Sweet oblivion beckons to me. May it swallow you as well.",
                 unlocks: {
-                    locations: ["Shadow5"],
+                    locations: ["Shadow5","Saw Demon","Chain Demon"],
                 },
                 locks_lines: ["Shadow5"],
 							}),

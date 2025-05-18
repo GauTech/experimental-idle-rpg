@@ -1390,7 +1390,7 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         value: 1000,
         price_recovers: true,
     });    
-    item_templates["Ectoplasm"] = new Material({
+    item_templates["Ectoplasm"] = new Junk({
         name: "Ectoplasm", 
         description: "Ectoplasm",
         value: 8,
@@ -1398,7 +1398,7 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         material_type: "material",
     });
 	
-    item_templates["Congealed Blood"] = new Material({
+    item_templates["Congealed Blood"] = new Junk({
         name: "Congealed Blood", 
         description: "Congealed Blood",
         value: 10,
@@ -1462,7 +1462,7 @@ item_templates["Spider Fang"] = new Material({
     material_type: "material",
 });
 
-item_templates["Chitin Shard"] = new Material({
+item_templates["Chitin Shard"] = new Junk({
     name: "Chitin Shard", 
     description: "A brittle fragment of a spider’s exoskeleton.",
     value: 10,
@@ -1501,7 +1501,7 @@ item_templates["Royal Silk"] = new Material({
     price_recovers: true,
     material_type: "material",
 });
-item_templates["Ant Mandible"] = new Material({
+item_templates["Ant Mandible"] = new Junk({
     name: "Ant Mandible", 
     description: "A sturdy biting appendage from a soldier or worker ant.",
     value: 6,
@@ -2835,21 +2835,21 @@ item_templates["Royal Jelly"] = new Material({
     });
     item_templates["Upstart pickaxe"] = new Tool({
         name: "Upstart pickaxe",
-        description: "Upstart rod. +10% Tool Bonus",
+        description: "Upstart pickaxe. +10% Tool Bonus",
         value: 1000,
 		tool_bonus: 10,
         equip_slot: "pickaxe",
     });
 	    item_templates["Upstart axe"] = new Tool({
         name: "Upstart axe",
-        description: "Upstart rod. +10% Tool Bonus",
+        description: "Upstart axe. +10% Tool Bonus",
         value: 1000,
 		tool_bonus: 10,
         equip_slot: "axe",
     });
     item_templates["Upstart sickle"] = new Tool({
         name: "Upstart sickle",
-        description: "Upstart rod. +10% Tool Bonus",
+        description: "Upstart sickle. +10% Tool Bonus",
         value: 1000,
 		tool_bonus: 10,
         equip_slot: "sickle",
@@ -2864,21 +2864,21 @@ item_templates["Royal Jelly"] = new Material({
 
     item_templates["Journeyman pickaxe"] = new Tool({
         name: "Journeyman pickaxe",
-        description: "Journeyman rod. +20% Tool Bonus",
+        description: "Journeyman pickaxe. +20% Tool Bonus",
         value: 10000,
 		tool_bonus: 20,
         equip_slot: "pickaxe",
     });
 	    item_templates["Journeyman axe"] = new Tool({
         name: "Journeyman axe",
-        description: "Journeyman rod. +20% Tool Bonus",
+        description: "Journeyman axe. +20% Tool Bonus",
         value: 10000,
 		tool_bonus: 20,
         equip_slot: "axe",
     });
     item_templates["Journeyman sickle"] = new Tool({
         name: "Journeyman sickle",
-        description: "Journeyman rod. +20% Tool Bonus",
+        description: "Journeyman sickle. +20% Tool Bonus",
         value: 10000,
 		tool_bonus: 20,
         equip_slot: "sickle",
@@ -2892,21 +2892,21 @@ item_templates["Royal Jelly"] = new Material({
     });
     item_templates["Expert pickaxe"] = new Tool({
         name: "Expert pickaxe",
-        description: "Expert rod. +35% Tool Bonus",
+        description: "Expert pickaxe. +35% Tool Bonus",
         value: 50000,
 		tool_bonus: 35,
         equip_slot: "pickaxe",
     });
 	    item_templates["Expert axe"] = new Tool({
         name: "Expert axe",
-        description: "Expert rod. +35% Tool Bonus",
+        description: "Expert axe. +35% Tool Bonus",
         value: 50000,
 		tool_bonus: 35,
         equip_slot: "axe",
     });
     item_templates["Expert sickle"] = new Tool({
         name: "Expert sickle",
-        description: "Expert rod. +35% Tool Bonus",
+        description: "Expert sickle. +35% Tool Bonus",
         value: 50000,
 		tool_bonus: 35,
         equip_slot: "sickle",

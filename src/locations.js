@@ -760,7 +760,7 @@ function get_equipped_tool_bonus(tool) {
                 }
             },
             2: {
-                description: "A very tight and narrow area where there's not much place for maneuvering",
+                description: "A very narrow area, where there's no room to manuever",
                 related_skill: "Tight maneuvers",
                 effects: {
                     evasion_points: {multiplier: 0.333},
@@ -884,7 +884,7 @@ function get_equipped_tool_bonus(tool) {
         stages: {
             1: {
                 description: "Tricky terrain makes dodging difficult",
-                related_skill: "Equlibtium",
+                related_skill: "Equilibrium",
                 effects: {
                     evasion_points: {multiplier: 0.1},
                 }
@@ -1352,8 +1352,8 @@ locations["Burial Chamber"].connected_locations.push({location: locations["Catac
     locations["Wandering Undead"] = new Combat_zone({
         description: "Deal with undead stragglers.", 
         enemy_count: 15, 
-		enemy_groups_list: [["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie","Frail Zombie"],["Slime","Slime","Slime","Slime"],],
-        //enemies_list: ["Shambling Corpse"],
+		//enemy_groups_list: [["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie","Frail Zombie"],["Slime","Slime","Slime","Slime"],],
+        enemies_list: ["Pinata"],
         types: [{type: "dark", stage: 1, xp_gain: 3}],
         enemy_stat_variation: 0.1,
         is_unlocked: true, 
@@ -1454,7 +1454,7 @@ locations["Sewer"].connected_locations.push({location: locations["Sewer Depths"]
 
 	locations["Backstreets"] = new Location({ 
         connected_locations: [{location: locations["Sewer"]}],
-        description: "Backsteets.",
+        description: "Ruined streets of a fallen city.",
 		dialogues: ["Kon2"],
         name: "Backstreets",
         is_unlocked: false,
@@ -1770,7 +1770,7 @@ locations["Dark Woods"] = new Location({
         connected_locations: [{location: locations["Forest"]}],
         description: "Dark Woods",
         name: "Dark Woods",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Forest"].connected_locations.push({location: locations["Dark Woods"]});
 
@@ -1786,7 +1786,7 @@ locations["Cavern"].connected_locations.push({location: locations["Burrows"]});
 locations["Ant Hive"] = new Combat_zone({
     description: "The Ant Hive", 
     enemy_count: 45, 
-    types: [{type: "narrow", stage: 1,  xp_gain: 3},{type: "dark", stage: 2,  xp_gain: 5}],
+    types: [{type: "narrow", stage: 2,  xp_gain: 5},{type: "dark", stage: 2,  xp_gain: 5}],
     enemies_list: ["Giant Ant", "Soldier Ant", "Fire Ant", "Legion Ant"],
     enemy_group_size: [5, 8],
     enemy_stat_variation: 0.2,
@@ -1802,7 +1802,8 @@ locations["Ant Hive"] = new Combat_zone({
     },
     repeatable_reward: {
         xp: 750,
-		flags: ["is_ant_hive_beaten"]
+		flags: ["is_ant_hive_beaten"],
+		locations: [{location: "The Nest"}],
     }
 });
 locations["Burrows"].connected_locations.push({location: locations["Ant Hive"]});
@@ -1900,7 +1901,7 @@ locations["Ancient Bridge"] = new Location({
         description: "Ancient Bridge",
 		dialogues: ["Slayer3"],
         name: "Ancient Bridge",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Grave of Heroes"].connected_locations.push({location: locations["Ancient Bridge"]});
 
@@ -1985,7 +1986,7 @@ locations["Mine Dwellers"] = new Combat_zone({
 		rare_list: ["Mimic"],
 		rare_chance: 0.001,
         is_unlocked: true, 
-        name: "Escaped Slimes", 
+        name: "Mine Dwellers", 
         leave_text: "Go back to entrance",
         parent_location: locations["Mines"],
         first_reward: {
@@ -2027,6 +2028,9 @@ locations["Undead Horde"] = new Combat_zone({
         types: [],
         enemies_list: ["Blighted One", "Skeleton Archer"],
         enemy_group_size: [5,6],
+		rare_list: ["Mimic"],
+		rare_chance: 0.001,
+		boss_list: ["Skeleton Warlord"],
         enemy_stat_variation: 0.2,
         is_unlocked: false, 
         name: "Undead Horde",
@@ -2188,6 +2192,7 @@ locations["Saw Demon"] = new Challenge_zone({
 			flags: ["is_saw_demon_beaten"],
 			skill: 1000,
 			related_skill: "Destiny Mastery",
+			locations: [{location: "Dark Woods"}],
         }
     });
 locations["Forest"].connected_locations.push({location: locations["Saw Demon"]});
@@ -2283,7 +2288,7 @@ locations["Frostbitten Knight"] = new Challenge_zone({
         description: "Frostbitten Knight", 
         enemy_count: 1, 
         types: [],
-        enemies_list: ["Bloody Knight"],
+        enemies_list: ["Frostbitten Knight"],
         enemy_group_size: [1,1],
         enemy_stat_variation: 0.2,
         is_unlocked: true, 
@@ -2340,6 +2345,7 @@ locations["Silent Knight"] = new Challenge_zone({
             xp: 100,
 			skill: 1000,
 			related_skill: "Fate Mastery",
+			locations: [{location: "Ancient Bridge"}],
 			
         }
     });
@@ -3039,7 +3045,7 @@ locations["Time Demon"] = new Challenge_zone({
     });
 //locations["Burial Chamber"].connected_locations.push({location: locations["Time Demon"], custom_text: "Encounter the Time Demon"});
 
-//combat zone types cheatsheet: bright 1/2/3, dark 1/2/3, narrow 1, open 1/2, hot 1/2/3, cold 1/2/3, unstable 1
+//combat zone types cheatsheet: bright 1/2/3, dark 1/2/3, narrow 1,2 open 1/2, hot 1/2/3, cold 1/2/3, unstable 1
 
 //challenge zones
 (function(){
@@ -3169,7 +3175,7 @@ locations["Time Demon"] = new Challenge_zone({
             get_payment: () => {
                 return 100 + Math.round(150 * skills["Farming"].current_level/skills["Farming"].max_level);
             },
-            is_unlocked: true,
+            is_unlocked: false,
             working_period: 60*2,
             availability_time: {start: 6, end: 20},
             skill_xp_per_tick: 1, 
@@ -3486,14 +3492,14 @@ locations["Well of Souls"].activities = {
             activity_name: "meditating",
             infinite: true,
             starting_text: "Sit down and meditate in the dense energy",
-            skill_xp_per_tick: 10,
+            skill_xp_per_tick: 20,
             is_unlocked: true,
         }),
 		 "manaexpansion": new LocationActivity({
             activity_name: "manaexpansion",
             infinite: true,
             starting_text: "Circulate energies",
-            skill_xp_per_tick: 10,
+            skill_xp_per_tick: 20,
             is_unlocked: true,
         }),
     };
@@ -3504,7 +3510,7 @@ locations["Castle Barracks"].activities = {
             activity_name: "weightlifting",
             infinite: true,
             starting_text: "Train with the knight's equipment",
-            skill_xp_per_tick: 5,
+            skill_xp_per_tick: 20,
             is_unlocked: true,
         }),
 		"practice": new LocationActivity({
@@ -3520,7 +3526,7 @@ locations["Laboratory"].activities = {
             activity_name: "running",
             infinite: true,
             starting_text: "Use the strange running equipment",
-            skill_xp_per_tick: 5,
+            skill_xp_per_tick: 20,
             is_unlocked: true,
         }),
     };
@@ -3651,14 +3657,53 @@ function get_all_main_locations() {
                         },
                 }
             ],
-            attempt_duration: 1,
+            attempt_duration: 5,
             success_chances: [0.2,1],
             rewards: {
 				locations: [{location: "Bone Tournament"}],
 			 },
         }),
-	}
+        "tomb": new LocationAction({
+            action_id: "tomb",
+            starting_text: "A locked tomb",
+            description: "Attempt to break into the tomb.",
+            action_text: "Picking the lock",
+			is_unlocked: true,
+            success_text: "You manage to break into the tomb",
+            failure_texts: {
+                random_loss: ["You didn't quite get it, maybe next time"],
+				conditional_loss: ["You didn't quite get it, maybe with more practice"],
+            },
+          conditions: [
+                {
+                        
+                    skills: {
+                            "Lockpicking": 1,
+                        },
+                },
+                {
+                        skills: {
+                            "Lockpicking": 10,
+                        },
+                }
+            ],
+            attempt_duration: 10,
+            success_chances: [0.1,1],
+               rewards: {
+				items: [{item:"Iron axe", count:1 }],
+			   },
+	            loss_rewards: {
+								      skill_xp: {
+            "Lockpicking": 10,
+        }
+
+			 },
+        }),
+
+	
+	}	
 })();
+
 
 (function(){
     locations["Cavern"].actions = {

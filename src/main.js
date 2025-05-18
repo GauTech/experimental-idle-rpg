@@ -328,7 +328,10 @@ function option_combat_autoswitch(option) {
 }
 
 function roll_time_demon(location) {
-    if (Math.random() < 0.01) { // 1% 
+	
+	
+	
+    if (Math.random() < 0.01 && global_flags.is_hero_level10 == true) { // 1% 
 		locations["Time Demon"].is_finished = false;
         location.connected_locations.push({
             location: locations["Time Demon"],
@@ -897,13 +900,34 @@ if (rewards.locations) {
         }
     }
 
-    if(rewards.items && !only_unlocks) {
-        for(let i = 0; i < rewards.items.length; i++) {
-            const item = item_templates[rewards.items[i]];
-            log_message(`${character.name} obtained "${item.getName()} x${rewards.items[i].count||1}"`);
-            add_to_character_inventory([{item_key: item.getInventoryKey(), count: rewards.items[i].count}]);
-        }
-    }
+			if (rewards.items && !only_unlocks) {
+				console.log(rewards);
+				console.log(rewards.items);
+
+				const parsed_items = [];
+
+				for (let i = 0; i < rewards.items.length; i++) {
+					const reward_entry = rewards.items[i];
+					const item_key = typeof reward_entry === "string" ? reward_entry : reward_entry.item;
+					const count = reward_entry.count || 1;
+
+					const item = item_templates[item_key];
+
+					if (!item) {
+						console.warn(`Item template not found for key: ${item_key}`);
+						continue;
+					}
+
+					log_message(`${character.name} obtained "${item.getName()} x${count}"`);
+
+					parsed_items.push({
+						item: item,
+						count: count
+					});
+				}
+
+				add_to_character_inventory(parsed_items);
+			}
 
     if(rewards.reputation && !only_unlocks) {
         Object.keys(rewards.reputation).forEach(region => {
@@ -1871,7 +1895,9 @@ for (const effect_name of status_effects) {
 
             update_displayed_effects();
             character.stats.add_active_effect_bonus();
+			update_character_stats();
             update_displayed_stats();
+			
 
             log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
         }
@@ -1969,6 +1995,7 @@ function apply_on_connectedstrike_effects(attacker) {
 
                 update_displayed_effects();
                 character.stats.add_active_effect_bonus();
+				update_character_stats();
                 update_displayed_stats();
 
                 log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");

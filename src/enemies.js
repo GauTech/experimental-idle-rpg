@@ -361,7 +361,7 @@ Platinum Slime
         rank: 4,
         size: "small",
         tags: ["amorphous"],
-		on_strike: {poison: 200},
+		on_strike: {poison: 50},
         stats: {health: 160, attack: 56, agility: 8, dexterity: 44, magic: 0, intuition: 8, attack_speed: 1.2, defense: 6}, 
         loot_list: [
             {item_name: "Goo", chance: 0.80, count: 2},
@@ -681,7 +681,7 @@ enemy_templates["Ant Queen"] = new Enemy({
 /// mimic
     enemy_templates["Mimic"] = new Enemy({
         name: "Mimic", 
-        description: "An elusive creature that occasionally yields treasure.",
+        description: "A master of disguise that occasionally yields treasure. Very elusive.",
 		xp_value: 50, 
         rank: 3,
         size: "medium",
@@ -882,7 +882,21 @@ enemy_templates["Ant Queen"] = new Enemy({
         size: "small",
     });
 
+//// Rank 3 boss
 
+    enemy_templates["Skeleton Warlord"] = new Enemy({
+        name: "Skeleton Warlord", 
+        description: "A skeleton that specialises in ranged ambushes.",
+		xp_value: 50, 
+        rank: 3,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 140, attack: 44, agility: 6, dexterity: 28, magic: 0, intuition: 6, attack_speed: 1.2, defense: 5}, //stat_total = 80 (discount atk speed, HP/10)
+        loot_list: [
+            {item_name: "Bones", chance: 0.60},
+			{item_name: "Shoddy Treasure Chest", chance: 0.15},
+        ],
+    });
 
 
 //The order
@@ -898,7 +912,7 @@ Umbral Knight*/
     enemy_templates["Bloody Knight"] = new Enemy({
         name: "Bloody Knight", 
         description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
-		xp_value: 400, 
+		xp_value: 80, 
         rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
@@ -911,7 +925,7 @@ Umbral Knight*/
     enemy_templates["Famine Knight"] = new Enemy({
         name: "Famine Knight", 
         description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
-		xp_value: 400, 
+		xp_value: 80, 
         rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
@@ -924,7 +938,7 @@ Umbral Knight*/
     enemy_templates["Plague Knight"] = new Enemy({
         name: "Plague Knight", 
         description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
-		xp_value: 400, 
+		xp_value: 80, 
         rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
@@ -938,7 +952,7 @@ Umbral Knight*/
     enemy_templates["Frostbitten Knight"] = new Enemy({
         name: "Frostbitten Knight", 
         description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
-		xp_value: 400, 
+		xp_value: 80, 
         rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
@@ -952,7 +966,7 @@ Umbral Knight*/
     enemy_templates["Silent Knight"] = new Enemy({
         name: "Silent Knight", 
         description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
-		xp_value: 400, 
+		xp_value: 80, 
         rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
@@ -965,7 +979,7 @@ Umbral Knight*/
     enemy_templates["Ash Knight"] = new Enemy({
         name: "Ash Knight", 
         description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
-		xp_value: 400, 
+		xp_value: 80, 
         rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
@@ -979,7 +993,7 @@ Umbral Knight*/
     enemy_templates["Storm Knight"] = new Enemy({
         name: "Storm Knight", 
         description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
-		xp_value: 400, 
+		xp_value: 80, 
         rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
@@ -992,7 +1006,7 @@ Umbral Knight*/
     enemy_templates["Umbral Knight"] = new Enemy({
         name: "Umbral Knight", 
         description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
-		xp_value: 400, 
+		xp_value: 80, 
         rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
@@ -1506,6 +1520,7 @@ Umbral Knight*/
         rank: 9,
         size: "medium",
         tags: ["humanoid", "spirit"],
+		on_connectedstrike: { stun: { duration: 10, chance: 0.3 } }, 
         stats: {health: 1, attack: 1, agility: 1, dexterity: 1, magic: 1, intuition: 1, attack_speed: 1, defense: 1}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Purest Darkness", chance: 1},
@@ -1513,6 +1528,7 @@ Umbral Knight*/
 		    custom_generate: function (template, context) {
         const player_stats = character.stats.full;
 		player_stats.attack = Math.round(character.stats.full.attack_power);
+		player_stats.health = Math.round(character.stats.full.max_health);
         return {
             override_stats: { ...player_stats },
             post_generate(enemy) {
