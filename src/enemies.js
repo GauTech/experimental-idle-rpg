@@ -1309,7 +1309,7 @@ enemy_templates["Rot Warden"] = new Enemy({
         rank: 8,
         size: "large",
         tags: ["abomination", "beast"],
-		on_strike: {multistrike: 8}
+		on_strike: {multistrike: 8},
         stats: {health: 3520, attack: 268, agility: 380, dexterity: 680, magic: 0, intuition: 120, attack_speed: 2.5, defense: 60}, //stat_total = 2560 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Regenerating Flesh", chance: 0.8},

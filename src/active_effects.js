@@ -3,30 +3,37 @@ const effect_templates = {};
 
 class ActiveEffect {
     /**
-     * 
      * @param {Object} effect_data
      * @param {String} effect_data.name
      * @param {String} [effect_data.id]
      * @param {Number} effect_data.duration
-     * @param {Object} effect_data.effects {stats}
+     * @param {Object} effect_data.effects
+     * @param {String} [effect_data.type] // e.g., "foodbuff"
+     * @param {Number} [effect_data.potency] // derived metric
      */
-    constructor({name, id, duration, effects}) {
+    constructor({ name, id, duration, effects, type = "misc", potency = null }) {
         this.name = name;
         this.id = id || name;
         this.duration = duration ?? 0;
         this.effects = effects;
+        this.type = type;
+        this.potency = potency !== null ? potency : this.calculatePotency();
+    }
+
+    calculatePotency() {
+        let total = 0;
+        if (this.effects?.stats) {
+            for (const stat in this.effects.stats) {
+                const val = this.effects.stats[stat]?.flat || 0;
+                total += val;
+            }
+        }
+        return total;
     }
 }
 
 
-effect_templates["Basic meal"] = new ActiveEffect({
-    name: "Basic meal",
-    effects: {
-        stats: {
-            stamina_regeneration_flat: {flat: 1},
-        }
-    }
-});
+
 
 effect_templates["Weak healing powder"] = new ActiveEffect({
     name: "Weak healing powder",
@@ -46,73 +53,80 @@ effect_templates["Weak healing potion"] = new ActiveEffect({
     }
 });
 
-effect_templates["Cheap meat meal"] = new ActiveEffect({
-    name: "Cheap meat meal",
+effect_templates["Basic meal"] = new ActiveEffect({
+    name: "Basic meal",
+    type: "foodbuff",
     effects: {
         stats: {
-            stamina_regeneration_flat: {flat: 2},
+            stamina_regeneration_flat: { flat: 1 }
+        }
+    }
+});
+
+effect_templates["Cheap meat meal"] = new ActiveEffect({
+    name: "Cheap meat meal",
+    type: "foodbuff",
+    effects: {
+        stats: {
+            stamina_regeneration_flat: { flat: 2 }
         }
     }
 });
 
 effect_templates["Cheap fish dish"] = new ActiveEffect({
     name: "Cheap fish dish",
+    type: "foodbuff",
     effects: {
         stats: {
-            stamina_regeneration_flat: {flat: 2},
+            stamina_regeneration_flat: { flat: 2 }
         }
     }
 });
 
 effect_templates["Simple fish dish"] = new ActiveEffect({
     name: "Simple fish dish",
+    type: "foodbuff",
     effects: {
         stats: {
-            stamina_regeneration_flat: {flat: 3},
-			health_regeneration_flat: {flat: 1},
-        }
-    }
-});
-
-effect_templates["Simple fish dish"] = new ActiveEffect({
-    name: "Simple fish dish",
-    effects: {
-        stats: {
-            stamina_regeneration_flat: {flat: 3},
-			health_regeneration_flat: {flat: 1},
+            stamina_regeneration_flat: { flat: 3 },
+            health_regeneration_flat: { flat: 1 }
         }
     }
 });
 
 effect_templates["Ordinary fish dish"] = new ActiveEffect({
     name: "Ordinary fish dish",
+    type: "foodbuff",
     effects: {
         stats: {
-            stamina_regeneration_flat: {flat: 6},
-			health_regeneration_flat: {flat: 2},
+            stamina_regeneration_flat: { flat: 6 },
+            health_regeneration_flat: { flat: 2 }
         }
     }
 });
 
 effect_templates["Superior fish dish"] = new ActiveEffect({
     name: "Superior fish dish",
+    type: "foodbuff",
     effects: {
         stats: {
-            stamina_regeneration_flat: {flat: 8},
-			health_regeneration_flat: {flat: 4},
+            stamina_regeneration_flat: { flat: 8 },
+            health_regeneration_flat: { flat: 4 }
         }
     }
 });
 
 effect_templates["Luxury fish dish"] = new ActiveEffect({
     name: "Luxury fish dish",
+    type: "foodbuff",
     effects: {
         stats: {
-            stamina_regeneration_flat: {flat: 15},
-			health_regeneration_flat: {flat: 7},
+            stamina_regeneration_flat: { flat: 15 },
+            health_regeneration_flat: { flat: 7 }
         }
     }
 });
+
 
 
 effect_templates["Slight food poisoning"] = new ActiveEffect({
