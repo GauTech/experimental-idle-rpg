@@ -3048,7 +3048,7 @@ item_templates["Stale bread"] = new UsableItem({
 
 
     item_templates["Cooked Minnow"] = new UsableItem({
-        name: "Cooked Sardine", 
+        name: "Cooked Minnow", 
         description: "A powerful fishy smell belies a satisfactory taste.",
         value: 20,
 		gluttony_value: 300,
