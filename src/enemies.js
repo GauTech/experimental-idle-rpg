@@ -499,7 +499,7 @@ enemy_templates["Spider Queen"] = new Enemy({
         {item_name: "Spider Core", chance: 0.60},
         {item_name: "Royal Silk", chance: 0.40},
         {item_name: "Venom Gland", chance: 0.30},
-		{item_name: "Shoody Treasure Chest", chance: 0.30},
+		{item_name: "Shoddy Treasure Chest", chance: 0.30},
     ],
 });
 // ant family

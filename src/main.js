@@ -2195,6 +2195,7 @@ function clear_all_ally_attack_loops() {
 
 function do_ally_combat_action(ally_index) {
     if (!current_party[ally_index]) return;
+	if (!current_enemies) return;
 
     const ally_id = current_party[ally_index];
     const ally = allies[ally_id];
@@ -2260,6 +2261,16 @@ function do_ally_combat_action(ally_index) {
             log_message(`${ally.name} has missed`, "hero_missed");
         }
     }
+	
+	            if(current_enemies != null && current_enemies.filter(enemy => enemy.is_alive).length == 0) { //set next loop if there's still an enemy left;
+                current_location.enemy_groups_killed += 1;
+                if(current_location.enemy_groups_killed > 0 && current_location.enemy_groups_killed % current_location.enemy_count == 0) {
+                    get_location_rewards(current_location);
+                }
+                document.getElementById("enemy_count_div").children[0].children[1].innerHTML = current_location.enemy_count - current_location.enemy_groups_killed % current_location.enemy_count;
+        
+                set_new_combat();;
+            } 
 }
 
 
