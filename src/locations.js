@@ -1885,7 +1885,7 @@ locations["The Nest"] = new Location({
         description: "The Nest",
 		dialogues: ["Fireseeker4"],
         name: "The Nest",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Burrows"].connected_locations.push({location: locations["The Nest"]});
 
@@ -1908,6 +1908,7 @@ locations["Spider Brood"] = new Combat_zone({
         },
         repeatable_reward: {
             xp: 1000,
+			locations: [{location: "Fire Pit"}],
         }
     });
 locations["The Nest"].connected_locations.push({location: locations["Spider Brood"]});
@@ -1917,7 +1918,10 @@ locations["Fire Pit"] = new Location({
         description: "Fire Pit",
 		dialogues: ["Fireseeker5"],
         name: "Fire Pit",
-        is_unlocked: true,
+        is_unlocked: false,
+		ambient_damage: 5,
+		ambient_damage_type: "Heat",
+		ambient_damage_related_skill: "Heat resistance",
     });
 locations["The Nest"].connected_locations.push({location: locations["Fire Pit"]});
 
@@ -3715,7 +3719,7 @@ function get_all_main_locations() {
             description: "Attempt to break into the tomb.",
             action_text: "Picking the lock",
 			is_unlocked: true,
-            success_text: "You manage to break into the tomb",
+            success_text: "You manage to break into the tomb and find a shiny Iron axe for your troubles",
             failure_texts: {
                 random_loss: ["You didn't quite get it, maybe next time"],
 				conditional_loss: ["You didn't quite get it, maybe with more practice"],

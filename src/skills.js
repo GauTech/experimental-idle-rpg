@@ -890,7 +890,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
             return `Reduces damage taken and status debuffs from heat. <br> <br>Reduces:<br>
 			Burn active effect damage by ${(Math.round((skills["Heat resistance"].current_level/skills["Heat resistance"].max_level)*100)*1000)/1000}%, <br> 
 			Heat (non-combat) damage by ${(Math.round((skills["Heat resistance"].current_level/skills["Heat resistance"].max_level)*100)*1000)/1000}%,<br>
-			Heat (combat) damage by ${Math.round((1-((1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))**0.66667))*1000)/10}%,<br>
+			Heat field (combat) damage by ${Math.round((1-((1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))**0.66667))*1000)/10}%,<br>
 			Heat (combat) penalties by ${Math.round((1-((1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))))*1000)/10}%`;
         },
 	        rewards: {
@@ -934,7 +934,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
             return `Reduces damage taken and status debuffs from cold. <br> <br>Reduces:<br>
 			Freeze active effect effects by ${(Math.round((skills["Cold resistance"].current_level/skills["Cold resistance"].max_level)*100)*1000)/1000}%, <br> 
 			Cold (non-combat) damage by ${(Math.round((skills["Cold resistance"].current_level/skills["Cold resistance"].max_level)*100)*1000)/1000}%,<br>
-			Cold (combat) damage by ${Math.round((1-((1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))**0.66667))*1000)/10}%,<br>
+			Cold field (combat) damage by ${Math.round((1-((1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))**0.66667))*1000)/10}%,<br>
 			Cold (combat) penalties by ${Math.round((1-((1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))))*1000)/10}%`;
 			
 			
@@ -994,7 +994,7 @@ skills["Poison resistance"] = new Skill({
             return `Reduces damage taken from poison:<br> <br>
 			Poison active effect damage by ${(Math.round((skills["Poison resistance"].current_level/skills["Poison resistance"].max_level)*100)*1000)/1000}%, <br> 
 			Poison ambient (non-combat) damage by ${(Math.round((skills["Poison resistance"].current_level/skills["Poison resistance"].max_level)*100)*1000)/1000}%,<br>
-			Poison (combat) damage by ${Math.round((1-((1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))**0.66667))*1000)/10}% `;
+			Poison field (combat) damage by ${Math.round((1-((1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))**0.66667))*1000)/10}% `;
 			
 			
         },

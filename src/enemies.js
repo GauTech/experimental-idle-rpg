@@ -1124,6 +1124,20 @@ enemy_templates["Rot Worshipper"] = new Enemy({
             {item_name: "Bones", chance: 1},
         ],
     });
+
+enemy_templates["Rot Warden"] = new Enemy({
+    name: "Rot Warden", 
+    description: "A more important member of the rot cult. It seems even anarchic cults have a hierachy.",
+	xp_value: 525, 
+    rank: 5,
+    size: "medium",
+    tags: ["humanoid"],
+    stats: {health: 250, attack: 100, agility: 30, dexterity: 126, magic: 0, intuition: 16, attack_speed: 1.4, defense: 9},
+    loot_list: [
+      
+    ],
+	on_connectedstrike: {poison: 40},
+});
 	
     enemy_templates["Fledging Vampire"] = new Enemy({
         name: "Fledging Vampire", 

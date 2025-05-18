@@ -415,6 +415,10 @@ body {
 	.stat_breakdown {
 		text-align: left;
 	}
+	
+#health_tooltip {
+	top: var(--stat_tooltip_top-50px);
+}
 
 .stat_slot_div:hover .stat_tooltip {
 	 display: block;

@@ -73,7 +73,7 @@
 						<div id="character_health_value"></div>
 
 						<!-- Add tooltip here -->
-						<div class="stat_tooltip">
+						<div id= "health_tooltip" class="stat_tooltip">
 							<div>Max health. Shows base HP, plus any flat or multiplicative bonuses along with any active HP regen or HP loss effects.</div>
 							<div class="stat_breakdown"></div>
 						</div>
@@ -1533,6 +1533,16 @@
                         tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
                     }
                 }
+				
+								const healthDiv = document.getElementById("character_health_div");
+								healthDiv.addEventListener('mousemove', move_stat_tooltip, false);
+								function move_health_tooltip(event) {
+					if (Date.now() >= tooltip_wait) {
+						document.documentElement.style.setProperty('--stat_tooltip_top', `${event.pageY - 140}px`);
+						document.documentElement.style.setProperty('--stat_tooltip_left', `${event.pageX}px`);
+						tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
+					}
+				}
 
                 //unequip item
                 equipment_div.onclick = function(event) {

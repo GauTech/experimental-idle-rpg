@@ -68,15 +68,15 @@ const current_health_bar = document.getElementById("character_healthbar_current"
 
 const healthDiv = document.getElementById("character_health_div");
 
-// Hook into hover
 healthDiv.addEventListener("mouseenter", () => {
     update_stat_description("max_health");
 });
 
-// Optional: cleanup if needed
 healthDiv.addEventListener("mouseleave", () => {
-    // clear tooltip if desired
+    // Optionally clear or hide tooltip
 });
+
+
 
 
 //character stamina display
@@ -2827,6 +2827,8 @@ function update_displayed_mana() { //call it when using healing items, resting o
 }
 
 
+
+
 function update_displayed_stats() { //updates displayed stats
 
     Object.keys(stats_divs).forEach(function(key){
@@ -2949,9 +2951,9 @@ function updateCombatDisplays(alliesInParty) {
                         const statElements = statsContainer.querySelectorAll('.ally_stat, .ally_power');
 
                         if (statElements.length >= 3) {
-                            statElements[0].textContent = `Atk Pwr: ${(Math.round(allyData.attack_power)*(skills["Leadership"].get_coefficient("multiplicative")*100)/100)}`;
+                            statElements[0].textContent = `Atk Pwr: ${(Math.round(allyData.attack_power*(skills["Leadership"].get_coefficient("multiplicative"))*100)/100)}`;
                             statElements[1].textContent = `Atk Spd: ${allyData.attack_speed}`;
-                            statElements[2].textContent = `AP: ${allyData.AP}`;
+                            statElements[2].textContent = `AP: ${(Math.round(allyData.AP*(skills["Leadership"].get_coefficient("multiplicative"))*100)/100)}`;
                         }
                     }
                 }

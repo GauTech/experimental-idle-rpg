@@ -151,4 +151,31 @@ effect_templates["Minor defense boost"] = new ActiveEffect({
     }
 });
 
+effect_templates["Major strength boost"] = new ActiveEffect({
+    name: "Major strength boost",
+    effects: {
+        stats: {
+            strength: {flat: 20},
+        }
+    }
+});
+
+effect_templates["Major magic boost"] = new ActiveEffect({
+    name: "Major magic boost",
+    effects: {
+        stats: {
+            magic: {flat: 20},
+        }
+    }
+});
+
+effect_templates["Major defense boost"] = new ActiveEffect({
+    name: "Major defense boost",
+    effects: {
+        stats: {
+            defense: {flat: 8},
+        }
+    }
+});
+
 export {effect_templates, ActiveEffect};
