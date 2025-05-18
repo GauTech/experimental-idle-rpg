@@ -3047,6 +3047,78 @@ item_templates["Stale bread"] = new UsableItem({
 })();
 
 
+    item_templates["Cooked Minnow"] = new UsableItem({
+        name: "Cooked Sardine", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 20,
+		gluttony_value: 300,
+        effects: [{effect: "Cheap fish dish", duration: 10}],
+    });
+    item_templates["Cooked Sardine"] = new UsableItem({
+        name: "Cooked Sardine", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 30,
+		gluttony_value: 400,
+        effects: [{effect: "Cheap fish dish", duration: 30}],
+    });
+    item_templates["Cooked Goldfish"] = new UsableItem({
+        name: "Cooked Goldfish", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 40,
+		gluttony_value: 500,
+        effects: [{effect: "Cheap fish dish", duration: 60}],
+    });
+	    item_templates["Cooked Plaice"] = new UsableItem({
+        name: "Cooked Plaice", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 50,
+		gluttony_value: 600,
+        effects: [{effect: "Simple fish dish", duration: 20}],
+    });
+	    item_templates["Cooked Bass"] = new UsableItem({
+        name: "Cooked Bass", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 60,
+		gluttony_value: 700,
+        effects: [{effect: "Simple fish dish", duration: 50}],
+    });
+	    item_templates["Cooked Crab"] = new UsableItem({
+        name: "Cooked Crab", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 70,
+		gluttony_value: 800,
+        effects: [{effect: "Simple fish dish", duration: 80}],
+    });
+	    item_templates["Cooked Haddock"] = new UsableItem({
+        name: "Cooked Haddock", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 80,
+		gluttony_value: 900,
+        effects: [{effect: "Ordinary fish dish", duration: 30}],
+    });
+	    item_templates["Cooked Carp"] = new UsableItem({
+        name: "Cooked Carp", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 90,
+		gluttony_value: 1000,
+        effects: [{effect: "Ordinary fish dish", duration: 60}],
+    });
+	    item_templates["Cooked Tuna"] = new UsableItem({
+        name: "Cooked Tuna", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 100,
+		gluttony_value: 1100,
+        effects: [{effect: "Ordinary fish dish", duration: 90}],
+    });
+	    item_templates["Cooked Catfish"] = new UsableItem({
+        name: "Cooked Catfish", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 110,
+		gluttony_value: 1200,
+        effects: [{effect: "Superior fish dish", duration: 40}],
+    });
+
+
 //
 (function(){
     item_templates["1000 Years Pill"] = new UsableItem({

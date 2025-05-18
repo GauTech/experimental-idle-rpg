@@ -421,40 +421,85 @@ class LocationActivity{
         }
 
     getActivityEfficiency = function() {
-        let skill_modifier = 1;
-		let chronomancy_modifier = 1;
-		let tool_bonus = 1;
-        if(this.gained_resources.scales_with_skill){
-            let skill_level_sum = 0;
-            for(let i = 0; i < activities[this.activity_name].base_skills_names?.length; i++) {
-                skill_level_sum += Math.min(
-                    this.gained_resources.skill_required[1]-this.gained_resources.skill_required[0]+1, Math.max(0,skills[activities[this.activity_name].base_skills_names[i]].current_level-this.gained_resources.skill_required[0]+1)
-                )/(this.gained_resources.skill_required[1]-this.gained_resources.skill_required[0]+1);
-            }
-            skill_modifier = (skill_level_sum/activities[this.activity_name].base_skills_names?.length) ?? 1;
-			chronomancy_modifier = (1 - (0.5 * skills["Chronomancy"].current_level/skills["Chronomancy"].max_level)) || 1;
-			//tool_bonus = (1 - (character.equipment[(this.activity_name).required_tool_type].tool_bonus)) || 1;
-			for (let i = 0; i < activities[this.activity_name].base_skills_names?.length; i++) {
-				const tool = activities[this.activity_name].required_tool_type;
-				const bonus = get_equipped_tool_bonus(tool);
-				tool_bonus = (1 - (0.01*bonus)) || 1;
-			}
+    let skill_modifier = 1;
+    let chronomancy_modifier = 1;
+    let tool_bonus = 1;
+
+    const base_skill_names = activities[this.activity_name].base_skills_names || [];
+
+    // Compute average skill modifier if scaling is enabled
+    if (this.gained_resources.scales_with_skill) {
+        let skill_level_sum = 0;
+        for (let i = 0; i < base_skill_names.length; i++) {
+            const skill = skills[base_skill_names[i]];
+            const clamped = Math.min(
+                this.gained_resources.skill_required[1] - this.gained_resources.skill_required[0] + 1,
+                Math.max(0, skill.current_level - this.gained_resources.skill_required[0] + 1)
+            );
+            skill_level_sum += clamped / (this.gained_resources.skill_required[1] - this.gained_resources.skill_required[0] + 1);
         }
-        const gathering_time_needed = Math.floor(this.gained_resources.time_period[0]*(this.gained_resources.time_period[1]/this.gained_resources.time_period[0])**skill_modifier*chronomancy_modifier*tool_bonus);
+        skill_modifier = (skill_level_sum / base_skill_names.length) || 1;
 
-        const gained_resources = [];
+        // Chronomancy modifier
+        chronomancy_modifier = (1 - (0.5 * skills["Chronomancy"].current_level / skills["Chronomancy"].max_level)) || 1;
 
-        for(let i = 0; i < this.gained_resources.resources.length; i++) {
-
-            const chance = this.gained_resources.resources[i].chance[0]*(this.gained_resources.resources[i].chance[1]/this.gained_resources.resources[i].chance[0])**skill_modifier;
-            const min = Math.round(this.gained_resources.resources[i].ammount[0][0]*(this.gained_resources.resources[i].ammount[1][0]/this.gained_resources.resources[i].ammount[0][0])**skill_modifier);
-            const max = Math.round(this.gained_resources.resources[i].ammount[0][1]*(this.gained_resources.resources[i].ammount[1][1]/this.gained_resources.resources[i].ammount[0][1])**skill_modifier);
-            gained_resources.push({name: this.gained_resources.resources[i].name, count: [min,max], chance: chance});
+        // Tool bonus
+        for (let i = 0; i < base_skill_names.length; i++) {
+            const tool = activities[this.activity_name].required_tool_type;
+            const bonus = get_equipped_tool_bonus(tool);
+            tool_bonus = (1 - (0.01 * bonus)) || 1;
         }
-
-        return {gathering_time_needed, gained_resources};
     }
-}
+
+    const gathering_time_needed = Math.floor(
+        this.gained_resources.time_period[0] *
+        (this.gained_resources.time_period[1] / this.gained_resources.time_period[0]) ** skill_modifier *
+        chronomancy_modifier *
+        tool_bonus
+    );
+
+			const gained_resources = [];
+
+			for (let i = 0; i < this.gained_resources.resources.length; i++) {
+				const res = this.gained_resources.resources[i];
+
+				// Determine required level (per-resource or global)
+				let required_level = res.skill_required;
+				if (required_level === undefined) {
+					const global_req = this.gained_resources.skill_required;
+					required_level = Array.isArray(global_req) ? global_req[0] : global_req;
+				}
+
+				// Check if any skill meets the requirement
+				let meets_requirement = true;
+				if (required_level !== undefined) {
+					meets_requirement = base_skill_names.some(skill_name =>
+						skills[skill_name].current_level >= required_level
+					);
+				}
+
+				if (!meets_requirement) {
+					gained_resources.push({
+						name: res.name,
+						count: [0, 0],
+						chance: 0,
+						unmet_requirement: required_level // include this so tooltip can reflect it
+					});
+				} else {
+					const chance = res.chance[0] * (res.chance[1] / res.chance[0]) ** skill_modifier;
+					const min = Math.round(res.ammount[0][0] * (res.ammount[1][0] / res.ammount[0][0]) ** skill_modifier);
+					const max = Math.round(res.ammount[0][1] * (res.ammount[1][1] / res.ammount[0][1]) ** skill_modifier);
+					gained_resources.push({
+						name: res.name,
+						count: [min, max],
+						chance: chance
+					});
+				}
+			}
+
+			return { gathering_time_needed, gained_resources };
+		};
+    }
 
 class LocationAction{
     /**
@@ -3362,19 +3407,19 @@ locations["Docks"].activities = {
             skill_xp_per_tick: 2,
             is_unlocked: true,
             gained_resources: {
-                resources: [
-                    {name: "Rotten Bonefish", ammount: [[1,1], [1,1]], chance: [0.1,1]},
-                    {name: "Perfect Plaice", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]},
-					{name: "Boisterous Bass", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]},
+				  resources: [
+                    {name: "Rotten Bonefish", ammount: [[1,1], [1,1]], chance: [0.2,2]},
 					{name: "Meagre Minnow", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]},
-					{name: "Clingy Crab", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]}, 
-					{name: "Salty Sardine", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]},
-					{name: "Haughty Haddock", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]},
-					{name: "Glimmering Goldfish", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]},
-					{name: "Cunning Carp", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]},
-					{name: "Timid Tuna", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]},
-                    {name: "Curious Catfish", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]}
-                ], 
+					{name: "Salty Sardine", ammount: [[1,1], [1,1]], chance: [0.1, 1.4], skill_required: 2},
+					{name: "Glimmering Goldfish", ammount: [[1,1], [1,1]], chance: [0.1, 1.0], skill_required: 2},
+                    {name: "Perfect Plaice", ammount: [[1,1], [1,1]], chance: [0.1, 0.7], skill_required: 10},
+					{name: "Boisterous Bass", ammount: [[1,1], [1,1]], chance: [0.1, 0.7], skill_required: 12},
+					{name: "Clingy Crab", ammount: [[1,1], [1,1]], chance: [0.1, 0.7], skill_required: 15},
+					{name: "Haughty Haddock", ammount: [[1,1], [1,1]], chance: [0.1, 0.7], skill_required: 18},
+					{name: "Cunning Carp", ammount: [[1,1], [1,1]], chance: [0.1, 0.7], skill_required: 20},
+					{name: "Timid Tuna", ammount: [[1,1], [1,1]], chance: [0.1, 0.7], skill_required: 25},
+                    {name: "Curious Catfish", ammount: [[1,1], [1,1]], chance: [0.1, 0.7], skill_required: 30}
+                ],  
                 time_period: [120, 45],
                 skill_required: [0, 10],
                 scales_with_skill: true,

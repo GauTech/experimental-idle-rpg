@@ -285,6 +285,8 @@ body {
 	cursor: not-allowed;
 }
 
+
+
 .action_travel:hover, .start_dialogue:hover, .start_trade:hover, .start_location_action:hover, .start_activity:hover, .location_choices:hover,
 .dialogue_textline:hover, .end_dialogue_button:hover, .dialogue_trade:hover, .choices_return_button:hover {
 	background-color: #2c3953;
@@ -2249,6 +2251,15 @@ danger_rating {
 .danger_rank_9  { background-color: rgba(232, 67, 147, 0.9); }
 .danger_rank_10 { background-color: rgba(255, 0, 0, 0.9); }
 
+.greyed_out_resource {
+    color: #999;
+    font-style: italic;
+    opacity: 0.8;
+}
 
+.greyed-out {
+    color: #999;
+    font-style: italic;
+}
 
 

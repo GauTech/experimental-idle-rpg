@@ -4807,14 +4807,39 @@ function update() {
 
                         const items = [];
 
-                        for(let i = 0; i < gained_resources.length; i++) {
-                            if(Math.random() > (1-gained_resources[i].chance)) {
-                                const count = Math.floor(Math.random()*(gained_resources[i].count[1]-gained_resources[i].count[0]+1))+gained_resources[i].count[0];
-                                items.push({item: item_templates[gained_resources[i].name], count: count});
-								
-								gathered_materials[gained_resources[i].name] = (gathered_materials[gained_resources[i].name] || 0) + count;
-                            }
-                        }
+                        const {resources} = current_activity.gained_resources;
+const base_skill_names = activities[current_activity.activity_name].base_skills_names || [];
+
+for (let i = 0; i < resources.length; i++) {
+    const resource = resources[i];
+
+    // Extract per-resource requirement if present
+    let required_skill_level = resource.skill_required;
+
+    // If not present, fall back to global skill_required lower bound
+    if (required_skill_level === undefined) {
+        const global_req = current_activity.gained_resources.skill_required;
+        required_skill_level = Array.isArray(global_req) ? global_req[0] : global_req;
+    }
+
+    // Check if at least one base skill meets the requirement
+    const meetsRequirement = base_skill_names.some(skill_name => {
+        const skill = skills[skill_name];
+        return skill && skill.current_level >= required_skill_level;
+    });
+
+    if (!meetsRequirement) continue;
+
+    // Apply chance logic
+    const chance = Array.isArray(resource.chance) ? resource.chance[1] : resource.chance;
+    if (Math.random() > (1 - chance)) {
+        const countRange = Array.isArray(resource.ammount) ? resource.ammount[1] : [1, 1];
+        const count = Math.floor(Math.random() * (countRange[1] - countRange[0] + 1)) + countRange[0];
+
+        items.push({ item: item_templates[resource.name], count });
+        gathered_materials[resource.name] = (gathered_materials[resource.name] || 0) + count;
+    }
+}
 
                         if(items.length > 0) {
                             log_loot(items, false);

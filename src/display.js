@@ -2771,20 +2771,35 @@ function create_gathering_tooltip(location_activity) {
     gathering_tooltip.id = "gathering_tooltip";
     gathering_tooltip.classList.add("job_tooltip");
 
-    const {gathering_time_needed, gained_resources} = location_activity.getActivityEfficiency();
+    const { gathering_time_needed, gained_resources } = location_activity.getActivityEfficiency();
 
     let skill_names = "";
-    for(let i = 0; i < activities[location_activity.activity_name].base_skills_names.length; i++) {
+    for (let i = 0; i < activities[location_activity.activity_name].base_skills_names.length; i++) {
         skill_names += skills[activities[location_activity.activity_name].base_skills_names[i]].name();
     }
 
-    if(location_activity.gained_resources.scales_with_skill) {
+    if (location_activity.gained_resources.scales_with_skill) {
         gathering_tooltip.innerHTML = `<span class="activity_efficiency_info">Efficiency scaling:<br>"${skill_names}" skill lvl ${location_activity.gained_resources.skill_required[0]} to ${location_activity.gained_resources.skill_required[1]}</span><br><br>`;
     }
 
     gathering_tooltip.innerHTML += `Every ${format_reading_time(gathering_time_needed)}, chance to find:`;
-    for(let i = 0; i < gained_resources.length; i++) {
-        gathering_tooltip.innerHTML += `<br>x${gained_resources[i].count[0]===gained_resources[i].count[1]?gained_resources[i].count[0]:`${gained_resources[i].count[0]}-${gained_resources[i].count[1]}`} "${gained_resources[i].name}" at ${Math.round(100*gained_resources[i].chance)}%`;
+
+    for (let i = 0; i < gained_resources.length; i++) {
+        const res = gained_resources[i];
+        const countDisplay = res.count[0] === res.count[1] ? res.count[0] : `${res.count[0]}-${res.count[1]}`;
+        const chanceDisplay = Math.min(100, Math.round(100 * res.chance));
+        const requirementText = (res.chance === 0 && res.unmet_requirement !== undefined)
+            ? ` (requires skill: lvl ${res.unmet_requirement})`
+            : "";
+
+        const line = document.createElement("div");
+        line.innerText = `x${countDisplay} "${res.name}" at ${chanceDisplay}%${requirementText}`;
+
+        if (res.chance === 0 && res.unmet_requirement !== undefined) {
+            line.classList.add("greyed-out");
+        }
+
+        gathering_tooltip.appendChild(line);
     }
 
     return gathering_tooltip;
@@ -2792,23 +2807,41 @@ function create_gathering_tooltip(location_activity) {
 
 function update_gathering_tooltip(current_activity) {
     const gathering_tooltip = document.getElementById("gathering_tooltip");
-    if(!gathering_tooltip) {
+    if (!gathering_tooltip) {
         return;
     }
-    
-    const {gathering_time_needed, gained_resources} = current_activity.getActivityEfficiency();
+
+    const { gathering_time_needed, gained_resources } = current_activity.getActivityEfficiency();
 
     let skill_names = "";
-    for(let i = 0; i < activities[current_activity.activity_name].base_skills_names.length; i++) {
+    for (let i = 0; i < activities[current_activity.activity_name].base_skills_names.length; i++) {
         skill_names += skills[activities[current_activity.activity_name].base_skills_names[i]].name();
     }
 
-    if(current_activity.gained_resources.scales_with_skill) {
+    if (current_activity.gained_resources.scales_with_skill) {
         gathering_tooltip.innerHTML = `<span class="activity_efficiency_info">Efficiency scaling:<br>"${skill_names}" skill lvl ${current_activity.gained_resources.skill_required[0]} to ${current_activity.gained_resources.skill_required[1]}</span><br><br>`;
+    } else {
+        gathering_tooltip.innerHTML = "";
     }
+
     gathering_tooltip.innerHTML += `Every ${format_reading_time(gathering_time_needed)}, chance to find:`;
-    for(let i = 0; i < gained_resources.length; i++) {
-        gathering_tooltip.innerHTML += `<br>x${gained_resources[i].count[0]===gained_resources[i].count[1]?gained_resources[i].count[0]:`${gained_resources[i].count[0]}-${gained_resources[i].count[1]}`} "${gained_resources[i].name}" at ${Math.round(100*gained_resources[i].chance)}%`;
+
+    for (let i = 0; i < gained_resources.length; i++) {
+        const res = gained_resources[i];
+        const countDisplay = res.count[0] === res.count[1] ? res.count[0] : `${res.count[0]}-${res.count[1]}`;
+        const chanceDisplay = Math.min(100, Math.round(100 * res.chance));
+        const requirementText = (res.chance === 0 && res.unmet_requirement !== undefined)
+            ? ` (requires skill: lvl ${res.unmet_requirement})`
+            : "";
+
+        const line = document.createElement("div");
+        line.innerText = `x${countDisplay} "${res.name}" at ${chanceDisplay}%${requirementText}`;
+
+        if (res.chance === 0 && res.unmet_requirement !== undefined) {
+            line.classList.add("greyed-out");
+        }
+
+        gathering_tooltip.appendChild(line);
     }
 }
 

@@ -794,6 +794,99 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         recipe_level: [1,10],
         recipe_skill: "Alchemy",
     });
+    cooking_recipes.items["Cooked Minnow"] = new ItemRecipe({
+        name: "Cooked Minnow",
+        recipe_type: "usable",
+        materials: [{material_id: "Meagre Minnow", count: 2}], 
+        result: {result_id: "Cooked Minnow", count: 1},
+        success_chance: [0.4,1],
+        recipe_level: [1,5],
+        recipe_skill: "Cooking",
+    });
+	    cooking_recipes.items["Cooked Sardine"] = new ItemRecipe({
+        name: "Cooked Sardine",
+        recipe_type: "usable",
+        materials: [{material_id: "Salty Sardine", count: 2}], 
+        result: {result_id: "Cooked Sardine", count: 1},
+        success_chance: [0.2,1],
+        recipe_level: [4,8],
+        recipe_skill: "Cooking",
+    });
+	    cooking_recipes.items["Cooked Goldfish"] = new ItemRecipe({
+        name: "Cooked Goldfish",
+        recipe_type: "usable",
+        materials: [{material_id: "Glimmering Goldfish", count: 2}], 
+        result: {result_id: "Cooked Goldfish", count: 1},
+        success_chance: [0.1,1],
+        recipe_level: [7,11],
+        recipe_skill: "Cooking",
+    });
+	    cooking_recipes.items["Cooked Plaice"] = new ItemRecipe({
+        name: "Cooked Plaice",
+        recipe_type: "usable",
+        materials: [{material_id: "Perfect Plaice", count: 2}], 
+        result: {result_id: "Cooked Plaice", count: 1},
+        success_chance: [0,1],
+        recipe_level: [10,14],
+        recipe_skill: "Cooking",
+    });
+	    cooking_recipes.items["Cooked Bass"] = new ItemRecipe({
+        name: "Cooked Bass",
+        recipe_type: "usable",
+        materials: [{material_id: "Boisterous Bass", count: 2}], 
+        result: {result_id: "Cooked Bass", count: 1},
+        success_chance: [0,1],
+        recipe_level: [13,17],
+        recipe_skill: "Cooking",
+    });
+	    cooking_recipes.items["Cooked Crab"] = new ItemRecipe({
+        name: "Cooked Crab",
+        recipe_type: "usable",
+        materials: [{material_id: "Clingy Crab", count: 2}], 
+        result: {result_id: "Cooked Crab", count: 1},
+        success_chance: [0,1],
+        recipe_level: [16,20],
+        recipe_skill: "Cooking",
+    });
+	    cooking_recipes.items["Cooked Haddock"] = new ItemRecipe({
+        name: "Cooked Haddock",
+        recipe_type: "usable",
+        materials: [{material_id: "Haughty Haddock", count: 2}], 
+        result: {result_id: "Cooked Haddock", count: 1},
+        success_chance: [0,1],
+        recipe_level: [19,23],
+        recipe_skill: "Cooking",
+    });
+	    cooking_recipes.items["Cooked Carp"] = new ItemRecipe({
+        name: "Cooked Carp",
+        recipe_type: "usable",
+        materials: [{material_id: "Cunning Carp", count: 2}], 
+        result: {result_id: "Cooked Carp", count: 1},
+        success_chance: [0,1],
+        recipe_level: [22,26],
+        recipe_skill: "Cooking",
+    });
+	    cooking_recipes.items["Cooked Tuna"] = new ItemRecipe({
+        name: "Cooked Tuna",
+        recipe_type: "usable",
+        materials: [{material_id: "Timid Tuna", count: 2}], 
+        result: {result_id: "Cooked Tuna", count: 1},
+        success_chance: [0,1],
+        recipe_level: [25,29],
+        recipe_skill: "Cooking",
+    });
+	    cooking_recipes.items["Cooked Catfish"] = new ItemRecipe({
+        name: "Cooked Catfish",
+        recipe_type: "usable",
+        materials: [{material_id: "Curious Catfish", count: 2}], 
+        result: {result_id: "Cooked Catfish", count: 1},
+        success_chance: [0,1],
+        recipe_level: [28,32],
+        recipe_skill: "Cooking",
+    });
+	
+	
+	
 })();
 
 //trinkets

@@ -69,7 +69,7 @@ effect_templates["Simple fish dish"] = new ActiveEffect({
     effects: {
         stats: {
             stamina_regeneration_flat: {flat: 3},
-			ealth_regeneration_flat: {flat: 1},
+			health_regeneration_flat: {flat: 1},
         }
     }
 });
@@ -79,7 +79,7 @@ effect_templates["Simple fish dish"] = new ActiveEffect({
     effects: {
         stats: {
             stamina_regeneration_flat: {flat: 3},
-			ealth_regeneration_flat: {flat: 1},
+			health_regeneration_flat: {flat: 1},
         }
     }
 });
@@ -89,7 +89,7 @@ effect_templates["Ordinary fish dish"] = new ActiveEffect({
     effects: {
         stats: {
             stamina_regeneration_flat: {flat: 6},
-			ealth_regeneration_flat: {flat: 2},
+			health_regeneration_flat: {flat: 2},
         }
     }
 });
@@ -99,7 +99,7 @@ effect_templates["Superior fish dish"] = new ActiveEffect({
     effects: {
         stats: {
             stamina_regeneration_flat: {flat: 8},
-			ealth_regeneration_flat: {flat: 4},
+			health_regeneration_flat: {flat: 4},
         }
     }
 });
@@ -109,7 +109,7 @@ effect_templates["Luxury fish dish"] = new ActiveEffect({
     effects: {
         stats: {
             stamina_regeneration_flat: {flat: 15},
-			ealth_regeneration_flat: {flat: 7},
+			health_regeneration_flat: {flat: 7},
         }
     }
 });
