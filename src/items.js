@@ -1550,7 +1550,11 @@ item_templates["Chitin Shard"] = new Junk({
         value: 1,
         price_recovers: true,
     });
-
+    item_templates["Purest Darkness"] = new KeyItem({
+        name: "Purest Darkness", 
+        description: "Purest Darkness",
+        value: 1, 
+    });
 
 
 })();
@@ -1861,11 +1865,7 @@ item_templates["Chitin Shard"] = new Junk({
         description: "Imperial Regalia",
         value: 5000, 
     });
-    item_templates["Purest Darkness"] = new OtherItem({
-        name: "Purest Darkness", 
-        description: "Purest Darkness",
-        value: 1, 
-    });
+
 }());
 
 //weapon components:

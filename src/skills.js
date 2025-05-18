@@ -727,7 +727,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                             names: {0: "Spatial awareness"}, 
                                             description: "Understanding where you are in relation to other creatures and objects", 
                                             get_effect_description: ()=> {
-                                                return `Reduces environmental penalty in open areas by ^${Math.round(100-100*skills["Spatial awareness"].current_level/skills["Spatial awareness"].max_level)/100}`;
+                                                return `Reduces environmental penalty in open areas by ${Math.round((1-((1-(skills["Spatial awareness"].current_level/skills["Spatial awareness"].max_level))))*1000)/10}%`;
                                             },
                                             category: "Environmental",
                                             rewards: {
@@ -757,7 +757,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                         description: "Learn how to fight in narrow environment, where there's not much space for dodging attacks", 
                                         category: "Environmental",
                                         get_effect_description: ()=> {
-                                            return `Reduces environmental penalty in narrow areas by ^${Math.round(100-100*skills["Tight maneuvers"].current_level/skills["Tight maneuvers"].max_level)/100}`;
+                                            return `Reduces environmental penalty in narrow areas by ${Math.round((1-((1-(skills["Tight maneuvers"].current_level/skills["Tight maneuvers"].max_level))))*1000)/10}%`;
                                         },
                                         rewards: {
                                             milestones: {
@@ -784,7 +784,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                     max_level: 10,
                                     category: "Environmental",
                                     get_effect_description: () => {
-                                        return `Reduces darkness penalty (except for 'pure darkness') by ^${Math.round(100-100*skills["Night vision"].current_level/skills["Night vision"].max_level)/100}`;
+                                        return `Reduces darkness penalty (except for 'pure darkness') by ${Math.round((1-((1-(skills["Night vision"].current_level/skills["Night vision"].max_level))))*1000)/10}%`;
                                     },
                                     rewards: {
                                         milestones: {
@@ -834,7 +834,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                 max_level: 20,
                 category: "Environmental",
                 get_effect_description: () => {
-                    return `Reduces extreme darkness penalty by ^${Math.round(100-100*skills["Presence sensing"].current_level/skills["Presence sensing"].max_level)/100}`;
+                    return `Reduces extreme darkness penalty by ${Math.round((1-((1-(skills["Presence sensing"].current_level/skills["Presence sensing"].max_level))))*1000)/10}%`;
                 },
                 rewards: {
                     milestones: {
@@ -886,8 +886,12 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
         base_xp_cost: 100,
         max_level: 40,
         category: "Environmental",
-        get_effect_description: () => {
-            return `Reduces penalty from hot locations`;
+        get_effect_description: ()=> {
+            return `Reduces damage taken and status debuffs from heat. <br> <br>Reduces:<br>
+			Burn active effect damage by ${(Math.round((skills["Heat resistance"].current_level/skills["Heat resistance"].max_level)*100)*1000)/1000}%, <br> 
+			Heat (non-combat) damage by ${(Math.round((skills["Heat resistance"].current_level/skills["Heat resistance"].max_level)*100)*1000)/1000}%,<br>
+			Heat (combat) damage by ${Math.round((1-((1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))**0.66667))*1000)/10}%,<br>
+			Heat (combat) penalties by ${Math.round((1-((1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))))*1000)/10}%`;
         },
 	        rewards: {
             milestones: {
@@ -926,8 +930,14 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
         base_xp_cost: 100,
         max_level: 40,
         category: "Environmental",
-        get_effect_description: () => {
-            return `Reduces penalty from cold locations`;
+           get_effect_description: ()=> {
+            return `Reduces damage taken and status debuffs from cold. <br> <br>Reduces:<br>
+			Freeze active effect effects by ${(Math.round((skills["Cold resistance"].current_level/skills["Cold resistance"].max_level)*100)*1000)/1000}%, <br> 
+			Cold (non-combat) damage by ${(Math.round((skills["Cold resistance"].current_level/skills["Cold resistance"].max_level)*100)*1000)/1000}%,<br>
+			Cold (combat) damage by ${Math.round((1-((1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))**0.66667))*1000)/10}%,<br>
+			Cold (combat) penalties by ${Math.round((1-((1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))))*1000)/10}%`;
+			
+			
         },
         rewards: {
             milestones: {
@@ -981,7 +991,12 @@ skills["Poison resistance"] = new Skill({
         max_level: 30,
         category: "Environmental",
         get_effect_description: ()=> {
-            return `Reduces damage from poison by ${(Math.round((skills["Poison resistance"].current_level/skills["Poison resistance"].max_level)*100)*1000)/1000}% `;
+            return `Reduces damage taken from poison:<br> <br>
+			Poison active effect damage by ${(Math.round((skills["Poison resistance"].current_level/skills["Poison resistance"].max_level)*100)*1000)/1000}%, <br> 
+			Poison ambient (non-combat) damage by ${(Math.round((skills["Poison resistance"].current_level/skills["Poison resistance"].max_level)*100)*1000)/1000}%,<br>
+			Poison (combat) damage by ${Math.round((1-((1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))**0.66667))*1000)/10}% `;
+			
+			
         },
         max_level_bonus: 0.5
     });
@@ -1865,7 +1880,8 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         },
 		},
 		get_effect_description: ()=> {
-                                    return `Multiplies strength, agility and stamina by ${Math.round(skills["Breathing"].get_coefficient("multiplicative")*1000)/1000}`;
+                                    return `Multiplies strength, agility and stamina by ${Math.round(skills["Breathing"].get_coefficient("multiplicative")*1000)/1000}<br>
+									Reduces environmental penalty in open areas by ${Math.round((1-((1-(skills["Breathing"].current_level/skills["Breathing"].max_level))))*1000)/10}%`;
         },
     });  
 	

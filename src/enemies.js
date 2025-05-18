@@ -700,10 +700,10 @@ enemy_templates["Ant Queen"] = new Enemy({
         rank: 1,
         size: "medium",
         tags: ["undead","humanoid"],
-		on_strike: {bark: ["Grooooan","Braaains"]},
+		on_strike: {bark: ["Grooooan","Braaains"], },
 		on_death: {
 		bark: "The monster lets out a final shriek and falls silent!",
-
+		
 },
         stats: {health: 20, attack: 12, agility: 2, dexterity: 2, magic: 0, intuition: 1, attack_speed: 0.8, defense: 1}, //stat_total = 20 (discount atk speed, HP/10)
         loot_list: [
@@ -1044,6 +1044,20 @@ Umbral Knight*/
             {item_name: "Rotten Flesh", chance: 0.80},
         ],
     });
+	
+enemy_templates["Rot Worshipper"] = new Enemy({
+    name: "Rot Worshipper", 
+    description: "Deranged cultist that worships poison, blight and decay.",
+	xp_value: 125, 
+    rank: 4,
+    size: "medium",
+    tags: ["humanoid"],
+    stats: {health: 120, attack: 50, agility: 20, dexterity: 46, magic: 0, intuition: 14, attack_speed: 1.4, defense: 4},
+    loot_list: [
+      
+    ],
+	on_connectedstrike: {poison: 20},
+});
 	
     enemy_templates["Spectre"] = new Enemy({
         name: "Spectre", 

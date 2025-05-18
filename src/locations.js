@@ -2236,7 +2236,7 @@ locations["Saw Demon"] = new Challenge_zone({
         repeatable_reward: {
             xp: 1000,
 			flags: ["is_saw_demon_beaten"],
-			skill: 1000,
+			skill: 200,
 			related_skill: "Destiny Mastery",
 			locations: [{location: "Dark Woods"}],
         }
@@ -2259,7 +2259,7 @@ locations["Chain Demon"] = new Challenge_zone({
         repeatable_reward: {
             xp: 1000,
 			flags: ["is_chain_demon_beaten"],
-			skill: 1000,
+			skill: 200,
 			related_skill: "Destiny Mastery",
         }
     });
@@ -2280,7 +2280,7 @@ locations["Chain-Saw Demon"] = new Challenge_zone({
         },
         repeatable_reward: {
             xp: 10000,
-			skill: 10000,
+			skill: 1000,
 			related_skill: "Destiny Mastery",
         }
     });
@@ -2493,7 +2493,7 @@ locations["Exiled Demon"] = new Challenge_zone({
             xp: 20000,
         },
         repeatable_reward: {
-            skill: 10000,
+            skill: 200,
 			related_skill: "Destiny Mastery",
         }
     });
@@ -2513,7 +2513,7 @@ locations["Bloodstained Emperor"] = new Challenge_zone({
             xp: 20000,
         },
         repeatable_reward: {
-            skill: 10000,
+            skill: 200,
 			related_skill: "Fate Mastery",
         }
     });
@@ -2533,7 +2533,7 @@ locations["Hellfire Dragon"] = new Challenge_zone({
             xp: 20000,
         },
         repeatable_reward: {
-            skill: 10000,
+            skill: 1000,
 			related_skill: "Destiny Mastery",
         }
     });
@@ -2553,7 +2553,7 @@ locations["Calamity Dragon"] = new Challenge_zone({
             xp: 20000,
         },
         repeatable_reward: {
-            skill: 10000,
+            skill: 1000,
 			related_skill: "Destiny Mastery",
         }
     });
@@ -2573,7 +2573,7 @@ locations["Eclipse Dragon"] = new Challenge_zone({
             xp: 20000,
         },
         repeatable_reward: {
-            skill: 10000,
+            skill: 1000,
 			related_skill: "Destiny Mastery",
         }
     });
@@ -2593,7 +2593,7 @@ locations["Primordial Dragon"] = new Challenge_zone({
             xp: 20000,
         },
         repeatable_reward: {
-            skill: 10000,
+            skill: 1000,
 			related_skill: "Destiny Mastery",
         }
     });
@@ -2613,7 +2613,7 @@ locations["Nightmare Dragon"] = new Challenge_zone({
             xp: 20000,
         },
         repeatable_reward: {
-            skill: 10000,
+            skill: 1000,
 			related_skill: "Destiny Mastery",
         }
     });
@@ -2861,7 +2861,7 @@ locations["Ancient Bridge"].connected_locations.push({location: locations["Bridg
 locations["Toxic Enemies"] = new Combat_zone({
         description: "Toxic Enemies", 
 		types: [{type: "noxious", stage: 2,  xp_gain: 5}],
-        enemies_list: ["Plague Rat", "Toxic Slime", ],
+        enemies_list: ["Plague Rat", "Toxic Slime","Rot Worshipper"],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -3830,7 +3830,7 @@ function get_all_main_locations() {
                 {
                         
                     skills: {
-                            "Climbing": 10,
+                            "Climbing": 9,
                         },
                 },
                 {
@@ -3846,6 +3846,7 @@ function get_all_main_locations() {
             "Climbing": 100,
         },
 		locations: [{location: "Upper Tower"}],
+		move_to: {location: "Upper Tower"},
 
 			 },
 			            loss_rewards: {

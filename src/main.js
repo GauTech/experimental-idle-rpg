@@ -1857,32 +1857,36 @@ for (const effect_name of status_effects) {
         if (Math.random() <= chance) {
             let stats = {};
             switch (effect_name) {
-                case "poison":
-                    stats = {
-                        health_regeneration_flat: { flat: (-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))) },
-                    };
-                    break;
-				      case "toxic":
-                    stats = {
-                        health_regeneration_flat: { flat: -5 },
-                    };
-                    break;
-                case "freeze":
-                    stats = {
-                        attack_speed: { multiplier: 0.5 },
-                    };
-                    break;
-                case "burn":
-                    stats = {
-                        health_regeneration_flat: { flat: -5 },
-                    };
-                    break;
-                case "stun":
-                    stats = {
-                        attack_speed: { multiplier: 0.1 }, // placeholder
-                    };
-                    break;
-            }
+					case "poison":
+						stats = {
+							health_regeneration_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 3});
+						break;
+						  case "toxic":
+						stats = {
+							health_regeneration_flat: { flat: (Math.round(-5 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 20});
+						break;
+					case "freeze":
+						stats = {
+							attack_speed: { multiplier: (Math.round(0.5 * (1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Cold resistance"], xp_to_add: 3});
+						break;
+					case "burn":
+						stats = {
+							health_regeneration_flat: { flat: (Math.round(-2 * (1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Heat resistance"], xp_to_add: 3});
+						break;
+					case "stun":
+						stats = {
+							attack_speed: { multiplier: 0.1 }, // placeholder
+						};
+						break;
+				}
 
             const effect = new ActiveEffect({
                 name: effect_name.charAt(0).toUpperCase() + effect_name.slice(1),
@@ -1956,33 +1960,37 @@ function apply_on_connectedstrike_effects(attacker) {
 
             if (Math.random() <= chance) {
                 let stats = {};
-                switch (effect_name) {
-                    case "poison":
-                        stats = {
-                            health_regeneration_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
-                        };
-                        break;
-					        case "toxic":
-                        stats = {
-                            health_regeneration_flat: { flat: -5 },
-                        };
-                        break;	
-                    case "freeze":
-                        stats = {
-                            attack_speed: { multiplier: 0.5 },
-                        };
-                        break;
-                    case "burn":
-                        stats = {
-                            health_regeneration_flat: { flat: -5 },
-                        };
-                        break;
-                    case "stun":
-                        stats = {
-                            attack_speed: { multiplier: 0.1 },
-                        };
-                        break;
-                }
+					switch (effect_name) {
+					case "poison":
+						stats = {
+							health_regeneration_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 3});
+						break;
+						  case "toxic":
+						stats = {
+							health_regeneration_flat: { flat: (Math.round(-5 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 20});
+						break;
+					case "freeze":
+						stats = {
+							attack_speed: { multiplier: (Math.round(0.5 * (1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Cold resistance"], xp_to_add: 3});
+						break;
+					case "burn":
+						stats = {
+							health_regeneration_flat: { flat: (Math.round(-2 * (1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Heat resistance"], xp_to_add: 3});
+						break;
+					case "stun":
+						stats = {
+							attack_speed: { multiplier: 0.1 }, // placeholder
+						};
+						break;
+				}
 
                 const effect = new ActiveEffect({
                     name: effect_name.charAt(0).toUpperCase() + effect_name.slice(1),
