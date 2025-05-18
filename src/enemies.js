@@ -765,7 +765,7 @@ enemy_templates["Ant Queen"] = new Enemy({
         stats: {health: 30, attack: 3, agility: 11, dexterity: 11, magic: 0, intuition: 4, attack_speed: 0.9, defense: 1}, //stat_total = 40
         loot_list: [
             {item_name: "Rat meat chunks", chance: 0.10},
-			{item_name: "Rat fang", chance: 0.40}
+			{item_name: "Rat fang", chance: 0.40},
         ],
     });
 
@@ -987,6 +987,7 @@ Umbral Knight*/
         stats: {health: 160, attack: 120, agility: 15, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
         loot_list: [
             {item_name: "Order Badge", chance: 1},
+			{item_name: "Castle Key", chance: 1},
         ],
     });
 	

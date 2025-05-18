@@ -895,12 +895,28 @@ function get_equipped_tool_bonus(tool) {
         name: "noxious",
         stages: {
             1: {
-                description: "noxious",
+                description: "Mild poison fills the area.",
                 related_skill: "Poison resistance",
                 effects: {
                    health_loss_flat: {flat: -2}
                 }
             },
+			           2: {
+                description: "Heavy poison fills the area.",
+                related_skill: "Poison resistance",
+                effects: {
+                   health_loss_flat: {flat: -5}
+                }
+            },
+					           3: {
+                description: "Deadly toxins fill the area.",
+                related_skill: "Poison resistance",
+                effects: {
+                   health_loss_flat: {flat: -20}
+                }
+            },
+			
+			
 	        }
     });
     location_types["cursed"] = new LocationType({
@@ -931,6 +947,18 @@ function get_equipped_tool_bonus(tool) {
                     stamina: {multiplier: 0.1},
                 }
             }
+        }
+    });
+	 location_types["antimagic"] = new LocationType({
+        name: "antimagic",
+        stages: {
+            1: {
+                description: "Magic Attacks are useless here.",
+                related_skill: "Magic Potency",
+                effects: {
+                    magic_power: {multiplier: 0.05},
+                }
+            },
         }
     });
 
@@ -1352,8 +1380,8 @@ locations["Burial Chamber"].connected_locations.push({location: locations["Catac
     locations["Wandering Undead"] = new Combat_zone({
         description: "Deal with undead stragglers.", 
         enemy_count: 15, 
-		//enemy_groups_list: [["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie","Frail Zombie"],["Slime","Slime","Slime","Slime"],],
-        enemies_list: ["Pinata"],
+		enemy_groups_list: [["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie","Frail Zombie"],["Slime","Slime","Slime","Slime"],],
+        //enemies_list: ["Pinata"],//debug enemy to level quick and test
         types: [{type: "dark", stage: 1, xp_gain: 3}],
         enemy_stat_variation: 0.1,
         is_unlocked: true, 
@@ -1393,9 +1421,12 @@ locations["Catacombs"].connected_locations.push({location: locations["Sewer"]});
 
 	locations["Putrid Bog"] = new Location({ 
         connected_locations: [{location: locations["Sewer"]}],
-        description: "Obligatory poison swamp.",
+        description: "The obligatory poison swamp that every fallen kingdom seems to have.",
         name: "Putrid Bog",
         is_unlocked: false,
+		ambient_damage: 2,
+		ambient_damage_type: "Poison",
+		ambient_damage_related_skill: "Poison resistance",
     });
 	
 locations["Sewer"].connected_locations.push({location: locations["Putrid Bog"]});
@@ -1433,7 +1464,7 @@ locations["Sewer"].connected_locations.push({location: locations["Sewer Depths"]
     locations["Sewer Beasts"] = new Combat_zone({
         description: "Deal with sewer beasts.", 
         enemy_count: 20, 
-        enemies_list: ["Plague Rat"],
+        enemies_list: ["Plague Rat", "Voluminous Slime"],
 		rare_list: ["Mimic"],
 		rare_chance: 0.001,
         types: [{type: "dark", stage: 1, xp_gain: 3}, {type: "narrow", stage: 1, xp_gain: 3}],
@@ -1546,20 +1577,38 @@ locations["Castle"] = new Location({
         description: "Castle",
         name: "Castle",
 		dialogues: ["Kon4"],
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Courtyard"].connected_locations.push({location: locations["Castle"]});
 
 locations["Tower"] = new Location({ 
         connected_locations: [{location: locations["Courtyard"]}],
-        description: "Tower",
+        description: "An imposing tower stretching into the sky. There doesn't appear to be any stairs leading up.",
+			getDescription: function() {
+			if(locations["Upper Tower"].is_unlocked === true) {
+				return "An imposing tower stretching into the sky. A precarious ladder leads to the upper floors.";
+			}
+			else {
+				return "An imposing tower stretching into the sky. There doesn't appear to be any stairs leading up."; 
+			}
+		},
         name: "Tower",
-		dialogues: ["Scholar2","Scholar3"],
         is_unlocked: true,
     });
 	
 locations["Courtyard"].connected_locations.push({location: locations["Tower"]});
+
+
+locations["Upper Tower"] = new Location({ 
+        connected_locations: [{location: locations["Tower"]}],
+        description: "The heights of the tower. It looms above the rest of the city.",
+        name: "Upper Tower",
+		dialogues: ["Scholar2","Scholar3"],
+        is_unlocked: false,
+    });
+	
+locations["Tower"].connected_locations.push({location: locations["Upper Tower"]});
 
 locations["The Midden"] = new Location({ 
         connected_locations: [{location: locations["Docks"]},{location: locations["Putrid Bog"]}],
@@ -1635,13 +1684,10 @@ locations["Laboratory"].connected_locations.push({location: locations["Vivarium"
 
 locations["The Roost"] = new Location({ 
         connected_locations: [{location: locations["Vivarium"]}],
-        description: "The Roost",
+        description: "The nesting ground of many great dragons. Tread carefully.",
         name: "The Roost",
         is_unlocked: true,
-		getBackgroundNoises: function() {
-            let noises = ["ROAR", "*You hear wings flapping*", ];
-            return noises;
-        },
+		background_noises: ["ROAR", "*You hear wings flapping*",],
     });
 	
 locations["Vivarium"].connected_locations.push({location: locations["The Roost"]});
@@ -2256,7 +2302,7 @@ locations["Strange Knight"] = new Challenge_zone({
         },
         repeatable_reward: {
             xp: 100,
-			skill: 1000,
+			skill: 100,
 			related_skill: "Fate Mastery",
 			locations: [{location: "Grave of Heroes"}],
         }
@@ -2278,7 +2324,7 @@ locations["Famine Knight"] = new Challenge_zone({
         },
         repeatable_reward: {
             xp: 100,
-			skill: 1000,
+			skill: 100,
 			related_skill: "Fate Mastery",
         }
     });
@@ -2299,7 +2345,7 @@ locations["Frostbitten Knight"] = new Challenge_zone({
         },
         repeatable_reward: {
             xp: 100,
-			skill: 1000,
+			skill: 100,
 			related_skill: "Fate Mastery",
 			locations: [{location: "Courtyard"}],
         }
@@ -2322,7 +2368,7 @@ locations["Plague Knight"] = new Challenge_zone({
         },
         repeatable_reward: {
             xp: 100,
-			skill: 1000,
+			skill: 100,
 			related_skill: "Fate Mastery",
         }
     });
@@ -2343,7 +2389,7 @@ locations["Silent Knight"] = new Challenge_zone({
         },
         repeatable_reward: {
             xp: 100,
-			skill: 1000,
+			skill: 100,
 			related_skill: "Fate Mastery",
 			locations: [{location: "Ancient Bridge"}],
 			
@@ -2366,7 +2412,7 @@ locations["Ash Knight"] = new Challenge_zone({
         },
         repeatable_reward: {
             xp: 100,
-			skill: 1000,
+			skill: 100,
 			related_skill: "Fate Mastery",
         }
     });
@@ -2387,7 +2433,7 @@ locations["Storm Knight"] = new Challenge_zone({
         },
         repeatable_reward: {
             xp: 100,
-			skill: 1000,
+			skill: 100,
 			related_skill: "Fate Mastery",
         }
     });
@@ -2408,7 +2454,7 @@ locations["Umbral Knight"] = new Challenge_zone({
         },
         repeatable_reward: {
             xp: 100,
-			skill: 1000,
+			skill: 100,
 			related_skill: "Fate Mastery",
         }
     });
@@ -2417,13 +2463,13 @@ locations["Well of Souls"].connected_locations.push({location: locations["Umbral
 locations["Anti-Magic Golem"] = new Challenge_zone({
         description: "Anti-Magic Golem", 
         enemy_count: 1, 
-        types: [],
+        types: [{type: "antimagic", stage: 1,  xp_gain: 1},{type: "thin air", stage: 1,  xp_gain: 3},],
         enemies_list: ["Anti-Magic Golem"],
         enemy_group_size: [1,1],
         enemy_stat_variation: 0.2,
         is_unlocked: false, 
         name: "Anti-Magic Golem",
-        parent_location: locations["Tower"],
+        parent_location: locations["Upper Tower"],
         first_reward: {
             xp: 2000,
         },
@@ -2431,7 +2477,7 @@ locations["Anti-Magic Golem"] = new Challenge_zone({
             textlines: [{dialogue: "Scholar2", lines: ["Scholar2Done"]}],
         }
     });
-locations["Tower"].connected_locations.push({location: locations["Anti-Magic Golem"]});
+locations["Upper Tower"].connected_locations.push({location: locations["Anti-Magic Golem"]});
 
 locations["Exiled Demon"] = new Challenge_zone({
         description: "Exiled Demon", 
@@ -2814,8 +2860,8 @@ locations["Ancient Bridge"].connected_locations.push({location: locations["Bridg
 
 locations["Toxic Enemies"] = new Combat_zone({
         description: "Toxic Enemies", 
-		types: [{type: "noxious", stage: 1,  xp_gain: 4}],
-        enemies_list: ["Zombie"],
+		types: [{type: "noxious", stage: 2,  xp_gain: 5}],
+        enemies_list: ["Plague Rat", "Toxic Slime", ],
         enemy_count: 10, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -2829,7 +2875,7 @@ locations["Toxic Enemies"] = new Combat_zone({
             xp: 350,
         }
     });
-locations["Putrid Bog"].connected_locations.push({location: locations["Toxic Enemies"], custom_text: "Toxic Enemies"});
+locations["Putrid Bog"].connected_locations.push({location: locations["Toxic Enemies"]});
 
 locations["Palace Menagerie"] = new Combat_zone({
         description: "Palace Menagerie", 
@@ -3707,8 +3753,8 @@ function get_all_main_locations() {
 
 (function(){
     locations["Cavern"].actions = {
-        "sign": new LocationAction({
-            action_id: "sign",
+        "explore": new LocationAction({
+            action_id: "explore",
             starting_text: "Explore the cavern network",
             description: "Navigate the dark caverns.",
             action_text: "Exploring",
@@ -3730,7 +3776,7 @@ function get_all_main_locations() {
                         },
                 }
             ],
-            attempt_duration: 1,
+            attempt_duration: 10,
             success_chances: [1],
             rewards: {
 				locations: [{location: "Mines"},{location: "Burrows"}],
@@ -3740,6 +3786,77 @@ function get_all_main_locations() {
 })();
 
 
+(function(){
+    locations["Courtyard"].actions = {
+        "castlegate": new LocationAction({
+            action_id: "castlegate",
+            starting_text: "Approach the castle.",
+            description: "Look for a way to enter the castle.",
+            action_text: "Investigating",
+            success_text: "You open up the route to the castle.",
+            failure_texts: {
+                random_loss: ["random loss text"],
+				conditional_loss: ["Try as you might you can't open the gate. You will need to find the key."],
+            },
+			conditions: [
+                {
+                    items_by_id: {"Castle Key": {count: 1, remove: true}},
+                }
+            ],
+            attempt_duration: 6,
+            success_chances: [1],
+            rewards: {
+				locations: [{location: "Castle"}],
+			 },
+        }),
+	}
+})();
+
+
+
+(function(){
+    locations["Tower"].actions = {
+        "climbtower": new LocationAction({
+            action_id: "climbtower",
+            starting_text: "Try to climb the tower",
+            description: "An old rusty gate. Locked tight.",
+            action_text: "Climbing",
+            success_text: "Finally you make your way to the upper areas. You find a ladder that you kick down to the lower section.",
+            failure_texts: {
+                random_loss: ["You climb most of the way then lose your footing and slide back down. The only thing to do is try again."],
+				conditional_loss: ["This isn't working. You'll need to get better at climbing to stand a chance."],
+            },
+          conditions: [
+                {
+                        
+                    skills: {
+                            "Climbing": 10,
+                        },
+                },
+                {
+                        skills: {
+                            "Climbing": 12,
+                        },
+                }
+            ],
+            attempt_duration: 20,
+            success_chances: [0.6,1],
+            rewards: {
+								       skill_xp: {
+            "Climbing": 100,
+        },
+		locations: [{location: "Upper Tower"}],
+
+			 },
+			            loss_rewards: {
+								       skill_xp: {
+            "Climbing": 10,
+        }
+
+			 },
+        }),
+	}
+})();
 
 export {locations, location_types, get_location_type_penalty, get_all_main_locations};
 

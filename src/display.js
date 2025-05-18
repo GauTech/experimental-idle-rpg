@@ -4395,7 +4395,6 @@ function addJunk() {
         if (!item || count <= 0) continue;
 
         if (item.item_type === "JUNK") {
-			console.log("item =", item);
             total_price += add_to_selling_list({
                 item_key: item_key,
                 count: count
@@ -4409,7 +4408,7 @@ function addJunk() {
                     trade_price_value.innerHTML = format_money(total_price);
                     check_trade_cost();
 
-    console.log("All junk items added to the selling list.");
+    log_message("All junk items added to the selling list.");
 }
 
 // Attach event listener when DOM is ready

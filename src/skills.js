@@ -1368,10 +1368,10 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     skills["Salvaging"] = new Skill({skill_id: "Salvaging", 
                                 names: {0: "Salvaging"}, 
                                 description: "Salvaging",
-                                base_xp_cost: 40,
+                                base_xp_cost: 100,
                                 category: "Activity",
                                 max_level: 10,
-                                xp_scaling: 1.6,
+                                xp_scaling: 1.8,
                                 max_level_coefficient: 2,
 								get_effect_description: ()=> {
                                     return `Multiplies droprate by ${Math.round(skills["Salvaging"].get_coefficient("multiplicative")*1000)/1000}`;

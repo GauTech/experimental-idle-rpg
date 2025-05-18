@@ -261,6 +261,16 @@ class Junk extends OtherItem {
     }
 }
 
+class KeyItem extends OtherItem {
+    constructor(item_data) {
+        super(item_data);
+        this.item_type = "KEYITEM";
+        this.saturates_market = true;
+        this.price_recovers = true;
+        this.tags["keyitem"] = true;
+    }
+}
+
 class ItemComponent extends Item {
     constructor(item_data) {
         super(item_data);
@@ -924,6 +934,8 @@ function getItem(item_data) {
             return new OtherItem(item_data);
 		case "JUNK":
             return new Junk(item_data);
+			case "KEYITEM":
+            return new KeyItem(item_data);
         case "COMPONENT":
             if (item_data.tags["weapon component"])
                 return new WeaponComponent(item_data);
@@ -1250,13 +1262,7 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
 
 //miscellaneous and loot:
 (function(){
-    item_templates["Rat fang"] = new Junk({
-        name: "Rat fang", 
-        description: "Fang of a huge rat, not very sharp, but can still pierce a human skin if enough force is applied", 
-        value: 8,
-        saturates_market: true,
-        price_recovers: true,
-    });
+ 
 
     item_templates["Wolf fang"] = new OtherItem({
         name: "Wolf fang", 
@@ -1351,13 +1357,7 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         material_type: "bone",
     });
 	
-    item_templates["Rotten Flesh"] = new Junk({
-        name: "Rotten Flesh", 
-        description: "Rotten Flesh",
-        value: 1,
-        price_recovers: true,
-        material_type: "material",
-    });
+
 	    item_templates["Slime Jelly"] = new Material({
         name: "Slime Jelly", 
         description: "Slime Jelly",
@@ -1365,46 +1365,14 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         price_recovers: true,
         material_type: "material",
     });
-	    item_templates["Goo"] = new Junk({
-        name: "Goo", 
-        description: "Goo",
-        value: 1,
-        price_recovers: true,
-    });
-	    item_templates["Acid"] = new Junk({
-        name: "Acid", 
-        description: "Acid",
-        value: 10,
-        price_recovers: true,
-    });
 
-	    item_templates["Burning Goo"] = new Junk({
-        name: "Burning Goo", 
-        description: "Burning Goo",
-        value: 10,
-        price_recovers: true,
-    });
 	    item_templates["Platinum Shard"] = new Material({
         name: "Platinum Shard", 
         description: "Platinum Shard",
         value: 1000,
         price_recovers: true,
     });    
-    item_templates["Ectoplasm"] = new Junk({
-        name: "Ectoplasm", 
-        description: "Ectoplasm",
-        value: 8,
-        price_recovers: true,
-        material_type: "material",
-    });
-	
-    item_templates["Congealed Blood"] = new Junk({
-        name: "Congealed Blood", 
-        description: "Congealed Blood",
-        value: 10,
-        price_recovers: true,
-        material_type: "material",
-    });
+
 	
 	    item_templates["Magic Stone"] = new Material({
         name: "Magic Stone", 
@@ -1422,13 +1390,7 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         material_type: "material",
     });
 	
-	    item_templates["Bat Wings"] = new Junk({
-        name: "Bat Wings", 
-        description: "Bat Wings",
-        value: 2,
-        price_recovers: true,
-        material_type: "material",
-    });
+
 	
 		item_templates["Regenerating Flesh"] = new Material({
         name: "Regenerating Flesh", 
@@ -1462,13 +1424,7 @@ item_templates["Spider Fang"] = new Material({
     material_type: "material",
 });
 
-item_templates["Chitin Shard"] = new Junk({
-    name: "Chitin Shard", 
-    description: "A brittle fragment of a spider’s exoskeleton.",
-    value: 10,
-    price_recovers: true,
-    material_type: "material",
-});
+
 
 item_templates["Venom Gland"] = new Material({
     name: "Venom Gland", 
@@ -1501,13 +1457,7 @@ item_templates["Royal Silk"] = new Material({
     price_recovers: true,
     material_type: "material",
 });
-item_templates["Ant Mandible"] = new Junk({
-    name: "Ant Mandible", 
-    description: "A sturdy biting appendage from a soldier or worker ant.",
-    value: 6,
-    price_recovers: true,
-    material_type: "material",
-});
+
 
 item_templates["Ant Core"] = new Material({
     name: "Ant Core", 
@@ -1524,8 +1474,83 @@ item_templates["Royal Jelly"] = new Material({
     price_recovers: true,
     material_type: "material",
 });
+
+//junk items 
+item_templates["Ant Mandible"] = new Junk({
+    name: "Ant Mandible", 
+    description: "A sturdy biting appendage from a soldier or worker ant.",
+    value: 6,
+    price_recovers: true,
+});
+item_templates["Chitin Shard"] = new Junk({
+    name: "Chitin Shard", 
+    description: "A brittle fragment of a spider’s exoskeleton.",
+    value: 10,
+    price_recovers: true,
+});
+	    item_templates["Bat Wings"] = new Junk({
+        name: "Bat Wings", 
+        description: "Bat Wings",
+        value: 2,
+        price_recovers: true,
+    });
+	    item_templates["Goo"] = new Junk({
+        name: "Goo", 
+        description: "Goo",
+        value: 1,
+        price_recovers: true,
+    });
+	    item_templates["Acid"] = new Junk({
+        name: "Acid", 
+        description: "Acid",
+        value: 10,
+        price_recovers: true,
+    });
+
+	    item_templates["Burning Goo"] = new Junk({
+        name: "Burning Goo", 
+        description: "Burning Goo",
+        value: 10,
+        price_recovers: true,
+    });
+    item_templates["Ectoplasm"] = new Junk({
+        name: "Ectoplasm", 
+        description: "Ectoplasm",
+        value: 8,
+        price_recovers: true,
+    });
 	
+    item_templates["Congealed Blood"] = new Junk({
+        name: "Congealed Blood", 
+        description: "Congealed Blood",
+        value: 10,
+        price_recovers: true,
+    });
+
+    item_templates["Rotten Flesh"] = new Junk({
+        name: "Rotten Flesh", 
+        description: "A rotting lump of flesh. Why would you even pick it up?",
+        value: 1,
+        price_recovers: true,
+    });
+   item_templates["Rat fang"] = new Junk({
+        name: "Rat fang", 
+        description: "Fang of a huge rat, not very sharp, but can still pierce a human skin if enough force is applied", 
+        value: 8,
+        saturates_market: true,
+        price_recovers: true,
+    });	
+
 	
+//key items
+
+    item_templates["Castle Key"] = new KeyItem({
+        name: "Castle Key", 
+        description: "Key to the castle.",
+        value: 1,
+        price_recovers: true,
+    });
+
 
 
 })();
