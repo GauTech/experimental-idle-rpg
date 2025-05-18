@@ -1406,7 +1406,7 @@ enemy_templates["Rot Warden"] = new Enemy({
         rank: 9,
         size: "large",
         tags: ["dragonoid", "fire"],
-		on_connectedstrike: { burn: { duration: 100, chance: 0.7 },
+		on_connectedstrike: { burn: { duration: 100, chance: 0.7 }},
         stats: {health: 4480, attack: 1704, agility: 1040, dexterity: 1340, magic: 80, intuition: 448, attack_speed: 2.4, defense: 60}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1419,7 +1419,7 @@ enemy_templates["Rot Warden"] = new Enemy({
         rank: 9,
         size: "large",
         tags: ["dragonoid"],
-		on_connectedstrike: { stun: { duration: 10, chance: 0.7 }, 
+		on_connectedstrike: { stun: { duration: 10, chance: 0.7 }}, 
         stats: {health: 4480, attack: 1664, agility: 1040, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 80}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1432,7 +1432,7 @@ enemy_templates["Rot Warden"] = new Enemy({
         rank: 9,
         size: "large",
         tags: ["dragonoid", "ice"],
-		on_connectedstrike: { freeze: { duration: 100, chance: 0.7 }, 
+		on_connectedstrike: { freeze: { duration: 100, chance: 0.7 }}, 
         stats: {health: 4480, attack: 1664, agility: 1040, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 80}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1494,7 +1494,7 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
 	    enemy_templates["Hellfire Dragon"] = new Enemy({
         name: "Hellfire Dragon", 
-        description: "An ancient and terrible dragon. Its breath cam melt even the toughest steel."
+        description: "An ancient and terrible dragon. Its breath cam melt even the toughest steel.",
 		xp_value: 999999, 
         rank: 10,
         size: "large",
