@@ -901,7 +901,7 @@ function get_equipped_tool_bonus(tool) {
                 description: "thundering",
                 related_skill: "Shock resistance",
                 effects: {
-                    stamina: {multiplier: 0.5},
+                    attack_speed: {multiplier: 0.5},
                 }
             },
             2: {
@@ -910,7 +910,7 @@ function get_equipped_tool_bonus(tool) {
                 effects: {
                     attack_points: {multiplier: 0.7},
                     evasion_points: {multiplier: 0.7},
-                    stamina: {multiplier: 0.2},
+                    attack_speed: {multiplier: 0.2},
                 }
             },
             3: {
@@ -919,7 +919,7 @@ function get_equipped_tool_bonus(tool) {
                 effects: {
                     attack_points: {multiplier: 0.5},
                     evasion_points: {multiplier: 0.5},
-                    stamina: {multiplier: 0.1},
+                    attack_speed: {multiplier: 0.1},
                 }
             }
         }
@@ -980,7 +980,7 @@ function get_equipped_tool_bonus(tool) {
                 effects: {
                     attack_points: {multiplier: 0.7},
                     evasion_points: {multiplier: 0.7},
-                    stamina: {multiplier: 0.2},
+                    defense: {multiplier: 0.2},
                 }
             },
             3: {
@@ -989,7 +989,7 @@ function get_equipped_tool_bonus(tool) {
                 effects: {
                     attack_points: {multiplier: 0.5},
                     evasion_points: {multiplier: 0.5},
-                    stamina: {multiplier: 0.1},
+                    defense: {multiplier: 0.1},
                 }
             }
         }
@@ -2632,7 +2632,7 @@ locations["Primordial Dragon"] = new Challenge_zone({
         description: "Primordial Dragon", 
         enemy_count: 1, 
         types: [],
-        enemies_list: ["Wall"],
+        enemies_list: ["Primordial Dragon"],
         enemy_group_size: [1,1],
         enemy_stat_variation: 0.2,
         is_unlocked: true, 

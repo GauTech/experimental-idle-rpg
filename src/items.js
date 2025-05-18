@@ -2975,13 +2975,7 @@ item_templates["Chitin Shard"] = new Junk({
 
 //usables:
 (function(){
-item_templates["Discount bread"] = new UsableItem({
-        name: "Discount bread", 
-        description: "Big piece of an old bread, still edible. Budget priced.", 
-        value: 5,
-		gluttony_value: 20,
-        effects: [{effect: "Basic meal", duration: 60}],
-    });
+
 	
 item_templates["Discount healing powder"] = new UsableItem({
         name: "Discount healing powder", 
@@ -2990,6 +2984,32 @@ item_templates["Discount healing powder"] = new UsableItem({
         effects: [{effect: "Weak healing powder", duration: 120}],
     });
 
+
+
+
+    item_templates["Weak healing powder"] = new UsableItem({
+        name: "Weak healing powder", 
+        description: "Not very potent, but can still make body heal noticeably faster for quite a while", 
+        value: 40,
+        effects: [{effect: "Weak healing powder", duration: 120}],
+    });
+
+    item_templates["Oneberry juice"] = new UsableItem({
+        name: "Oneberry juice", 
+        description: "Tastes kinda nice and provides a quick burst of healing", 
+        value: 80,
+		gluttony_value: 30,
+        effects: [{effect: "Weak healing potion", duration: 10}],
+    });
+
+
+item_templates["Discount bread"] = new UsableItem({
+        name: "Discount bread", 
+        description: "Big piece of an old bread, still edible. Budget priced.", 
+        value: 5,
+		gluttony_value: 20,
+        effects: [{effect: "Basic meal", duration: 60}],
+    });
 
 item_templates["Stale bread"] = new UsableItem({
         name: "Stale bread", 
@@ -3014,27 +3034,13 @@ item_templates["Stale bread"] = new UsableItem({
         effects: [{effect: "Basic meal", duration: 60}],
     });
 
-    item_templates["Weak healing powder"] = new UsableItem({
-        name: "Weak healing powder", 
-        description: "Not very potent, but can still make body heal noticeably faster for quite a while", 
-        value: 40,
-        effects: [{effect: "Weak healing powder", duration: 120}],
-    });
-
-    item_templates["Oneberry juice"] = new UsableItem({
-        name: "Oneberry juice", 
-        description: "Tastes kinda nice and provides a quick burst of healing", 
-        value: 80,
-		gluttony_value: 30,
-        effects: [{effect: "Weak healing potion", duration: 10}],
-    });
-
+//meat
     item_templates["Roasted rat meat"] = new UsableItem({
         name: "Roasted rat meat", 
         description: "Smell might be fine now, but it still seems like a bad idea to eat it",
         value: 10,
 		gluttony_value: 150,
-        effects: [{effect: "Cheap meat meal", duration: 30}, {effect: "Slight food poisoning", duration: 30}],
+        effects: [{effect: "Cheap meat meal", duration: 31}, {effect: "Slight food poisoning", duration: 30}],
     });
 
     item_templates["Roasted purified rat meat"] = new UsableItem({
@@ -3042,10 +3048,10 @@ item_templates["Stale bread"] = new UsableItem({
         description: "Smells alright and should be safe to eat, yet you still have some doubts",
         value: 20,
 		gluttony_value: 300,
-        effects: [{effect: "Cheap meat meal", duration: 30}],
+        effects: [{effect: "Cheap meat meal", duration: 31}],
     });
-})();
 
+//fish dish
 
     item_templates["Cooked Minnow"] = new UsableItem({
         name: "Cooked Minnow", 
@@ -3117,7 +3123,7 @@ item_templates["Stale bread"] = new UsableItem({
 		gluttony_value: 1200,
         effects: [{effect: "Superior fish dish", duration: 40}],
     });
-
+})();
 
 //
 (function(){

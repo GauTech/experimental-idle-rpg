@@ -393,7 +393,7 @@ Platinum Slime
             {item_name: "Burning Goo", chance: 1, count: 5},
         ],
 		on_death: {hero_damage: 4,},
-		on_strike: {burn: 100},
+		on_strike: { burn: { duration: 100, chance: 0.4 } },
 	});
 	    enemy_templates["Platinum Slime"] = new Enemy({
         name: "Platinum Slime", 
@@ -1248,7 +1248,7 @@ enemy_templates["Rot Warden"] = new Enemy({
 
     enemy_templates["Death Knight"] = new Enemy({
         name: "Death Knight", 
-        description: "Death Knight",
+        description: "A powerful undead knight. A great champion in life and formidable foe in death.",
 		xp_value: 13125, 
         rank: 7,
         size: "medium",
@@ -1304,12 +1304,13 @@ enemy_templates["Rot Warden"] = new Enemy({
 //rank 8s
     enemy_templates["Artificial Hydra"] = new Enemy({
         name: "Artificial Hydra", 
-        description: "Artificial Hydra",
+        description: "An 8-headed abomindation. ",
 		xp_value: 65625, 
         rank: 8,
         size: "large",
         tags: ["abomination", "beast"],
-        stats: {health: 3520, attack: 968, agility: 380, dexterity: 680, magic: 0, intuition: 120, attack_speed: 2.5, defense: 60}, //stat_total = 2560 (discount atk speed, HP/10)
+		on_strike: {multistrike: 8}
+        stats: {health: 3520, attack: 268, agility: 380, dexterity: 680, magic: 0, intuition: 120, attack_speed: 2.5, defense: 60}, //stat_total = 2560 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Regenerating Flesh", chance: 0.8},
         ],
@@ -1317,12 +1318,12 @@ enemy_templates["Rot Warden"] = new Enemy({
 
     enemy_templates["Zombie Dragon"] = new Enemy({
         name: "Zombie Dragon", 
-        description: "Zombie Dragon",
+        description: "A reanimated dragon. Deprived of its intellect, but powerful nonetheless.",
 		xp_value: 65625, 
         rank: 8,
         size: "large",
         tags: ["dragonoid", "undead"],
-        stats: {health: 2240, attack: 832, agility: 520, dexterity: 680, magic: 40, intuition: 224, attack_speed: 2, defense: 40}, //stat_total = 2560 (discount atk speed, HP/10)
+        stats: {health: 2240, attack: 932, agility: 520, dexterity: 680, magic: 40, intuition: 124, attack_speed: 2, defense: 40}, //stat_total = 2560 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 0.6},
         ],
@@ -1331,7 +1332,7 @@ enemy_templates["Rot Warden"] = new Enemy({
 //special
     enemy_templates["Time Demon"] = new Enemy({
         name: "Time Demon", 
-        description: "Time Demon",
+        description: "A horror from beyond time and space. Its designs are unfathomable.",
 		xp_value: 99999, 
         rank: 8,
         size: "large",
@@ -1388,7 +1389,7 @@ enemy_templates["Rot Warden"] = new Enemy({
 //rank 9
     enemy_templates["Black Dragon"] = new Enemy({
         name: "Black Dragon", 
-        description: "Black Dragon",
+        description: "A lesser dragon with an affinity with darkmess.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
@@ -1400,11 +1401,12 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
 	    enemy_templates["Fire Dragon"] = new Enemy({
         name: "Fire Dragon", 
-        description: "Fire Dragon",
+        description: "A lesser dragon with an affinity with fire.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
         tags: ["dragonoid", "fire"],
+		on_connectedstrike: { burn: { duration: 100, chance: 0.7 },
         stats: {health: 4480, attack: 1704, agility: 1040, dexterity: 1340, magic: 80, intuition: 448, attack_speed: 2.4, defense: 60}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1412,11 +1414,12 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
     enemy_templates["Thunder Dragon"] = new Enemy({
         name: "Thunder Dragon", 
-        description: "Thunder Dragon",
+        description: "A lesser dragon with an affinity with thunder.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
         tags: ["dragonoid"],
+		on_connectedstrike: { stun: { duration: 10, chance: 0.7 }, 
         stats: {health: 4480, attack: 1664, agility: 1040, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 80}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1424,11 +1427,12 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
 	    enemy_templates["Ice Dragon"] = new Enemy({
         name: "Ice Dragon", 
-        description: "Ice Dragon",
+        description: "A lesser dragon with an affinity with ice.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
         tags: ["dragonoid", "ice"],
+		on_connectedstrike: { freeze: { duration: 100, chance: 0.7 }, 
         stats: {health: 4480, attack: 1664, agility: 1040, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 80}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1436,7 +1440,7 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
     enemy_templates["Earth Dragon"] = new Enemy({
         name: "Earth Dragon", 
-        description: "Earth Dragon",
+        description: "A lesser dragon with an affinity with earth.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
@@ -1448,7 +1452,7 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
     enemy_templates["Sea Dragon"] = new Enemy({
         name: "Sea Dragon", 
-        description: "Sea Dragon",
+        description: "A lesser dragon with an affinity with water.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
@@ -1462,7 +1466,7 @@ enemy_templates["Rot Warden"] = new Enemy({
 //rank 9 bosses
     enemy_templates["Bloodstained Emperor"] = new Enemy({
         name: "Bloodstained Emperor", 
-        description: "Bloodstained Emperor",
+        description: "A fallen sovereign, presiding over an empire of dirt. Death would be a mercy.",
 		xp_value: 60000, 
         rank: 9,
         size: "large",
@@ -1473,11 +1477,13 @@ enemy_templates["Rot Warden"] = new Enemy({
         ],
 	 });
 
+
+//rank 10
     enemy_templates["Eclipse Dragon"] = new Enemy({
         name: "Eclipse Dragon", 
-        description: "Eclipse Dragon",
+        description: "An ancient and terrible dragon. Light itself shies away from it.",
 		xp_value: 999999, 
-        rank: 9,
+        rank: 10,
         size: "large",
         tags: ["dragonoid", "true dragon"],
         stats: {health: 44800, attack: 1664, agility: 1030, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 90}, //stat_total = 5120 (discount atk speed, HP/10)
@@ -1488,11 +1494,12 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
 	    enemy_templates["Hellfire Dragon"] = new Enemy({
         name: "Hellfire Dragon", 
-        description: "Hellfire Dragon",
+        description: "An ancient and terrible dragon. Its breath cam melt even the toughest steel."
 		xp_value: 999999, 
-        rank: 9,
+        rank: 10,
         size: "large",
         tags: ["dragonoid", "fire", "true dragon"],
+		on_strike: {burn: 400},
         stats: {health: 44800, attack: 1704, agility: 1040, dexterity: 1340, magic: 80, intuition: 448, attack_speed: 2.4, defense: 60}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1501,11 +1508,12 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
     enemy_templates["Calamity Dragon"] = new Enemy({
         name: "Calamity Dragon", 
-        description: "Calamity Dragon",
+        description: "An ancient and terrible dragon. Wrecks devastation whereever it treads.",
 		xp_value: 999999, 
-        rank: 9,
+        rank: 10,
         size: "large",
         tags: ["dragonoid", "true dragon"],
+		
         stats: {health: 44800, attack: 1664, agility: 1040, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 80}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1514,11 +1522,12 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
 	    enemy_templates["Nightmare Dragon"] = new Enemy({
         name: "Nightmare Dragon", 
-        description: "Nightmare Dragon",
+        description: "An ancient and terrible dragon. Its breath freezes to the bone.",
 		xp_value: 999999, 
-        rank: 9,
+        rank: 10,
         size: "large",
         tags: ["dragonoid", "ice", "true dragon"],
+		on_strike: {freeze: 400},
         stats: {health: 44800, attack: 1664, agility: 1040, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 80}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1527,9 +1536,9 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
     enemy_templates["Primordial Dragon"] = new Enemy({
         name: "Primordial Dragon", 
-        description: "Primordial Dragon",
-		xp_value: 328125, 
-        rank: 9,
+        description: "An ancient and terrible dragon. It lived for centuries, and all expected it to live for centuries more.",
+		xp_value: 999999, 
+        rank: 10,
         size: "large",
         tags: ["dragonoid","true dragon"],
         stats: {health: 64800, attack: 1364, agility: 1080, dexterity: 1380, magic: 80, intuition: 448, attack_speed: 2.4, defense: 120}, //stat_total = 5120 (discount atk speed, HP/10)
@@ -1572,7 +1581,7 @@ enemy_templates["Rot Warden"] = new Enemy({
 
     enemy_templates["Titan Turtle"] = new Enemy({
         name: "Titan Turtle", 
-        description: "Titan Turtle", 
+        description: "A great plodding beast. It would be dangerous if it had any inclination towards violence.", 
         xp_value: 1000,
         rank: 5,
         tags: ["aquatic", "beast"],
