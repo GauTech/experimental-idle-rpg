@@ -1,9 +1,8 @@
 To do:
 
 Known issues:
-Console bug if you save+reload whilst reading (but not re-reading) a book
  Stance list also can't handle scrolling. (Could trim a stance instead).
-Reading book then moving to combat zone doesn't remove the book reading display.
+Reading book inside combat zone doesn't read the book but still shows reading display.
 Fix multistrike damage (can look what YAIR dev repo does). 
 
 Design issues:
