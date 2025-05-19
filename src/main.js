@@ -3784,7 +3784,7 @@ function create_save() {
             }
         });
 
-        save_data["is_reading"] = is_reading;
+        save_data["is_reading"] = JSON.stringify({ id: is_reading });
 
         save_data["is_sleeping"] = is_sleeping;
 
