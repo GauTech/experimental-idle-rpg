@@ -1565,7 +1565,7 @@ locations["Sewer Depths"].connected_locations.push({location: locations["Deep Se
 	
 	locations["Sanctuary"] = new Location({ 
         connected_locations: [{location: locations["Backstreets"]}],
-        description: "A modest settlement occupying the city ruins. It's even gtowing its own crops.",
+        description: "A modest settlement occupying the city ruins. It's even growing its own crops.",
        	dialogues: ["Mad Lumberjack","Smith","Peddler","Fallen","Scholar1","Fireseeker1","Occultist"],
         traders: ["peddler","smith trader"],
         name: "Sanctuary",

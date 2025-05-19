@@ -3998,9 +3998,9 @@ global_battle_state = save_data.global_battle_state || {};
                 console.warn(`Book ${book} couldn't be found and was skipped!`);
             }
 
-            if(save_data.books[book].accumulated_time > 0) {
-                if(save_data.books[book].is_finished) {
-                    item_templates[book].setAsFinished();
+           if (save_data.books[book].accumulated_time > 0) {
+		if (save_data.books[book].is_finished) {
+					item_templates[book].setAsFinished(true); // Pass true to prevent unlocks
                     total_book_xp += book_stats[book].required_time * book_stats[book].literacy_xp_rate;
                 } else {
                     item_templates[book].addProgress(save_data.books[book].accumulated_time);

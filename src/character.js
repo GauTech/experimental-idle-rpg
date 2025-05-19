@@ -350,44 +350,42 @@ character.stats.add_skill_milestone_bonus = function ({stats = {}, xp_multiplier
  * called when a new milestone is reached
  * @param {{flats, multipliers}} bonuses 
  */
-character.stats.add_book_bonus = function ({multipliers = {}, xp_multipliers = {}, ...unlocks}) {
+character.stats.add_book_bonus = function ({multipliers = {}, xp_multipliers = {}, ...unlocks}, apply_unlocks = true) {
     Object.keys(character.base_stats).forEach(stat => {
-        if(multipliers[stat]) {
+        if (multipliers[stat]) {
             character.stats.multiplier.books[stat] = (character.stats.multiplier.books[stat] || 1) * multipliers[stat];
         }
     });
 
-    if(xp_multipliers?.hero) {
+    if (xp_multipliers?.hero) {
         character.xp_bonuses.multiplier.skills.hero = (character.xp_bonuses.multiplier.skills.hero || 1) * xp_multipliers.hero;
     }
-    if(xp_multipliers?.all) {
+    if (xp_multipliers?.all) {
         character.xp_bonuses.multiplier.skills.all = (character.xp_bonuses.multiplier.skills.all || 1) * xp_multipliers.all;
     }
-    if(xp_multipliers?.all_skill) {
+    if (xp_multipliers?.all_skill) {
         character.xp_bonuses.multiplier.skills.all_skill = (character.xp_bonuses.multiplier.skills.all_skill || 1) * xp_multipliers.all_skill;
     }
 
     Object.keys(skills).forEach(skill => {
-        if(xp_multipliers[skill]) {
+        if (xp_multipliers[skill]) {
             character.xp_bonuses.multiplier.skills[skill] = (character.xp_bonuses.multiplier.skills[skill] || 1) * xp_multipliers[skill];
         }
     });
 
-    // Handle unlocks
-    for (const key in unlocks) {
-        if (key.startsWith("unlock_")) {
-            const type = key.slice(7); // e.g. "magic", "recipe". cuts off first 7 characters (i.e.unlock_)
-            const value = unlocks[key];
-			if (type == "stance"){
-			unlock_combat_stance(value);
-			}
-			else if (type == "magic"){
-			unlock_magic(value);
-			}
-			/*else if (type == skill){
-			unlock_skill(skill);
-			}*/ // this function doesn't exist yet. Should also make an unlock_recipe function
-        
+    // Only apply unlocks if allowed
+    if (apply_unlocks) {
+        for (const key in unlocks) {
+            if (key.startsWith("unlock_")) {
+                const type = key.slice(7); // e.g. "magic", "recipe"
+                const value = unlocks[key];
+                if (type == "stance") {
+                    unlock_combat_stance(value);
+                } else if (type == "magic") {
+                    unlock_magic(value);
+                }
+                // etc.
+            }
         }
     }
 };

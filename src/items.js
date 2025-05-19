@@ -813,6 +813,7 @@ class BookData{
         finish_reward = {},
         rewards = {},
 		repeat_rewards = {},
+		unlocks = {},
     }) {
         this.required_time = required_time;
         this.accumulated_time = 0;
@@ -822,6 +823,7 @@ class BookData{
         this.is_finished = false;
         this.rewards = rewards; // unlocks should be in the format 		unlock_stance: "protect", unlock_magic: "Ice Beam", etc
 		this.repeat_rewards = repeat_rewards; // skill_xp rewards for repeating the book milesone
+		this.unlocks = unlocks;
     }
 }
 
@@ -859,18 +861,20 @@ class Book extends Item {
 	
 
 
-    addProgress(time = 1) {
-        book_stats[this.name].accumulated_time += time;
-        if(book_stats[this.name].accumulated_time >= book_stats[this.name].required_time) {
-            this.setAsFinished();
-        }
-    }
+		addProgress(time = 1) {
+			book_stats[this.name].accumulated_time += time;
+			if (book_stats[this.name].accumulated_time >= book_stats[this.name].required_time) {
+				this.setAsFinished(); // no argument = fromSave is false
+			}
+		}
 
-    setAsFinished() {
-        book_stats[this.name].is_finished = true;
-        book_stats[this.name].accumulated_time = book_stats[this.name].required_time;
-        character.stats.add_book_bonus(book_stats[this.name].rewards);
-    }
+				setAsFinished(fromSave = false) {
+			book_stats[this.name].is_finished = true;
+			book_stats[this.name].accumulated_time = book_stats[this.name].required_time;
+
+			// Pass `apply_unlocks = !fromSave`
+			character.stats.add_book_bonus(book_stats[this.name].rewards, !fromSave);
+}
 }
 
 function getAdjustedReadingTime(bookTitle) {
@@ -1158,13 +1162,14 @@ book_stats["TRUE ULTIMATE POWER"] = new BookData({
         xp_multipliers: {
             "Mana Expansion": 1.1,
         },
-		unlock_magic: "Empower"
+		unlock_magic: "Empower",
     },
 	repeat_rewards: {
     xp: {
         "Mana Expansion": 1000,
     }
-},
+	},
+	unlocks: {unlock_magic: "Empower"},
 });
 
 book_stats["The Spellblade Chronicles vol. 1"] = new BookData({
@@ -1174,13 +1179,14 @@ book_stats["The Spellblade Chronicles vol. 1"] = new BookData({
         xp_multipliers: {
             "Spellblade Stance Mastery": 1.1,
         },
-		unlock_stance: "spellblade",
+		unlock_stance: "spellblade"
     },
 	repeat_rewards: {
     xp: {
         "Spellblade Stance Mastery": 1000,
     }
 },
+	unlocks: {unlock_stance: "spellblade"},
 });
 
 
