@@ -239,7 +239,16 @@ get_loot() {
         stats: {health: 1, attack: 1, agility: 1, dexterity: 1, intuition: 1, magic: 0, attack_speed: 1, defense: 1}, 
         loot_list: [
             //{item_name: "Bones", chance: 0.60},
-			{item_name: "Low quality iron ore", chance: 1}, {item_name: "Low quality iron ingot", chance: 1}, {item_name: "Piece of wood", chance: 1}, {item_name: "Piece of rough wood", chance: 1}, {item_name: "Iron ingot", chance: 1},
+			{item_name: "Low quality iron ore", chance: 1}, 
+			{item_name: "Low quality iron ingot", chance: 1}, 
+			{item_name: "Piece of wood", chance: 1}, 
+			{item_name: "Piece of rough wood", chance: 1, count: 5}, 
+			{item_name: "Wolf pelt", chance: 1, count: 5},
+			{item_name: "Wool", chance: 1, count: 5},
+			{item_name: "Boar hide", chance: 1, count: 5},
+			{item_name: "Piece of mahogany wood", chance: 1, count: 5},
+			{item_name: "Blacksteel ore", chance: 1, count: 5},
+			{item_name: "Mithril ore", chance: 1, count: 5},
         ],
     });
 	

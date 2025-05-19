@@ -1920,16 +1920,17 @@ item_templates["Chitin Shard"] = new Junk({
 
 }());
 
+
 //weapon components:
 (function(){
     item_templates["Cheap short iron blade"] = new WeaponComponent({
         name: "Cheap short iron blade", description: "Crude blade made of iron. Perfect length for a dagger, but could be also used for a spear",
         component_type: "short blade",
-        value: 90,
+        value: 70,
         component_tier: 1,
         name_prefix: "Cheap iron",
         attack_value: 5,
-        stats: {
+        component_stats: {
             crit_rate: {
                 flat: 0.06,
             },
@@ -1937,37 +1938,76 @@ item_templates["Chitin Shard"] = new Junk({
                 multiplier: 1.20,
             },
             agility: {
-                flat: 1,
+                multiplier: 1.05,
             }
         }
     });
     item_templates["Short iron blade"] = new WeaponComponent({
         name: "Short iron blade", description: "A good iron blade. Perfect length for a dagger, but could be also used for a spear",
         component_type: "short blade",
-        value: 200,
+        value: 160,
         component_tier: 2,
         name_prefix: "Iron",
         attack_value: 8,
-        stats: {
+        component_stats: {
             crit_rate: {
-                flat: 0.1,
+                flat: 0.08,
             },
             attack_speed: {
                 multiplier: 1.30,
             },
             agility: {
-                flat: 2,
+                multiplier: 1.13,
             }
         }
     });
+    item_templates["Short blacksteel blade"] = new WeaponComponent({
+        name: "Short blacksteel blade", description: "A good blacksteel blade. Perfect length for a dagger, but could be also used for a spear",
+        component_type: "short blade",
+        value: 240,
+        component_tier: 3,
+        name_prefix: "Blacksteel",
+        attack_value: 11,
+        component_stats: {
+            crit_rate: {
+                flat: 0.1,
+            },
+            attack_speed: {
+                multiplier: 1.35,
+            },
+            agility: {
+                multiplier: 1.2,
+            }
+        }
+    });
+    item_templates["Short mithril blade"] = new WeaponComponent({
+        name: "Short mithril blade", description: "A good mithril blade. Perfect length for a dagger, but could be also used for a spear",
+        component_type: "short blade",
+        value: 360,
+        component_tier: 4,
+        name_prefix: "Mithril",
+        attack_value: 14,
+        component_stats: {
+            crit_rate: {
+                flat: 0.12,
+            },
+            attack_speed: {
+                multiplier: 1.40,
+            },
+            agility: {
+                multiplier: 1.28,
+            }
+        }
+    });
+	
     item_templates["Cheap long iron blade"] = new WeaponComponent({
         name: "Cheap long iron blade", description: "Crude blade made of iron, with a perfect length for a sword",
         component_type: "long blade",
-        value: 120,
+        value: 100,
         name_prefix: "Cheap iron",
         component_tier: 1,
         attack_value: 8,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 1.10,
             },
@@ -1979,11 +2019,11 @@ item_templates["Chitin Shard"] = new Junk({
     item_templates["Long iron blade"] = new WeaponComponent({
         name: "Long iron blade", description: "Good blade made of iron, with a perfect length for a sword",
         component_type: "long blade",
-        value: 260,
+        value: 210,
         name_prefix: "Iron",
         component_tier: 2,
         attack_value: 13,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 1.15,
             },
@@ -1992,40 +2032,94 @@ item_templates["Chitin Shard"] = new Junk({
             },
         }
     });
+    item_templates["Long blacksteel blade"] = new WeaponComponent({
+        name: "Long blacksteel blade", description: "Good blade made of blacksteel, with a perfect length for a sword",
+        component_type: "long blade",
+        value: 310,
+        name_prefix: "Blacksteel",
+        component_tier: 3,
+        attack_value: 18,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.2,
+            },
+            crit_rate: {
+                flat: 0.05,
+            },
+        }
+    });
+    item_templates["Long mithril blade"] = new WeaponComponent({
+        name: "Long mithril blade", description: "Good blade made of mithril, with a perfect length for a sword",
+        component_type: "long blade",
+        value: 450,
+        name_prefix: "Mithril",
+        component_tier: 4,
+        attack_value: 23,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.25,
+            },
+            crit_rate: {
+                flat: 0.06,
+            },
+        }
+    });	
     item_templates["Cheap iron axe head"] = new WeaponComponent({
         name: "Cheap iron axe head", description: "A heavy axe head made of low quality iron",
         component_type: "axe head",
-        value: 120,
+        value: 100,
         name_prefix: "Cheap iron",
         component_tier: 1,
         attack_value: 10,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.9,
             }
         }
     });
     item_templates["Iron axe head"] = new WeaponComponent({
-        name: "Iron axe head", description: "A heavy axe head made of good iron",
+        name: "Iron axe head", description: "A heavy axe head made of blacksteel",
         component_type: "axe head",
-        value: 260,
+        value: 210,
         name_prefix: "Iron",
         component_tier: 2,
         attack_value: 16,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.95,
             }
         }
     });
+    item_templates["Blacksteel axe head"] = new WeaponComponent({
+        name: "Blacksteel axe head", description: "A heavy axe head made of blacksteel",
+        component_type: "axe head",
+        value: 310,
+        name_prefix: "Blacksteel",
+        component_tier: 3,
+        attack_value: 22,
+    });
+   item_templates["Mithril axe head"] = new WeaponComponent({
+        name: "Mithril axe head", description: "A heavy axe head made of mithril",
+        component_type: "axe head",
+        value: 450,
+        name_prefix: "Mithril",
+        component_tier: 4,
+        attack_value: 28,
+		    component_stats: {
+            attack_speed: {
+                multiplier: 1.05,
+            }
+        }
+    });	
+	
     item_templates["Cheap iron hammer head"] = new WeaponComponent({
         name: "Cheap iron hammer head", description: "A crude ball made of low quality iron, with a small hole for the handle",
         component_type: "hammer head",
-        value: 120,
+        value: 100,
         name_prefix: "Cheap iron",
         component_tier: 1,
         attack_value: 12,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.8,
             }
@@ -2035,13 +2129,39 @@ item_templates["Chitin Shard"] = new Junk({
     item_templates["Iron hammer head"] = new WeaponComponent({
         name: "Iron hammer head", description: "A crude ball made of iron, with a small hole for the handle",
         component_type: "hammer head",
-        value: 260,
+        value: 210,
         name_prefix: "Iron",
         component_tier: 2,
         attack_value: 19,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.85,
+            }
+        }
+    });
+    item_templates["Blacksteel hammer head"] = new WeaponComponent({
+        name: "Blacksteel hammer head", description: "A blocky piece of blacksteel, with a small hole for the handle",
+        component_type: "hammer head",
+        value: 300,
+        name_prefix: "Blacksteel",
+        component_tier: 3,
+        attack_value: 26,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.9,
+            }
+        }
+    });
+    item_templates["Mithril hammer head"] = new WeaponComponent({
+        name: "Mithril hammer head", description: "A blocky piece of mithril, with a small hole for the handle",
+        component_type: "hammer head",
+        value: 450,
+        name_prefix: "Mithril",
+        component_tier: 4,
+        attack_value: 33,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.95,
             }
         }
     });
@@ -2049,28 +2169,52 @@ item_templates["Chitin Shard"] = new Junk({
     item_templates["Simple short wooden hilt"] = new WeaponComponent({
         name: "Simple short wooden hilt", description: "A short handle for a sword or maybe a dagger",
         component_type: "short handle",
-        value: 10,
+        value: 8,
         component_tier: 1,
     });
 
     item_templates["Short wooden hilt"] = new WeaponComponent({
         name: "Short wooden hilt", description: "A short handle for a sword or maybe a dagger",
         component_type: "short handle",
-        value: 40,
+        value: 32,
         component_tier: 2,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 1.05,
             }
         }
     });
 
+    item_templates["Short ash wood hilt"] = new WeaponComponent({
+        name: "Short ash wood hilt", description: "A short handle for a sword or maybe a dagger",
+        component_type: "short handle",
+        value: 48,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.1,
+            }
+        }
+    });
+    item_templates["Short mahogany wood hilt"] = new WeaponComponent({
+        name: "Short mahogany wood hilt", description: "A short handle for a sword or maybe a dagger",
+        component_type: "short handle",
+        value: 72,
+        component_tier: 4,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.15,
+            }
+        }
+    });	
+	
+
     item_templates["Simple medium wooden handle"] = new WeaponComponent({
         name: "Simple medium wooden handle", description: "A medium handle for an axe or a hammer",
         component_type: "medium handle",
-        value: 20,
+        value: 16,
         component_tier: 1,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.95,
             }
@@ -2080,17 +2224,40 @@ item_templates["Chitin Shard"] = new Junk({
     item_templates["Medium wooden handle"] = new WeaponComponent({
         name: "Medium wooden handle", description: "A medium handle for an axe or a hammer",
         component_type: "medium handle",
-        value: 80,
+        value: 64,
         component_tier: 2,
     });
+
+    item_templates["Medium ash wood handle"] = new WeaponComponent({
+        name: "Medium ash wood handle", description: "A medium handle for an axe or a hammer",
+        component_type: "medium handle",
+        value: 96,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.05,
+            }
+        }
+    });
+    item_templates["Medium mahogany wood handle"] = new WeaponComponent({
+        name: "Medium mahogany wood handle", description: "A medium handle for an axe or a hammer",
+        component_type: "medium handle",
+        value: 144,
+        component_tier: 4,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.1,
+            }
+        }
+    });	
+	
 
     item_templates["Simple long wooden shaft"] = new WeaponComponent({
         name: "Simple long wooden shaft", description: "A long shaft for a spear, somewhat uneven",
         component_type: "long handle",
-        value: 30,
+        value: 24,
         component_tier: 1,
-        attack_multiplier: 1.5,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.9,
             },
@@ -2101,22 +2268,42 @@ item_templates["Chitin Shard"] = new Junk({
         name: "Long wooden shaft", 
         description: "A long shaft for a spear, somewhat uneven",
         component_type: "long handle",
-        value: 120,
+        value: 100,
         component_tier: 2,
-        attack_multiplier: 1.5,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.95,
             },
         }
     });
+    item_templates["Long ash wood shaft"] = new WeaponComponent({
+        name: "Long ash wood shaft", 
+        description: "A long shaft for a spear.",
+        component_type: "long handle",
+        value: 150,
+        component_tier: 3,
+		
+    });
+	    item_templates["Long mahogany wood shaft"] = new WeaponComponent({
+        name: "Long mahogany wood shaft", 
+        description: "A long shaft for a spear.",
+        component_type: "long handle",
+        value: 225,
+        component_tier: 4,
+		   component_stats: {
+            attack_speed: {
+                multiplier: 1.05,
+            },
+        }
+    });
+	
 
     item_templates["Cheap short iron hilt"] = new WeaponComponent({
         name: "Cheap short iron hilt", description: "A short handle for a sword or maybe a dagger, heavy",
         component_type: "short handle",
-        value: 70,
+        value: 56,
         component_tier: 1,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.9,
             },
@@ -2129,11 +2316,34 @@ item_templates["Chitin Shard"] = new Junk({
     item_templates["Short iron hilt"] = new WeaponComponent({
         name: "Short iron hilt", description: "A short handle for a sword or maybe a dagger, heavy",
         component_type: "short handle",
-        value: 100,
+        value: 80,
         component_tier: 2,
-        stats: {
+        component_stats: {
             attack_power: {
                 multiplier: 1.05,
+            }
+        }
+    });
+
+    item_templates["Short blacksteel hilt"] = new WeaponComponent({
+        name: "Short blacksteel hilt", description: "A short handle for a sword or maybe a dagger, heavy",
+        component_type: "short handle",
+        value: 120,
+        component_tier: 3,
+        component_stats: {
+            attack_power: {
+                multiplier: 1.1,
+            }
+        }
+    });
+    item_templates["Short mithril hilt"] = new WeaponComponent({
+        name: "Short mithril hilt", description: "A short handle for a sword or maybe a dagger, heavy",
+        component_type: "short handle",
+        value: 180,
+        component_tier: 4,
+        component_stats: {
+            attack_power: {
+                multiplier: 1.15,
             }
         }
     });
@@ -2141,9 +2351,9 @@ item_templates["Chitin Shard"] = new Junk({
     item_templates["Cheap medium iron handle"] = new WeaponComponent({
         name: "Cheap medium iron handle", description: "A medium handle for an axe or a hammer, very heavy",
         component_type: "medium handle",
-        value: 80,
+        value: 64,
         component_tier: 1,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.7,
             },
@@ -2156,9 +2366,9 @@ item_templates["Chitin Shard"] = new Junk({
     item_templates["Medium iron handle"] = new WeaponComponent({
         name: "Medium iron handle", description: "A medium handle for an axe or a hammer, very heavy",
         component_type: "medium handle",
-        value: 120,
+        value: 100,
         component_tier: 2,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.8,
             },
@@ -2168,12 +2378,41 @@ item_templates["Chitin Shard"] = new Junk({
         }
     });
 
+    item_templates["Medium blacksteel handle"] = new WeaponComponent({
+        name: "Medium blacksteel handle", description: "A medium handle for an axe or a hammer, very heavy",
+        component_type: "medium handle",
+        value: 150,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.8,
+            },
+            attack_power: {
+                multiplier: 1.27,
+            }
+        }
+    });
+    item_templates["Medium mithril handle"] = new WeaponComponent({
+        name: "Medium mithril handle", description: "A medium handle for an axe or a hammer, very heavy",
+        component_type: "medium handle",
+        value: 225,
+        component_tier: 4,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.9,
+            },
+            attack_power: {
+                multiplier: 1.27,
+            }
+        }
+    });
+
     item_templates["Cheap long iron shaft"] = new WeaponComponent({
         name: "Cheap long iron shaft", description: "A long shaft for a spear, extremely heavy",
         component_type: "long handle",
-        value: 110,
+        value: 92,
         component_tier: 1,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.5,
             },
@@ -2187,14 +2426,92 @@ item_templates["Chitin Shard"] = new Junk({
         name: "Long iron shaft", 
         description: "A long shaft for a spear,  extremely heavy",
         component_type: "long handle",
-        value: 160,
+        value: 128,
         component_tier: 2,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.6,
             },
             attack_power: {
                 multiplier: 1.6,
+            }
+        }
+    });
+
+    item_templates["Long blacksteel shaft"] = new WeaponComponent({
+        name: "Long blacksteel shaft", 
+        description: "A long shaft for a spear, extremely heavy",
+        component_type: "long handle",
+        value: 192,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.6,
+            },
+            attack_power: {
+                multiplier: 1.75,
+            }
+        }
+    });
+	
+    item_templates["Long mithril shaft"] = new WeaponComponent({
+        name: "Long mithril shaft", 
+        description: "A long shaft for a spear, extremely heavy",
+        component_type: "long handle",
+        value: 288,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.6,
+            },
+            attack_power: {
+                multiplier: 1.9,
+            }
+        }
+    });
+
+    item_templates["Short weak bone hilt"] = new WeaponComponent({
+        name: "Short weak bone hilt", description: "A short handle for a sword or maybe a dagger, made of a weak monster's bone",
+        component_type: "short handle",
+        value: 120,
+        component_tier: 3,
+        component_stats: {
+            attack_power: {
+                multiplier: 1.05,
+            },
+            attack_speed: {
+                multiplier: 1.05,
+            }
+        },
+    });
+
+    item_templates["Medium weak bone handle"] = new WeaponComponent({
+        name: "Medium weak bone handle", description: "A medium handle for an axe or a hammer, made of a weak monster's bone",
+        component_type: "medium handle",
+        value: 150,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.95,
+            },
+            attack_power: {
+                multiplier: 1.1,
+            },
+        }
+    });
+
+    item_templates["Long weak bone shaft"] = new WeaponComponent({
+        name: "Long weak bone shaft", 
+        description: "A long shaft for a spear, made of weak monster's bone",
+        component_type: "long handle",
+        value: 192,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.8,
+            },
+            attack_power: {
+                multiplier: 1.5,
             }
         }
     });
@@ -2215,6 +2532,18 @@ item_templates["Chitin Shard"] = new Junk({
             handle: "Simple long wooden shaft"
         }
     });
+    item_templates["Blacksteel spear"] = new Weapon({
+        components: {
+            head: "Short blacksteel blade",
+            handle: "Long wooden shaft"
+        }
+    });
+    item_templates["Mithril spear"] = new Weapon({
+        components: {
+            head: "Short mithril blade",
+            handle: "Long wooden shaft"
+        }
+    });
 
     item_templates["Cheap iron dagger"] = new Weapon({
         components: {
@@ -2226,6 +2555,18 @@ item_templates["Chitin Shard"] = new Junk({
         components: {
             head: "Short iron blade",
             handle: "Simple short wooden hilt",
+        }
+    });
+    item_templates["Blacksteel dagger"] = new Weapon({
+        components: {
+            head: "Short blacksteel blade",
+            handle: "Short wooden hilt",
+        }
+    });
+    item_templates["Mithril dagger"] = new Weapon({
+        components: {
+            head: "Short mithril blade",
+            handle: "Short wooden hilt",
         }
     });
 
@@ -2241,6 +2582,18 @@ item_templates["Chitin Shard"] = new Junk({
             handle: "Simple short wooden hilt",
         }
     });
+    item_templates["Blacksteel sword"] = new Weapon({
+        components: {
+            head: "Long blacksteel blade",
+            handle: "Short wooden hilt",
+        }
+    });
+    item_templates["Mithril sword"] = new Weapon({
+        components: {
+            head: "Long mithril blade",
+            handle: "Short wooden hilt",
+        }
+    });
 
     item_templates["Cheap iron axe"] = new Weapon({
         components: {
@@ -2252,6 +2605,18 @@ item_templates["Chitin Shard"] = new Junk({
         components: {
             head: "Iron axe head",
             handle: "Simple medium wooden handle",
+        }
+    });
+    item_templates["Blacksteel axe"] = new Weapon({
+        components: {
+            head: "Blacksteel axe head",
+            handle: "Medium wooden handle",
+        }
+    });
+    item_templates["Mithril axe"] = new Weapon({
+        components: {
+            head: "Mithril axe head",
+            handle: "Medium wooden handle",
         }
     });
 
@@ -2267,6 +2632,19 @@ item_templates["Chitin Shard"] = new Junk({
             handle: "Simple medium wooden handle",
         }
     });
+    item_templates["Blacksteel battle hammer"] = new Weapon({
+        components: {
+            head: "Blacksteel hammer head",
+            handle: "Medium wooden handle",
+        }
+    });
+    item_templates["Mithril battle hammer"] = new Weapon({
+        components: {
+            head: "Mithril hammer head",
+            handle: "Medium wooden handle",
+        }
+    });	
+
 })();
 
 //armor components:

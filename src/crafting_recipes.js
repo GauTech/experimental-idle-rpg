@@ -292,116 +292,145 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         //maybe scale with materials needed?
         
         if(selected_recipe.recipe_level[1] < skill_level) {
-            exp_value = Math.round(Math.max(1,exp_value * Math.max(0,Math.min(5,(selected_recipe.recipe_level[1]+6-skill_level))/5)));
+            exp_value = (Math.max(1,exp_value * Math.max(0,Math.min(5,(selected_recipe.recipe_level[1]+6-skill_level))/5)));
         }
     } else if (subcategory === "components" || selected_recipe.recipe_type === "component") {
-        const result_level = 8*Math.max(1.2**result_tier,1.5*result_tier);
+        const result_level = 8*result_tier
 
-        exp_value = Math.max(exp_value,result_tier * 4 * material_count);
+        exp_value = Math.max(exp_value,result_tier * 4 * material_count, 1.3**(result_tier * 4 * material_count));
         exp_value = Math.round(Math.max(1,exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier));
     } else {
-        const result_level = 8*Math.max((1.2**Math.max(selected_components[0].component_tier,selected_components[1].component_tier)),(1.5*Math.max(selected_components[0].component_tier,selected_components[1].component_tier)));
-        exp_value = Math.max(exp_value,(selected_components[0].component_tier+selected_components[1].component_tier) * 4);
+        const result_level =  8*Math.max(selected_components[0].component_tier,selected_components[1].component_tier);
+        exp_value = Math.max(exp_value,(selected_components[0].component_tier+selected_components[1].component_tier) * 4,1.2**(selected_components[0].component_tier+selected_components[1].component_tier) * 4);
         exp_value = Math.round(Math.max(1,exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier));
     }
 
-    return exp_value;
+    return Math.round(exp_value);
 }
 
 //weapon components
 (()=>{
-    forging_recipes.components["Short blade"] = new ComponentRecipe({
-        name: "Short blade",
-        materials: [
-            {material_id: "Low quality iron ingot", count: 2, result_id: "Cheap short iron blade"}, 
-            {material_id: "Iron ingot", count: 2, result_id: "Short iron blade"},
-        ],
-        item_type: "Component",
-        recipe_skill: "Forging"
-    });
-    forging_recipes.components["Long blade"] = new ComponentRecipe({
-        name: "Long blade",
-        materials: [
-            {material_id: "Low quality iron ingot", count: 3, result_id: "Cheap long iron blade"}, 
-            {material_id: "Iron ingot", count: 3, result_id: "Long iron blade"},
-        ],
-        item_type: "Component",
-        recipe_skill: "Forging",
-    });
-    forging_recipes.components["Axe head"] = new ComponentRecipe({
-        name: "Axe head",
-        materials: [
-            {material_id: "Low quality iron ingot", count: 4, result_id: "Cheap iron axe head"}, 
-            {material_id: "Iron ingot", count: 4, result_id: "Iron axe head"},
-        ],
-        item_type: "Component",
-        recipe_skill: "Forging"
-    });
-    forging_recipes.components["Hammer head"] = new ComponentRecipe({
-        name: "Hammer head",
-        materials: [
-            {material_id: "Low quality iron ingot", count: 4, result_id: "Cheap iron hammer head"}, 
-            {material_id: "Iron ingot", count: 4, result_id: "Iron hammer head"},
-        ],
-        item_type: "Component",
-        recipe_skill: "Forging",
-    });
+forging_recipes.components["Short blade"] = new ComponentRecipe({
+    name: "Short blade",
+    materials: [
+        {material_id: "Low quality iron ingot", count: 2, result_id: "Cheap short iron blade"}, 
+        {material_id: "Iron ingot", count: 2, result_id: "Short iron blade"},
+        {material_id: "Blacksteel ingot", count: 2, result_id: "Short blacksteel blade"},
+        {material_id: "Mithril ingot", count: 2, result_id: "Short mithril blade"}
+    ],
+    item_type: "Component",
+    recipe_skill: "Forging"
+});
 
-    forging_recipes.components["Short hilt"] = new ComponentRecipe({
-        name: "Short hilt",
-        materials: [
-            {material_id: "Low quality iron ingot", count: 1, result_id: "Cheap short iron hilt"},
-            {material_id: "Iron ingot", count: 1, result_id: "Short iron hilt"},
-        ],
-        item_type: "Component",
-        recipe_skill: "Forging",
-    });
-    forging_recipes.components["Medium handle"] = new ComponentRecipe({
-        name: "Medium handle",
-        materials: [
-            {material_id: "Low quality iron ingot", count: 2, result_id: "Cheap medium iron handle"},
-            {material_id: "Iron ingot", count: 2, result_id: "Medium iron handle"},
-        ],
-        item_type: "Component",
-        recipe_skill: "Forging",
-    });
-    forging_recipes.components["Long shaft"] = new ComponentRecipe({
-        name: "Long shaft",
-        materials: [
-            {material_id: "Low quality iron ingot", count: 4, result_id: "Cheap long iron shaft"},
-            {material_id: "Iron ingot", count: 4, result_id: "Long iron shaft"},
-        ],
-        item_type: "Component",
-        recipe_skill: "Forging",
-    });
+forging_recipes.components["Long blade"] = new ComponentRecipe({
+    name: "Long blade",
+    materials: [
+        {material_id: "Low quality iron ingot", count: 3, result_id: "Cheap long iron blade"}, 
+        {material_id: "Iron ingot", count: 3, result_id: "Long iron blade"},
+        {material_id: "Blacksteel ingot", count: 3, result_id: "Long blacksteel blade"},
+        {material_id: "Mithril ingot", count: 3, result_id: "Long mithril blade"}
+    ],
+    item_type: "Component",
+    recipe_skill: "Forging",
+});
 
-    crafting_recipes.components["Short hilt"] = new ComponentRecipe({
-        name: "Short hilt",
-        materials: [
-            {material_id: "Processed rough wood", count: 1, result_id: "Simple short wooden hilt"},
-            {material_id: "Processed wood", count: 1, result_id: "Short wooden hilt"},
-        ],
-        item_type: "Component",
-        recipe_skill: "Crafting",
-    });
-    crafting_recipes.components["Medium handle"] = new ComponentRecipe({
-        name: "Medium handle",
-        materials: [
-            {material_id: "Processed rough wood", count: 2, result_id: "Simple medium wooden handle"},
-            {material_id: "Processed wood", count: 2, result_id: "Medium wooden handle"},
-        ],
-        item_type: "Component",
-        recipe_skill: "Crafting",
-    });
-    crafting_recipes.components["Long shaft"] = new ComponentRecipe({
-        name: "Long shaft",
-        materials: [
-            {material_id: "Processed rough wood", count: 4, result_id: "Simple long wooden shaft"},
-            {material_id: "Processed wood", count: 4, result_id: "Long wooden shaft"},
-        ],
-        item_type: "Component",
-        recipe_skill: "Crafting",
-    });
+forging_recipes.components["Axe head"] = new ComponentRecipe({
+    name: "Axe head",
+    materials: [
+        {material_id: "Low quality iron ingot", count: 4, result_id: "Cheap iron axe head"}, 
+        {material_id: "Iron ingot", count: 4, result_id: "Iron axe head"},
+        {material_id: "Blacksteel ingot", count: 4, result_id: "Blacksteel axe head"},
+        {material_id: "Mithril ingot", count: 4, result_id: "Mithril axe head"}
+    ],
+    item_type: "Component",
+    recipe_skill: "Forging"
+});
+
+forging_recipes.components["Hammer head"] = new ComponentRecipe({
+    name: "Hammer head",
+    materials: [
+        {material_id: "Low quality iron ingot", count: 4, result_id: "Cheap iron hammer head"}, 
+        {material_id: "Iron ingot", count: 4, result_id: "Iron hammer head"},
+        {material_id: "Blacksteel ingot", count: 4, result_id: "Blacksteel hammer head"},
+        {material_id: "Mithril ingot", count: 4, result_id: "Mithril hammer head"}
+    ],
+    item_type: "Component",
+    recipe_skill: "Forging",
+});
+
+forging_recipes.components["Short hilt"] = new ComponentRecipe({
+    name: "Short hilt",
+    materials: [
+        {material_id: "Low quality iron ingot", count: 1, result_id: "Cheap short iron hilt"},
+        {material_id: "Iron ingot", count: 1, result_id: "Short iron hilt"},
+        {material_id: "Blacksteel ingot", count: 1, result_id: "Short blacksteel hilt"},
+        {material_id: "Mithril ingot", count: 1, result_id: "Short mithril hilt"}
+    ],
+    item_type: "Component",
+    recipe_skill: "Forging",
+});
+
+forging_recipes.components["Medium handle"] = new ComponentRecipe({
+    name: "Medium handle",
+    materials: [
+        {material_id: "Low quality iron ingot", count: 2, result_id: "Cheap medium iron handle"},
+        {material_id: "Iron ingot", count: 2, result_id: "Medium iron handle"},
+        {material_id: "Blacksteel ingot", count: 2, result_id: "Medium blacksteel handle"},
+        {material_id: "Mithril ingot", count: 2, result_id: "Medium mithril handle"}
+    ],
+    item_type: "Component",
+    recipe_skill: "Forging",
+});
+
+forging_recipes.components["Long shaft"] = new ComponentRecipe({
+    name: "Long shaft",
+    materials: [
+        {material_id: "Low quality iron ingot", count: 4, result_id: "Cheap long iron shaft"},
+        {material_id: "Iron ingot", count: 4, result_id: "Long iron shaft"},
+        {material_id: "Blacksteel ingot", count: 4, result_id: "Long blacksteel shaft"},
+        {material_id: "Mithril ingot", count: 4, result_id: "Long mithril shaft"}
+    ],
+    item_type: "Component",
+    recipe_skill: "Forging",
+});
+
+crafting_recipes.components["Short hilt"] = new ComponentRecipe({
+    name: "Short hilt",
+    materials: [
+        {material_id: "Processed rough wood", count: 1, result_id: "Simple short wooden hilt"},
+        {material_id: "Processed wood", count: 1, result_id: "Short wooden hilt"},
+        {material_id: "Processed ash wood", count: 1, result_id: "Short ash wood hilt"},
+        {material_id: "Processed mahogany wood", count: 1, result_id: "Short mahogany wood hilt"}
+    ],
+    item_type: "Component",
+    recipe_skill: "Crafting",
+});
+
+crafting_recipes.components["Medium handle"] = new ComponentRecipe({
+    name: "Medium handle",
+    materials: [
+        {material_id: "Processed rough wood", count: 2, result_id: "Simple medium wooden handle"},
+        {material_id: "Processed wood", count: 2, result_id: "Medium wooden handle"},
+        {material_id: "Processed ash wood", count: 2, result_id: "Medium ash wood handle"},
+        {material_id: "Processed mahogany wood", count: 2, result_id: "Medium mahogany wood handle"}
+    ],
+    item_type: "Component",
+    recipe_skill: "Crafting",
+});
+
+crafting_recipes.components["Long shaft"] = new ComponentRecipe({
+    name: "Long shaft",
+    materials: [
+        {material_id: "Processed rough wood", count: 4, result_id: "Simple long wooden shaft"},
+        {material_id: "Processed wood", count: 4, result_id: "Long wooden shaft"},
+        {material_id: "Processed ash wood", count: 4, result_id: "Long ash wood shaft"},
+        {material_id: "Processed mahogany wood", count: 4, result_id: "Long mahogany wood shaft"}
+    ],
+    item_type: "Component",
+    recipe_skill: "Crafting",
+});
+	
+	
 })();
 
 //shield components
