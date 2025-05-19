@@ -1,6 +1,6 @@
 "use strict";
 
-import { character } from "./character.js";
+import { character, get_total_skill_level } from "./character.js";
 import { Armor, ArmorComponent, Shield, ShieldComponent, Weapon, WeaponComponent, item_templates } from "./items.js";
 import { skills } from "./skills.js";
 
@@ -20,6 +20,17 @@ const alchemy_recipes = {items: {}};
     
     overal max quality achievable scales with related skills
 */
+
+function get_crafting_quality_caps(skill_name, tier = 0) {
+    const skill_cap_components = Math.round(100 + 2 * get_total_skill_level(skill_name));
+    const skill_cap_equipment = Math.round(100 + 2.8 * get_total_skill_level(skill_name));
+    const tier_cap = 130 + (tier * 20);
+
+    return {
+        components: Math.min(skill_cap_components, tier_cap, 200),
+        equipment: Math.min(skill_cap_equipment, tier_cap, 250),
+    };
+}
 
 class Recipe {
     constructor({
@@ -48,7 +59,7 @@ class ItemRecipe extends Recipe {
         name,
         id,
         materials = [], //{name, count}
-        is_unlocked = true, //TODO: change to false when unlocking is implemented!
+        is_unlocked = true,
         recipe_type,
         result, //{name, count}
         getResult,
@@ -65,12 +76,12 @@ class ItemRecipe extends Recipe {
     }
 
     get_success_chance(station_tier=1) {
-        const level = Math.min(this.recipe_level[1]-this.recipe_level[0]+1, Math.max(0,skills[this.recipe_skill].current_level-this.recipe_level[0]+1));
+        const level = Math.min(this.recipe_level[1]-this.recipe_level[0]+1, Math.max(0,get_total_skill_level(this.recipe_skill)-this.recipe_level[0]+1));
         const skill_modifier = Math.min(1,(0||(level+(station_tier-1))/(this.recipe_level[1]-this.recipe_level[0]+1)));
         return this.success_chance[0]*(this.success_chance[1]/this.success_chance[0])**skill_modifier;
     }
 
- get_availability() {
+    get_availability() {
         let ammount = Infinity;
         let materials = [];
         for(let i = 0; i < this.materials.length; i++) {
@@ -101,17 +112,6 @@ class ItemRecipe extends Recipe {
         
         return {available_ammount: ammount, materials};
     }
-
-
-    get_is_any_material_present() {
-        for(let i = 0; i < this.materials.length; i++) {
-            
-            if(character.inventory[this.materials[i].material_id]) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
 
 class ComponentRecipe extends ItemRecipe{
@@ -119,51 +119,61 @@ class ComponentRecipe extends ItemRecipe{
         name,
         id,
         materials = [], 
-        is_unlocked = true, //TODO: change to false when unlocking is implemented!
+        is_unlocked = true,
         result, //{item, count, result_name} where result_name is an item_templates key
         component_type,
         recipe_skill,
         item_type,
     }) {
         super({name, id, materials, is_unlocked, recipe_type: "component", result, recipe_level: [1,1], recipe_skill, getResult: null, success_rate: [1,1]})
-        this.component_type = component_type;
+         this.component_type = component_type;
         this.item_type = item_type;
+
         this.getResult = function(material, station_tier = 1){
-            const result = item_templates[this.materials.filter(x => x.material_id===material.id)[0].result_id];
-            //return based on material used
-            let quality = this.get_quality((station_tier-result.component_tier) || 0);
+            const result = item_templates[this.materials.find(x => x.material_id === material.id).result_id];
+            const result_tier = result.component_tier ?? 1;
+            const quality = this.get_quality(station_tier - result_tier, result);
+
             if(result.tags["clothing"]) {
-                //means its a clothing (wearable internal part of armor)
-                return new Armor({...item_templates[result.id], quality: quality});
+                return new Armor({...result, quality});
             } else if(result.tags["armor component"]) {
-
-                return new ArmorComponent({...item_templates[result.id], quality: quality});
+                return new ArmorComponent({...result, quality});
             } else if(result.tags["weapon component"]) {
-
-                return new WeaponComponent({...item_templates[result.id], quality: quality});
+                return new WeaponComponent({...result, quality});
             } else if(result.tags["shield component"]) {
-
-                return new ShieldComponent({...item_templates[result.id], quality: quality});
+                return new ShieldComponent({...result, quality});
             } else {
                 throw new Error(`Component recipe ${this.name} does not produce a valid result!`);
             }
-        }
+        };
     }
 
-    get_quality_range(tier = 0) {
+    get_quality_range(tier_offset = 0, result_item = null) {
         const skill = skills[this.recipe_skill];
-        const quality = (140+(3*skill.current_level-skill.max_level)+(20*tier))/100;
-        return [Math.max(10,Math.round(25*(quality-0.15))*4), Math.max(10,Math.round(25*(quality+0.1))*4)];
+        const result_tier = result_item?.component_tier ?? 1;
+
+        const quality = (130 + (3 * get_total_skill_level(this.recipe_skill) - skill.max_level) + (15 * tier_offset)) / 100;
+        const cap = this.get_quality_cap(result_tier);
+
+        return [
+            Math.max(10, Math.min(cap, Math.round(25 * (quality - 0.15)) * 4)),
+            Math.max(10, Math.min(cap, Math.round(25 * (quality + 0.1)) * 4))
+        ];
     }
 
-    get_quality_cap() {
-        const skill = skills[this.recipe_skill];
-        return Math.min(Math.round(100*(1+2*skill.current_level/skill.max_level)),200);
+    get_quality_cap(result_tier = 1) {
+        const caps = get_crafting_quality_caps(this.recipe_skill, result_tier);
+        return this.item_type === "Armor" ? caps.equipment : caps.components;
     }
 
-    get_quality(tier = 0) {
-        const quality_range = this.get_quality_range(tier);
-        return Math.min(Math.round(((quality_range[1]-quality_range[0])*Math.random()+quality_range[0])/4)*4, this.get_quality_cap());
+    get_quality(tier_offset = 0, result_item = null) {
+        const quality_range = this.get_quality_range(tier_offset, result_item);
+        return Math.round(((quality_range[1] - quality_range[0]) * Math.random() + quality_range[0]) / 4) * 4;
+    }
+
+    get_is_quality_capped(result_item) {
+        const quality_range = this.get_quality_range(0, result_item);
+        return quality_range[0] >= this.get_quality_cap(result_item?.component_tier ?? 1);
     }
 }
 
@@ -172,7 +182,7 @@ class EquipmentRecipe extends Recipe {
         name,
         id,
         components = [], //pair of component types; first letter not capitalized; blade-handle or internal-external
-        is_unlocked = true, //TODO: change to false when unlocking is implemented
+        is_unlocked = true,
         result = null,
         recipe_skill = "Crafting",
         item_type, //Weapon/Armor/Shield
@@ -183,7 +193,13 @@ class EquipmentRecipe extends Recipe {
         this.item_type = item_type;
         this.getResult = function(component_1, component_2, station_tier = 1){
             const comp_quality_weighted = this.get_component_quality_weighted(component_1, component_2);
-            let quality = this.get_quality(comp_quality_weighted, (station_tier-Math.max(component_1.component_tier, component_2.component_tier)) || 0);
+            let quality = this.get_quality(
+				comp_quality_weighted,
+				component_1,
+				component_2,
+				(station_tier - Math.max(component_1.component_tier, component_2.component_tier)) || 0
+			);
+						
             //return based on components used
             if(this.item_type === "Weapon") {
                 return new Weapon(
@@ -221,21 +237,26 @@ class EquipmentRecipe extends Recipe {
         }
     }
 
-    get_quality_range(component_quality, tier = 0) {
-        const skill = skills[this.recipe_skill];
-        const quality = (40+component_quality+(3*skill.current_level-skill.max_level)+20*(tier));
-        return [Math.max(10,Math.round(quality-15)), Math.max(10,Math.round(quality+15))];
-    }
+		get_quality_cap(component_1, component_2) {
+			const lowest_tier = Math.min(component_1.component_tier, component_2.component_tier);
+			return get_crafting_quality_caps(this.recipe_skill, lowest_tier).equipment;
+		}
 
-    get_quality_cap() {
-        const skill = skills[this.recipe_skill];
-        return Math.min(Math.round(100*(1+2*skill.current_level/skill.max_level)),250);
-    }
+		get_quality_range(component_quality, component_1, component_2, station_tier = 0) {
+			const skill = skills[this.recipe_skill];
+			const lowest_tier = Math.min(component_1.component_tier, component_2.component_tier);
+			const quality = (50 + component_quality + (3 * get_total_skill_level(this.recipe_skill) - skill.max_level) + 10 * (station_tier));
+			const cap = get_crafting_quality_caps(this.recipe_skill, lowest_tier).equipment;
+			return [
+				Math.max(10, Math.min(cap, Math.round(quality - 15))),
+				Math.max(10, Math.min(cap, Math.round(quality + 15)))
+			];
+		}
 
-    get_quality(component_quality, tier = 0) {
-        const quality_range = this.get_quality_range(component_quality, tier);
-        return Math.min(((quality_range[1]-quality_range[0])*Math.random()+quality_range[0]), this.get_quality_cap());
-    }
+		get_quality(component_quality, component_1, component_2, station_tier = 0) {
+			const quality_range = this.get_quality_range(component_quality, component_1, component_2, station_tier);
+			return Math.round(((quality_range[1] - quality_range[0]) * Math.random() + quality_range[0]) / 2) * 2;
+		}
 
     get_component_quality_weighted(component_1, component_2) {
         return (component_1.quality*component_1.component_tier + component_2.quality*component_2.component_tier)/(component_1.component_tier+component_2.component_tier);
@@ -267,21 +288,21 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         throw new Error(`Tried to use a recipe that doesn't exist: ${category} -> ${subcategory} -> ${recipe_id}`);
     }
     if(subcategory === "items") {
-        exp_value = Math.max(exp_value,1.5*selected_recipe.recipe_level[1]);
+        exp_value = Math.round(Math.max(exp_value,1.5*selected_recipe.recipe_level[1],1.2**selected_recipe.recipe_level[1]));
         //maybe scale with materials needed?
         
         if(selected_recipe.recipe_level[1] < skill_level) {
-            exp_value = Math.max(1,exp_value * Math.max(0,Math.min(5,(selected_recipe.recipe_level[1]+6-skill_level))/5));
+            exp_value = Math.round(Math.max(1,exp_value * Math.max(0,Math.min(5,(selected_recipe.recipe_level[1]+6-skill_level))/5)));
         }
     } else if (subcategory === "components" || selected_recipe.recipe_type === "component") {
-        const result_level = 8*result_tier;
+        const result_level = 8*Math.max(1.2**result_tier,1.5*result_tier);
 
         exp_value = Math.max(exp_value,result_tier * 4 * material_count);
-        exp_value = Math.max(1,exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier);
+        exp_value = Math.round(Math.max(1,exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier));
     } else {
-        const result_level = 8*Math.max(selected_components[0].component_tier,selected_components[1].component_tier);
+        const result_level = 8*Math.max((1.2**Math.max(selected_components[0].component_tier,selected_components[1].component_tier)),(1.5*Math.max(selected_components[0].component_tier,selected_components[1].component_tier)));
         exp_value = Math.max(exp_value,(selected_components[0].component_tier+selected_components[1].component_tier) * 4);
-        exp_value = Math.max(1,exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier);
+        exp_value = Math.round(Math.max(1,exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier));
     }
 
     return exp_value;
@@ -731,6 +752,25 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         recipe_level: [5,15],
         recipe_skill: "Smelting",
     });
+    smelting_recipes.items["Blacksteel ingot"] = new ItemRecipe({
+        name: "Blacksteel ingot",
+        recipe_type: "material",
+        materials: [{material_id: "Blacksteel ore", count: 5}], 
+        result: {result_id: "Blacksteel ingot", count: 1},
+        success_chance: [0.1,1],
+        recipe_level: [10,20],
+        recipe_skill: "Smelting",
+    });
+    smelting_recipes.items["Mithril ingot"] = new ItemRecipe({
+        name: "Mithril ingot",
+        recipe_type: "material",
+        materials: [{material_id: "Mithril ore", count: 5}], 
+        result: {result_id: "Mithril ingot", count: 1},
+        success_chance: [0.1,1],
+        recipe_level: [15,25],
+        recipe_skill: "Smelting",
+    });	
+	
 
     crafting_recipes.items["Processed rough wood"] = new ItemRecipe({
         name: "Processed rough wood",
@@ -750,6 +790,24 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         recipe_level: [5,15],
         recipe_skill: "Crafting",
     });
+    crafting_recipes.items["Processed ash wood"] = new ItemRecipe({
+        name: "Processed ash wood",
+        recipe_type: "material",
+        materials: [{material_id: "Piece of ash wood", count: 5}], 
+        result: {result_id: "Processed ash wood", count: 1},
+        success_chance: [0.2,1],
+        recipe_level: [10,20],
+        recipe_skill: "Crafting",
+    });
+    crafting_recipes.items["Processed mahogany wood"] = new ItemRecipe({
+        name: "Processed mahogany wood",
+        recipe_type: "material",
+        materials: [{material_id: "Piece of mahogany wood", count: 5}], 
+        result: {result_id: "Processed mahogany wood", count: 1},
+        success_chance: [0.2,1],
+        recipe_level: [15,25],
+        recipe_skill: "Crafting",
+    });	
 })();
 
 //consumables

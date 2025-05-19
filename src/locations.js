@@ -1862,6 +1862,7 @@ locations["Dark Woods"] = new Location({
         description: "Dark Woods",
         name: "Dark Woods",
         is_unlocked: false,
+		unlock_text: "After thinning out the local wolf population it's safe to travel further into the treeline.",
     });
 locations["Forest"].connected_locations.push({location: locations["Dark Woods"]});
 
@@ -2728,6 +2729,7 @@ locations["Forest Beasts"] = new Combat_zone({
         repeatable_reward: {
             xp: 35,
             activities: [{location:"Forest", activity: "woodcutting"},{location:"Forest", activity: "herbalism"}],
+			locations: [{location: "Dark Woods", required_clears: 3}],
         }
     });
 locations["Forest"].connected_locations.push({location: locations["Forest Beasts"], custom_text: "Forest Beasts"});
@@ -3611,7 +3613,7 @@ locations["Dark Woods"].activities = {
             infinite: true,
             starting_text: "Gather some wood from nearby trees",
             skill_xp_per_tick: 5,
-            is_unlocked: false,
+            is_unlocked: true,
        gained_resources: {
                 resources: [
 				{name: "Piece of ash wood", ammount: [[1,1], [1,3]], chance: [0.6, 1.2]},

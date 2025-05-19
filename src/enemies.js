@@ -361,7 +361,7 @@ Platinum Slime
         rank: 4,
         size: "small",
         tags: ["amorphous"],
-		on_strike: {poison: 50},
+		on_strike: {poison: 20},
         stats: {health: 160, attack: 56, agility: 8, dexterity: 44, magic: 0, intuition: 8, attack_speed: 1.2, defense: 6}, 
         loot_list: [
             {item_name: "Goo", chance: 0.80, count: 2},

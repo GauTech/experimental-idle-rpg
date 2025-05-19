@@ -1782,6 +1782,24 @@ item_templates["Chitin Shard"] = new Junk({
         price_recovers: true,
         material_type: "metal",
     });
+    item_templates["Blacksteel ingot"] = new Material({
+        id: "Blacksteel ingot",
+        name: "Blacksteel ingot", 
+        description: "It doesn't suffer from any excessive impurities and can be used without worries.", 
+        value: 30,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "metal",
+    });
+    item_templates["Mithril ingot"] = new Material({
+        id: "Mithril ingot",
+        name: "Mithril ingot", 
+        description: "It doesn't suffer from any excessive impurities and can be used without worries.", 
+        value: 40,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "metal",
+    });
     item_templates["Piece of wolf rat leather"] = new Material({
         name: "Piece of wolf rat leather",
         description: "It's slightly damaged and seems useless for anything that requires precise work.",
@@ -1852,6 +1870,14 @@ item_templates["Chitin Shard"] = new Junk({
         name: "Processed ash wood", 
         description: "High quality wood, just waiting to be turned into a piece of equipment.",
         value: 20,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "wood",
+    });
+    item_templates["Processed mahogany wood"] = new Material({
+        name: "Processed mahogany wood", 
+        description: "High quality wood, just waiting to be turned into a piece of equipment.",
+        value: 30,
         saturates_market: true,
         price_recovers: true,
         material_type: "wood",

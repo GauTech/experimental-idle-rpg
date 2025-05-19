@@ -2514,19 +2514,46 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
         const xp_val_1 = get_recipe_xp_value({category, subcategory, recipe_id});
         tooltip += `<br>XP value: ${xp_val_1}`;
         tooltip += `<br>Result:<br><div class="recipe_result">${create_item_tooltip_content({item: item_templates[recipe.getResult().result_id], options: {skip_quality: true, anchor_tooltip: true}})}</div>`;
-    } else if(subcategory === "components"  || recipe.recipe_type === "component") {
-        tooltip += `Material required:<br>`;
-        if(character.inventory[item_templates[material.material_id].getInventoryKey()]?.count >= material.count) {
-            tooltip += `<span style="color:lime"><b>${item_templates[material.material_id].getName()} x${character.inventory[item_templates[material.material_id].getInventoryKey()]?.count || 0}/${material.count}</b></span><br>`;
-        } else {
-            tooltip += `<span style="color:red"><b>${item_templates[material.material_id].getName()} x${character.inventory[item_templates[material.material_id].getInventoryKey()]?.count || 0}/${material.count}</b></span><br>`;
-        }
-        const quality_range = recipe.get_quality_range(station_tier - item_templates[material.result_id].component_tier);
-        const xp_val_1 = get_recipe_xp_value({category, subcategory, recipe_id, material_count: material.count, result_tier: item_templates[material.result_id].component_tier, rarity_multiplier: rarity_multipliers[getItemRarity(quality_range[0])]});
-        const xp_val_2 = get_recipe_xp_value({category, subcategory, recipe_id, material_count: material.count, result_tier: item_templates[material.result_id].component_tier, rarity_multiplier: rarity_multipliers[getItemRarity(quality_range[1])]});
-        tooltip += `<br>XP value: ${xp_val_1} - ${xp_val_2}<br>`;
-        tooltip += `<br>Result:<br><div class="recipe_result">${create_item_tooltip_content({item:item_templates[material.result_id], options: {quality: quality_range}})}</div>`;
-    } else if(subcategory === "equipment") {
+} else if (subcategory === "components" || recipe.recipe_type === "component") {
+    tooltip += `Material required:<br>`;
+
+    const result_template = item_templates[material.result_id];
+    const material_template = item_templates[material.material_id];
+    const inventory_key = material_template.getInventoryKey();
+    const inventory_count = character.inventory[inventory_key]?.count || 0;
+    const has_enough = inventory_count >= material.count;
+
+    tooltip += `<span style="color:${has_enough ? "lime" : "red"}"><b>${material_template.getName()} x${inventory_count}/${material.count}</b></span><br>`;
+
+    const result_tier = result_template?.component_tier ?? 1;
+    const tier_offset = station_tier - result_tier;
+
+    const quality_range = recipe.get_quality_range(tier_offset, result_template);
+
+    const xp_val_1 = get_recipe_xp_value({
+        category,
+        subcategory,
+        recipe_id,
+        material_count: material.count,
+        result_tier: result_tier,
+        rarity_multiplier: rarity_multipliers[getItemRarity(quality_range[0])]
+    });
+
+    const xp_val_2 = get_recipe_xp_value({
+        category,
+        subcategory,
+        recipe_id,
+        material_count: material.count,
+        result_tier: result_tier,
+        rarity_multiplier: rarity_multipliers[getItemRarity(quality_range[1])]
+    });
+
+    tooltip += `<br>XP value: ${xp_val_1} - ${xp_val_2}<br>`;
+    tooltip += `<br>Result:<br><div class="recipe_result">${create_item_tooltip_content({
+        item: result_template,
+        options: { quality: quality_range }
+    })}</div>`;
+} else if(subcategory === "equipment") {
         if(!components) {
             //it's a componentless equipment recipe, most probably a clothing
             if(character.inventory[material.material_id]?.count >= material.count) {
@@ -2535,51 +2562,69 @@ function create_recipe_tooltip_content({category, subcategory, recipe_id, materi
                 tooltip += `<span style="color:red"><b>${item_templates[material.material_id].getName()} x${character.inventory[material.material_id]?.count || 0}/${material.count}</b></span><br>`;
             }
             const quality_range = recipe.get_quality_range(recipe.get_component_quality_weighted(), station_tier - item_templates[material.result_id].component_tier);
+			
+			
+			
             const xp_val_1 = get_recipe_xp_value({category, subcategory, recipe_id, material_count: material.count, result_tier: item_templates[material.result_id].component_tier, rarity_multiplier: rarity_multipliers[getItemRarity(quality_range[0])]});
             const xp_val_2 = get_recipe_xp_value({category, subcategory, recipe_id, material_count: material.count, result_tier: item_templates[material.result_id].component_tier, rarity_multiplier: rarity_multipliers[getItemRarity(quality_range[1])]});
             tooltip += `<br>XP value: ${xp_val_1} - ${xp_val_2}<br>`;
             tooltip += `<br>Result:<br><div class="recipe_result">${create_item_tooltip_content({item:item_templates[material.result_id], options: {quality: quality_range}})}</div>`;
         } else if(components.length < 2) {
             tooltip += `Result:<br><div class="recipe_result">Select one component from each category</div>`;
-        } else if(components.length == 2) {
-            let item = "";
-            
-            if(recipe.item_type === "Weapon") {
-                item = new Weapon(
-                    {
-                        components: {
-                            head: components[0].item.id,
-                            handle: components[1].item.id,
-                        },
-                    }
-                );
-            } else if(recipe.item_type === "Armor") {
-                item = new Armor(
-                    {
-                        components: {
-                            internal: components[0].item.id,
-                            external: components[1].item.id,
-                        },
-                    }
-                );
-            } else if(recipe.item_type === "Shield") {
-                item = new Shield(
-                    {
-                        components: {
-                            shield_base: components[0].item.id,
-                            handle: components[1].item.id,
-                        },
-                    }
-                );
-            } else {
-                throw new Error(`Recipe "${category}" -> "${subcategory}" -> "${recipe_id}" has an incorrect item type "${recipe.item_type}"`)
-            }
-            const quality_range = recipe.get_quality_range(recipe.get_component_quality_weighted(components[0].item, components[1].item), (station_tier-Math.max(components[0].item.component_tier, components[1].item.component_tier)) || 0);
-            const xp_val_1 = get_recipe_xp_value({category, subcategory, recipe_id, selected_components: [item_templates[components[0].item.id], item_templates[components[1].item.id]], rarity_multiplier: rarity_multipliers[getItemRarity(quality_range[0])]});
-            const xp_val_2 = get_recipe_xp_value({category, subcategory, recipe_id, selected_components: [item_templates[components[0].item.id], item_templates[components[1].item.id]], rarity_multiplier: rarity_multipliers[getItemRarity(quality_range[1])]});
-            tooltip += `<br>XP value: ${xp_val_1} - ${xp_val_2}<br>`;
-            tooltip += `Result:<br><div class="recipe_result">${create_item_tooltip_content({item, options: {quality: quality_range}})}</div>`;
-        } else {
+			 } else if(components.length == 2) {
+			let item = "";
+
+			const component_1 = components[0].item;
+			const component_2 = components[1].item;
+
+			if(recipe.item_type === "Weapon") {
+				item = new Weapon({
+					components: {
+						head: component_1.id,
+						handle: component_2.id,
+					},
+				});
+			} else if(recipe.item_type === "Armor") {
+				item = new Armor({
+					components: {
+						internal: component_1.id,
+						external: component_2.id,
+					},
+				});
+			} else if(recipe.item_type === "Shield") {
+				item = new Shield({
+					components: {
+						shield_base: component_1.id,
+						handle: component_2.id,
+					},
+				});
+			} else {
+				throw new Error(`Recipe "${category}" -> "${subcategory}" -> "${recipe_id}" has an incorrect item type "${recipe.item_type}"`);
+			}
+
+			const component_quality = recipe.get_component_quality_weighted(component_1, component_2);
+			const tier_offset = (station_tier - Math.max(component_1.component_tier, component_2.component_tier)) || 0;
+			const quality_range = recipe.get_quality_range(component_quality, component_1, component_2, tier_offset);
+
+			const xp_val_1 = get_recipe_xp_value({
+				category,
+				subcategory,
+				recipe_id,
+				selected_components: [item_templates[component_1.id], item_templates[component_2.id]],
+				rarity_multiplier: rarity_multipliers[getItemRarity(quality_range[0])],
+			});
+
+			const xp_val_2 = get_recipe_xp_value({
+				category,
+				subcategory,
+				recipe_id,
+				selected_components: [item_templates[component_1.id], item_templates[component_2.id]],
+				rarity_multiplier: rarity_multipliers[getItemRarity(quality_range[1])],
+			});
+
+			tooltip += `<br>XP value: ${xp_val_1} - ${xp_val_2}<br>`;
+			tooltip += `Result:<br><div class="recipe_result">${create_item_tooltip_content({ item, options: { quality: quality_range } })}</div>`;
+		} else {
             throw new Error(`Somehow recipe "${category}" -> "${subcategory}" -> "${recipe_id}" received more components than there should be (${components.length} instead of 2)`)
         }
     } else {

@@ -3327,7 +3327,7 @@ if (craft_amount > 1 && attempts > 0) {
     }
 
 if (craft_amount > 1 && attempts > 0) {
-    log_message(`Crafted ${attempts}x [${quality_name}]. Highest quality = ${max_quality}% (x ${max_quality_count})`, "crafting");
+    log_message(`Crafted ${attempts}x [${quality_name}].\n\n Highest quality = ${max_quality}% (x ${max_quality_count})`, "crafting");
 }
 }	else if (subcategory === "equipment") {
     const component_1_key = recipe_div.children[1].children[0].children[1].querySelector(".selected_component")?.dataset.item_key;
@@ -3389,7 +3389,7 @@ if (craft_amount > 1 && attempts > 0) {
     }
 
 if (craft_amount > 1 && attempts > 0) {
-    log_message(`Crafted ${attempts}x [${quality_name}]. Highest quality = ${max_quality}% (x ${max_quality_count})`, "crafting");
+    log_message(`Crafted ${attempts}x [${quality_name}].\n\n Highest quality = ${max_quality}% (x ${max_quality_count})`, "crafting");
 }
 }
 	}
