@@ -2096,6 +2096,31 @@ locations["Mine Dwellers"] = new Combat_zone({
 locations["Mines"].connected_locations.push({location: locations["Mine Dwellers"]});
 
 
+locations["Mine Drones"] = new Combat_zone({
+        description: "Mine Drones", 
+        enemy_count: 25, 
+        types: [{type: "dark", stage: 3,  xp_gain: 5}],
+        enemies_list: ["Decrepit Construct","Rogue Construct", "Relay Drone"],
+        enemy_group_size: [3,3],
+        enemy_stat_variation: 0.2,
+		boss_list: ["Drone Foreman"],
+		rare_list: ["Mimic"],
+		rare_chance: 0.001,
+        is_unlocked: true, 
+        name: "Mine Drones", 
+        leave_text: "Go back to entrance",
+        parent_location: locations["Motherlode"],
+        first_reward: {
+            xp: 400,
+        },
+        repeatable_reward: {
+            xp: 200,
+            activities: [{location:"Motherlode", activity:"mining"}],
+			//locations: [{location:"Motherlode"},{location:"The Platinum Pile"}],
+        }
+    });
+locations["Motherlode"].connected_locations.push({location: locations["Mine Drones"]});
+
 
 locations["Massed Undead"] = new Combat_zone({
         description: "Massed Undead", 
@@ -3511,7 +3536,10 @@ locations["Mines"].activities = {
             skill_xp_per_tick: 1,
             is_unlocked: false,
             gained_resources: {
-                resources: [{name: "Low quality iron ore", ammount: [[1,1], [1,3]], chance: [0.8, 1]}], 
+                resources: [
+				{name: "Low quality iron ore", ammount: [[1,1], [1,3]], chance: [0.7, 1.5]},
+				{name: "Iron ore", ammount: [[1,1], [1,3]], chance: [0.2, 1], skill_required: 10}
+				], 
                 time_period: [20, 10],
                 skill_required: [0, 20],
                 scales_with_skill: true,
@@ -3519,6 +3547,26 @@ locations["Mines"].activities = {
             unlock_text: "After clearing out the enemies you can now mine iron.",
         }),
     };
+locations["Motherlode"].activities = {
+        "mining": new LocationActivity({
+            activity_name: "mining",
+            infinite: true,
+            starting_text: "Mine the high grade ores",
+            skill_xp_per_tick: 20,
+            is_unlocked: false,
+            gained_resources: {
+                resources: [
+				{name: "Blacksteel ore", ammount: [[1,1], [1,3]], chance: [0.6, 1.2]},
+				{name: "Mithril ore", ammount: [[1,1], [1,3]], chance: [0.1, 1], skill_required: 30}
+				], 
+                time_period: [30, 60],
+                skill_required: [20, 40],
+                scales_with_skill: true,
+            },
+            unlock_text: "After clearing out the enemies you can now mine resources",
+        }),
+    };	
+	
 	
 locations["Forest"].activities = {
 		"woodcutting": new LocationActivity({
@@ -3528,12 +3576,15 @@ locations["Forest"].activities = {
             skill_xp_per_tick: 5,
             is_unlocked: false,
             gained_resources: {
-                resources: [{name: "Piece of rough wood", ammount: [[1,1], [1,3]], chance: [0.8, 1]}],
+                resources: [
+				{name: "Piece of rough wood", ammount: [[1,1], [1,3]], chance: [0.7, 1.5]},
+				{name: "Piece of wood", ammount: [[1,1], [1,3]], chance: [0.2, 1], skill_required: 10},
+				],
                 time_period: [20, 10],
                 skill_required: [0, 20],
                 scales_with_skill: true,
             },
-			//unlock_text: "After clearing out the enemies you can now cut trees.",
+			unlock_text: "After clearing out the enemies you can now cut trees.",
         }),
         "herbalism": new LocationActivity({
             activity_name: "herbalism",
@@ -3554,13 +3605,32 @@ locations["Forest"].activities = {
             require_tool: false,
 			}),
     };
+locations["Dark Woods"].activities = {
+		"woodcutting": new LocationActivity({
+            activity_name: "woodcutting",
+            infinite: true,
+            starting_text: "Gather some wood from nearby trees",
+            skill_xp_per_tick: 5,
+            is_unlocked: false,
+       gained_resources: {
+                resources: [
+				{name: "Piece of ash wood", ammount: [[1,1], [1,3]], chance: [0.6, 1.2]},
+				{name: "Piece of mahogany wood", ammount: [[1,1], [1,3]], chance: [0.1, 1], skill_required: 30}
+				], 
+                time_period: [30, 60],
+                skill_required: [20, 40],
+                scales_with_skill: true,
+            },
+			unlock_text: "After clearing out the enemies you can now cut trees.",
+			}),	
+}
 	
 locations["Royal Gardens"].activities = {
 		"woodcutting2": new LocationActivity({
             activity_name: "woodcutting",
             infinite: true,
             starting_text: "Gather some wood from the palace trees",
-            skill_xp_per_tick: 10,
+            skill_xp_per_tick: 20,
             is_unlocked: false,
             gained_resources: {
                 resources: [{name: "Piece of wood", ammount: [[2,2], [2,6]], chance: [0.8, 1]}],

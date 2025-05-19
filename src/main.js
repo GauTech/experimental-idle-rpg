@@ -2323,7 +2323,7 @@ function do_enemy_combat_action(enemy_id) {
 	damage_dealt *= damage_multiplier; // multistrike applied as damage multiplier.
     
     if(character.equipment["off-hand"]?.offhand_type === "shield") { //HAS SHIELD
-		       const hit_chance = get_hit_chance(attacker.stats.dexterity * Math.sqrt(attacker.stats.intuition ?? 1), (character.stats.full.evasion_points*(0.15+skills["Parrying"].get_level_bonus()))/evasion_chance_modifier);
+		       const hit_chance = get_hit_chance(attacker.stats.dexterity * Math.sqrt(attacker.stats.intuition ?? 1), (character.stats.full.evasion_points*character.stats.full.block_chance*(0.15+skills["Parrying"].get_level_bonus()))/evasion_chance_modifier);
 
         if(hit_chance < Math.random()) { //EVADED ATTACK
             const xp_to_add = character.wears_armor() ? attacker.xp_value : attacker.xp_value * 1.5; 
@@ -2591,7 +2591,7 @@ tags_bonus = 1; // returns to 1 if less than 1
 		
 		// Rare loot generation (0.1% chance)
 let rare_loot = [];
-if (Math.random() < 0.001 && Array.isArray(rare_items_pool) && rare_items_pool.length > 0) {
+if (Math.random() < 0.0001 && Array.isArray(rare_items_pool) && rare_items_pool.length > 0) {
     const rareItemName = rare_items_pool[Math.floor(Math.random() * rare_items_pool.length)];
     if (item_templates[rareItemName]) {
         rare_loot.push({ "item": getItem(item_templates[rareItemName]), "count": 1 });
@@ -3456,7 +3456,6 @@ function use_item(item_key) {
 function open_loot_chest(item_key) {
     const { id } = JSON.parse(item_key);
     const chest = item_templates[id];
-	console.log("loot_chest logic started");
     if (!chest || (!Array.isArray(chest.loot) && !chest.loot_pool)) {
         console.error(`Invalid loot chest: ${id}`);
         return;

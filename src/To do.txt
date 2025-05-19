@@ -6,6 +6,12 @@ Stances and magics unlocked via book or milestone rewards produce messages every
 Console bug if you save+reload whilst reading (but not re-reading) a book
  Stance list also can't handle scrolling. (Could trim a stance instead).
 Reading book then moving to combat zone doesn't remove the book reading display.
+Fix multistrike damage (can look what YAIR dev repo does). 
+
+Design issues:
+At very high strength values unarmed is straight up better than using a basic weapon.
+Attack dramatically outpaces attack at high levels.
+Shields scale very poorly as they used fixed block amounts. Look at % shield blocking.
 
 
 Changes:
@@ -26,6 +32,7 @@ Special combat effects:
 Enemies can now have defense piercing, apply status effects, deal ambush damage (free damage when they spawn) and deathrattle damage (free damage when they die.)
 Bestiary also properly lists these special effects.
 
+New item cases, junk item and key item and special shop handling for these cases.
 
 Many new skills:
 -Parrying skill allows chance of negating attacks when using a shield.

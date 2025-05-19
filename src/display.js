@@ -112,6 +112,8 @@ const bestiary_list = document.getElementById("bestiary_list");
 const combat_switch = document.getElementById("switch_to_combat")
 const inventory_switch = document.getElementById("switch_to_inventory")
 
+
+
 const data_entry_divs = {
                             character: document.getElementById("character_xp_multiplier"),
                             skills: document.getElementById("skills_xp_multiplier"),
@@ -3001,6 +3003,10 @@ function updateCombatDisplays(alliesInParty) {
     }
 }
 
+
+combat_switch.addEventListener('click', function() {
+    updateCombatDisplays(current_party.length);
+});
 
 /*for (let i = 1; i <= 4; i++) {
     document.getElementById(`ally${i}_combat_management`).innerHTML = createAllyCombatBlock(i);

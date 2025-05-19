@@ -1019,6 +1019,44 @@ Umbral Knight*/
 
 //rank 4s
 
+    enemy_templates["Rogue Construct"] = new Enemy({
+        name: "Rogue Construct", 
+        description: "A haywire mining unit. Robust but clumsy.",
+		xp_value: 125, 
+        rank: 4,
+        size: "large",
+        tags: ["animated"],
+        stats: {health: 500, attack: 50, agility: 1, dexterity: 30, magic: 0, intuition: 1, attack_speed: 0.8, defense: 20}, //stat_total = 80 (discount atk speed, HP/10)
+        loot_list: [
+            {item_name: "Magic Stone", chance: 0.4},
+        ],
+    });
+    enemy_templates["Relay Drone"] = new Enemy({
+        name: "Relay Drone", 
+        description: "A transport automaton running amok.",
+		xp_value: 125, 
+        rank: 4,
+        size: "medium",
+        tags: ["animated"],
+        stats: {health: 200, attack: 20, agility: 30, dexterity: 30, magic: 0, intuition: 1, attack_speed: 1.2, defense: 8}, //stat_total = 80 (discount atk speed, HP/10)
+        loot_list: [
+            {item_name: "Magic Stone", chance: 0.4},
+        ],
+    });	
+    enemy_templates["Drone Foreman"] = new Enemy({
+        name: "Drone Foreman", 
+        description: "A commander unit among the mining drones.",
+		xp_value: 125, 
+        rank: 4,
+        size: "large",
+        tags: ["animated"],
+        stats: {health: 1000, attack: 60, agility: 10, dexterity: 70, magic: 0, intuition: 1, attack_speed: 1, defense: 30}, //boss
+        loot_list: [
+            {item_name: "Magic Stone", chance: 0.4},
+        ],
+    });	
+
+
     enemy_templates["Skeleton Elite"] = new Enemy({
         name: "Skeleton Elite", 
         description: "Skeleton Elite",
@@ -1466,7 +1504,7 @@ enemy_templates["Rot Warden"] = new Enemy({
 //rank 9 bosses
     enemy_templates["Bloodstained Emperor"] = new Enemy({
         name: "Bloodstained Emperor", 
-        description: "A fallen sovereign, presiding over an empire of dirt. Death would be a mercy.",
+        description: "A fallen sovereign, presiding over an empire of dirt. Death is a mercy.",
 		xp_value: 60000, 
         rank: 9,
         size: "large",

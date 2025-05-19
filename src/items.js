@@ -1577,6 +1577,24 @@ item_templates["Chitin Shard"] = new Junk({
         price_recovers: true,
         material_type: "raw metal",
     });
+    item_templates["Blacksteel ore"] = new Material({
+        name: "Blacksteel ore", 
+        description: "Blacksteel ore", 
+        value: 10,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "raw metal",
+    });
+    item_templates["Mithril ore"] = new Material({
+        name: "Mithril ore", 
+        description: "Mithril ore", 
+        value: 20,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "raw metal",
+    });
+	
+	
     item_templates["Piece of rough wood"] = new Material({
         name: "Piece of rough wood", 
         description: "Cheapest form of wood. There's a lot of bark and malformed pieces.", 
@@ -1595,12 +1613,20 @@ item_templates["Chitin Shard"] = new Junk({
     });
     item_templates["Piece of ash wood"] = new Material({
         name: "Piece of ash wood", 
-        description: "Strong yet elastic, it's best wood you can hope to find around. There's a lot of bark and malformed pieces.",
+        description: "Strong yet elastic, it's among the best wood you can hope to find around. There's a lot of bark and malformed pieces.",
         value: 7,
         saturates_market: true,
         price_recovers: true,
         material_type: "raw wood",
     });
+    item_templates["Piece of mahogany wood"] = new Material({
+        name: "Piece of mahogany wood", 
+        description: "Firm strong wood, it's the best wood you can hope to find around. There's a lot of bark and malformed pieces.",
+        value: 12,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "raw wood",
+    });	
 
     item_templates["Belmart leaf"] = new Material({
         name: "Belmart leaf", 
