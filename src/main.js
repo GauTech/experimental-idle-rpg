@@ -551,12 +551,15 @@ function end_activity() {
 
     if(current_activity.gathered_materials && options.log_total_gathering_gain) {
 		console.log("if condition valid");
+		console.log(current_activity.gathered_materials);
         const loot = []; 
-        Object.keys(current_activity.gathered_materials).forEach(mat_key => {
-            loot.push({item_key: mat_key, count: current_activity.gathered_materials[mat_key]});
-        });
-		console.log("loot =",loot);
-        log_loot({loot_list: loot, is_a_summary: true});
+		
+		
+			 Object.keys(current_activity.gathered_materials).forEach(mat_key => {
+			loot.push({ item_id: mat_key, count: current_activity.gathered_materials[mat_key] });
+		});
+
+		log_loot({ loot_list: loot, is_a_summary: true }); 
     }
     end_activity_animation(); //clears the "animation"
     current_activity = null;
@@ -4835,13 +4838,19 @@ for (let i = 0; i < resources.length; i++) {
         const countRange = Array.isArray(resource.ammount) ? resource.ammount[1] : [1, 1];
         const count = Math.floor(Math.random() * (countRange[1] - countRange[0] + 1)) + countRange[0];
 
-        items.push({ item: item_templates[resource.name], count });
-        gathered_materials[resource.name] = (gathered_materials[resource.name] || 0) + count;
+        items.push({ item_key: resource.name, item: item_templates[resource.name], count });
+        gathered_materials[gained_resources[i].name] = (gathered_materials[resource.name] || 0) + count;
+	
     }
 }
 
                         if(items.length > 0) {
                             log_loot(items, false);
+							
+							 for(let i = 0; i < items.length; i++) {
+                                current_activity.gathered_materials[items[i].item_key] = (current_activity.gathered_materials[items[i].item_key] + items[i].count || items[i].count);
+								
+                            }
 
                             add_to_character_inventory(items);
                         }
