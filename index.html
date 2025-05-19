@@ -66,14 +66,18 @@
 						</div>
                     </div>
 
-                    <div id = "character_health_div"> 
-                        <div id = "character_healthbar_max"> 
-                            <div id = "character_healthbar_current">
-                            </div>
-                        </div>
-                        <div id = "character_health_value">
-                        </div>
-                    </div>
+						  <div id="character_health_div"> 
+						<div id="character_healthbar_max"> 
+							<div id="character_healthbar_current"></div>
+						</div>
+						<div id="character_health_value"></div>
+
+						<!-- Add tooltip here -->
+						<div id= "health_tooltip" class="stat_tooltip">
+							<div>Max health. Shows base HP, plus any flat or multiplicative bonuses along with any active HP regen or HP loss effects.</div>
+							<div class="stat_breakdown"></div>
+						</div>
+					</div>
                 </div>
 
                 <div id = "time_and_location" class = "box_div">
@@ -620,13 +624,16 @@
                             <div id = "cancel_trade_button" onclick = "cancelTrade()">
                                 Cancel
                             </div> 
+							  <div id = "add_junk_button">
+                                Add Junk
+                            </div> 
                             <div id = "exit_trade_button" onclick = "exitTrade()">
                                 Exit
                             </div>
                         </div>
                     </div>
 
-                  <div id = "crafting_window" class="crafting_window">
+                   <div id = "crafting_window" class="crafting_window">
                         <div id="crafting_mainpage_buttons" class="activable_buttons crafting_mainpage_buttons">
                             <div class="crafting_mainpage_button active_selection_button" onclick="switchCraftingRecipesPage('crafting')">Crafting</div>
                             <div class="crafting_mainpage_button" onclick="switchCraftingRecipesPage('cooking')">Cooking</div>
@@ -990,6 +997,10 @@
                     <input type="checkbox" id="options_dont_autoswitch_to_combat" name="options_dont_autoswitch_to_combat" value="options_dont_autoswitch_to_combat" onclick = "option_combat_autoswitch()"/>
                     <label for="options_dont_autoswitch_to_combat">Don't autoswitch out from inventory when starting combat</label>
                 </div>
+				                <div class="options_choice">
+                    <input type="checkbox" id="options_log_gathering_result" name="options_log_gathering_result" value="options_log_gathering_result" onclick = "option_log_gathering_result()" checked/>
+                    <label for="options_log_gathering_result">Log total gathered materials on gathering finish</label>
+                </div>
             </div>
             <div id="close_options" onclick="closeOptions()"> X </div>
             <div id = "backup_load_button" class="options_button" onclick = "loadTheBackup()">Load the backup autosave</div>
@@ -1155,6 +1166,7 @@
             function switchToCombat() {
                 document.documentElement.style.setProperty('--inventory_div_display', 'none');
                 document.documentElement.style.setProperty('--character_combat_div_display', 'block');
+				
             }
             function switchToInventory() {
                 document.documentElement.style.setProperty('--inventory_div_display', 'block');
@@ -1226,6 +1238,7 @@
                     console.log("You can't afford this");
                 }
             }
+
 
             function sortTraderInventory(option) {
                 trader_sorting = option;
@@ -1521,6 +1534,16 @@
                         tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
                     }
                 }
+				
+								const healthDiv = document.getElementById("character_health_div");
+								healthDiv.addEventListener('mousemove', move_stat_tooltip, false);
+								function move_health_tooltip(event) {
+					if (Date.now() >= tooltip_wait) {
+						document.documentElement.style.setProperty('--stat_tooltip_top', `${event.pageY - 140}px`);
+						document.documentElement.style.setProperty('--stat_tooltip_left', `${event.pageX}px`);
+						tooltip_wait = Date.now() + 1000 / tooltip_move_ticks;
+					}
+				}
 
                 //unequip item
                 equipment_div.onclick = function(event) {

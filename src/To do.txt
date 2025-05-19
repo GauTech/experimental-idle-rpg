@@ -1,11 +1,17 @@
 To do:
 
-console bug if you save+reload whilst reading (but not re-reading) a book
-Stance list and magic list tooltips extend beyond bottom of the page. Stance list also can't handle scrolling. (Could trim a stance instead).
-Add allies feature
-Add investigations / found items in area feature
+Known issues:
+Log gathering result handling isn't working on my version.
+Stances and magics unlocked via book or milestone rewards produce messages every time save data is loaded.
+Console bug if you save+reload whilst reading (but not re-reading) a book
+ Stance list also can't handle scrolling. (Could trim a stance instead).
 Reading book then moving to combat zone doesn't remove the book reading display.
+Fix multistrike damage (can look what YAIR dev repo does). 
 
+Design issues:
+At very high strength values unarmed is straight up better than using a basic weapon.
+Attack dramatically outpaces attack at high levels.
+Shields scale very poorly as they used fixed block amounts. Look at % shield blocking.
 
 
 Changes:
@@ -18,6 +24,15 @@ Three types of magic.
 All spells have a mana cost and a cooldown.
 Magic has an auto-cast toggle to automatically cast magic when cooldown elapses if possible.
 
+Allies feature:
+Assemble party of allies that attack enemies.
+Allies are untargettable damage platforms for now.
+
+Special combat effects:
+Enemies can now have defense piercing, apply status effects, deal ambush damage (free damage when they spawn) and deathrattle damage (free damage when they die.)
+Bestiary also properly lists these special effects.
+
+New item cases, junk item and key item and special shop handling for these cases.
 
 Many new skills:
 -Parrying skill allows chance of negating attacks when using a shield.

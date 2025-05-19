@@ -49,6 +49,17 @@ const rarity_multipliers = {
 
 const item_templates = {};
 
+
+///chance is handled in rolling the loot_pool in the first place, so these should always have 100% chance.
+const loot_pools = {
+    magic_spellbooks_pool: [
+        { item_id: "TRUE ULTIMATE POWER", chance: 100, min_count: 1, max_count: 1 },
+        { item_id: "Old combat manual", chance: 100, min_count: 1, max_count: 1 },
+        { item_id: "ABC for kids", chance: 100, min_count: 1, max_count: 1 },
+    ],
+    // other pools...
+};
+
 let loot_sold_count = {};
 
 function setLootSoldCount(data) {
@@ -237,6 +248,26 @@ class Material extends OtherItem {
         this.price_recovers = true;
         this.material_type = item_data.material_type;
         this.tags["material"] = true;
+    }
+}
+
+class Junk extends OtherItem {
+    constructor(item_data) {
+        super(item_data);
+        this.item_type = "JUNK";
+        this.saturates_market = true;
+        this.price_recovers = true;
+        this.tags["junk"] = true;
+    }
+}
+
+class KeyItem extends OtherItem {
+    constructor(item_data) {
+        super(item_data);
+        this.item_type = "KEYITEM";
+        this.saturates_market = true;
+        this.price_recovers = true;
+        this.tags["keyitem"] = true;
     }
 }
 
@@ -863,6 +894,7 @@ function getAdjustedReadingTime(bookTitle) {
 class LootChestItem extends UsableItem {
     constructor(item_data) {
         super(item_data);
+		this.loot_pool = item_data.loot_pool;
         this.loot = item_data.loot || []; // Array of { item_id, chance, min_count, max_count }
         this.tags["loot_chest"] = true;
     }
@@ -900,6 +932,10 @@ function getItem(item_data) {
             return new Book(item_data);
         case "OTHER":
             return new OtherItem(item_data);
+		case "JUNK":
+            return new Junk(item_data);
+			case "KEYITEM":
+            return new KeyItem(item_data);
         case "COMPONENT":
             if (item_data.tags["weapon component"])
                 return new WeaponComponent(item_data);
@@ -1154,85 +1190,79 @@ book_stats["The Spellblade Chronicles vol. 1"] = new BookData({
 item_templates["ABC for kids"] = new Book({
     name: "ABC for kids",
     description: "The simplest book on the market",
-    value: 100,
+    value: 500,
 });
 
 item_templates["Peak Literature"] = new Book({
     name: "Peak Literature",
     description: "Reborn as the Second Bastard Son of the 8th Margrave with an Animal Husbandry skill, so I'll Live As I Please Whilst Cheating at Horse Racing",
-    value: 100,
+    value: 500,
 });
 
 item_templates["Old combat manual"] = new Book({
     name: "Old combat manual",
     description: "Old book about combat, worn and outdated, but might still contain something useful",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Twist liek a snek"] = new Book({
     name: "Twist liek a snek",
     description: "This book has a terrible grammar, seemingly written by some uneducated bandit, but despite that it quite well details how to properly evade attacks.",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Ye olde dictionary"] = new Book({
     name: "Ye olde dictionary",
     description: "Ye olde dictionary",
-    value: 200,
+    value: 1000,
 });
 
 
 item_templates["Joy of Mining"] = new Book({
     name: "Joy of Mining",
     description: "Joy of Mining",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Joy of Woodcutting"] = new Book({
     name: "Joy of Woodcutting",
     description: "Joy of Woodcutting",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Joy of Fishing"] = new Book({
     name: "Joy of Fishing",
     description: "Joy of Fishing",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Joy of Herbalism"] = new Book({
     name: "Joy of Herbalism",
     description: "Joy of Herbalism",
-    value: 200,
+    value: 1000,
 });
 
 item_templates["Power of Dreams"] = new Book({
     name: "Power of Dreams",
     description: "Power of Dreams",
-    value: 100,
+    value: 1000,
 });
 
 item_templates["TRUE ULTIMATE POWER"] = new Book({
     name: "TRUE ULTIMATE POWER",
     description: "TRUE ULTIMATE POWER",
-    value: 1000,
+    value: 2000,
 });
 
 item_templates["The Spellblade Chronicles vol. 1"] = new Book({
     name: "The Spellblade Chronicles vol. 1",
     description: "The Spellblade Chronicles vol. 1",
-    value: 1000,
+    value: 2000,
 });
 
 //miscellaneous and loot:
 (function(){
-    item_templates["Rat fang"] = new OtherItem({
-        name: "Rat fang", 
-        description: "Fang of a huge rat, not very sharp, but can still pierce a human skin if enough force is applied", 
-        value: 8,
-        saturates_market: true,
-        price_recovers: true,
-    });
+ 
 
     item_templates["Wolf fang"] = new OtherItem({
         name: "Wolf fang", 
@@ -1327,13 +1357,7 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         material_type: "bone",
     });
 	
-    item_templates["Rotten Flesh"] = new Material({
-        name: "Rotten Flesh", 
-        description: "Rotten Flesh",
-        value: 1,
-        price_recovers: true,
-        material_type: "material",
-    });
+
 	    item_templates["Slime Jelly"] = new Material({
         name: "Slime Jelly", 
         description: "Slime Jelly",
@@ -1341,49 +1365,14 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         price_recovers: true,
         material_type: "material",
     });
-	    item_templates["Goo"] = new Material({
-        name: "Goo", 
-        description: "Goo",
-        value: 1,
-        price_recovers: true,
-        material_type: "material",
-    });
-	    item_templates["Acid"] = new Material({
-        name: "Acid", 
-        description: "Acid",
-        value: 10,
-        price_recovers: true,
-        material_type: "material",
-    });
 
-	    item_templates["Burning Goo"] = new Material({
-        name: "Burning Goo", 
-        description: "Burning Goo",
-        value: 10,
-        price_recovers: true,
-        material_type: "material",
-    });
 	    item_templates["Platinum Shard"] = new Material({
         name: "Platinum Shard", 
         description: "Platinum Shard",
         value: 1000,
         price_recovers: true,
     });    
-    item_templates["Ectoplasm"] = new Material({
-        name: "Ectoplasm", 
-        description: "Ectoplasm",
-        value: 8,
-        price_recovers: true,
-        material_type: "material",
-    });
-	
-    item_templates["Congealed Blood"] = new Material({
-        name: "Congealed Blood", 
-        description: "Congealed Blood",
-        value: 10,
-        price_recovers: true,
-        material_type: "material",
-    });
+
 	
 	    item_templates["Magic Stone"] = new Material({
         name: "Magic Stone", 
@@ -1401,13 +1390,7 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         material_type: "material",
     });
 	
-	    item_templates["Bat Wings"] = new Material({
-        name: "Bat Wings", 
-        description: "Bat Wings",
-        value: 2,
-        price_recovers: true,
-        material_type: "material",
-    });
+
 	
 		item_templates["Regenerating Flesh"] = new Material({
         name: "Regenerating Flesh", 
@@ -1441,13 +1424,7 @@ item_templates["Spider Fang"] = new Material({
     material_type: "material",
 });
 
-item_templates["Chitin Shard"] = new Material({
-    name: "Chitin Shard", 
-    description: "A brittle fragment of a spider’s exoskeleton.",
-    value: 10,
-    price_recovers: true,
-    material_type: "material",
-});
+
 
 item_templates["Venom Gland"] = new Material({
     name: "Venom Gland", 
@@ -1480,13 +1457,7 @@ item_templates["Royal Silk"] = new Material({
     price_recovers: true,
     material_type: "material",
 });
-item_templates["Ant Mandible"] = new Material({
-    name: "Ant Mandible", 
-    description: "A sturdy biting appendage from a soldier or worker ant.",
-    value: 6,
-    price_recovers: true,
-    material_type: "material",
-});
+
 
 item_templates["Ant Core"] = new Material({
     name: "Ant Core", 
@@ -1503,8 +1474,87 @@ item_templates["Royal Jelly"] = new Material({
     price_recovers: true,
     material_type: "material",
 });
+
+//junk items 
+item_templates["Ant Mandible"] = new Junk({
+    name: "Ant Mandible", 
+    description: "A sturdy biting appendage from a soldier or worker ant.",
+    value: 6,
+    price_recovers: true,
+});
+item_templates["Chitin Shard"] = new Junk({
+    name: "Chitin Shard", 
+    description: "A brittle fragment of a spider’s exoskeleton.",
+    value: 10,
+    price_recovers: true,
+});
+	    item_templates["Bat Wings"] = new Junk({
+        name: "Bat Wings", 
+        description: "Bat Wings",
+        value: 2,
+        price_recovers: true,
+    });
+	    item_templates["Goo"] = new Junk({
+        name: "Goo", 
+        description: "Goo",
+        value: 1,
+        price_recovers: true,
+    });
+	    item_templates["Acid"] = new Junk({
+        name: "Acid", 
+        description: "Acid",
+        value: 10,
+        price_recovers: true,
+    });
+
+	    item_templates["Burning Goo"] = new Junk({
+        name: "Burning Goo", 
+        description: "Burning Goo",
+        value: 10,
+        price_recovers: true,
+    });
+    item_templates["Ectoplasm"] = new Junk({
+        name: "Ectoplasm", 
+        description: "Ectoplasm",
+        value: 8,
+        price_recovers: true,
+    });
 	
+    item_templates["Congealed Blood"] = new Junk({
+        name: "Congealed Blood", 
+        description: "Congealed Blood",
+        value: 10,
+        price_recovers: true,
+    });
+
+    item_templates["Rotten Flesh"] = new Junk({
+        name: "Rotten Flesh", 
+        description: "A rotting lump of flesh. Why would you even pick it up?",
+        value: 1,
+        price_recovers: true,
+    });
+   item_templates["Rat fang"] = new Junk({
+        name: "Rat fang", 
+        description: "Fang of a huge rat, not very sharp, but can still pierce a human skin if enough force is applied", 
+        value: 8,
+        saturates_market: true,
+        price_recovers: true,
+    });	
+
 	
+//key items
+
+    item_templates["Castle Key"] = new KeyItem({
+        name: "Castle Key", 
+        description: "Key to the castle.",
+        value: 1,
+        price_recovers: true,
+    });
+    item_templates["Purest Darkness"] = new KeyItem({
+        name: "Purest Darkness", 
+        description: "Purest Darkness",
+        value: 1, 
+    });
 
 
 })();
@@ -1527,6 +1577,24 @@ item_templates["Royal Jelly"] = new Material({
         price_recovers: true,
         material_type: "raw metal",
     });
+    item_templates["Blacksteel ore"] = new Material({
+        name: "Blacksteel ore", 
+        description: "Blacksteel ore", 
+        value: 10,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "raw metal",
+    });
+    item_templates["Mithril ore"] = new Material({
+        name: "Mithril ore", 
+        description: "Mithril ore", 
+        value: 20,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "raw metal",
+    });
+	
+	
     item_templates["Piece of rough wood"] = new Material({
         name: "Piece of rough wood", 
         description: "Cheapest form of wood. There's a lot of bark and malformed pieces.", 
@@ -1545,12 +1613,20 @@ item_templates["Royal Jelly"] = new Material({
     });
     item_templates["Piece of ash wood"] = new Material({
         name: "Piece of ash wood", 
-        description: "Strong yet elastic, it's best wood you can hope to find around. There's a lot of bark and malformed pieces.",
+        description: "Strong yet elastic, it's among the best wood you can hope to find around. There's a lot of bark and malformed pieces.",
         value: 7,
         saturates_market: true,
         price_recovers: true,
         material_type: "raw wood",
     });
+    item_templates["Piece of mahogany wood"] = new Material({
+        name: "Piece of mahogany wood", 
+        description: "Firm strong wood, it's the best wood you can hope to find around. There's a lot of bark and malformed pieces.",
+        value: 12,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "raw wood",
+    });	
 
     item_templates["Belmart leaf"] = new Material({
         name: "Belmart leaf", 
@@ -1706,6 +1782,24 @@ item_templates["Royal Jelly"] = new Material({
         price_recovers: true,
         material_type: "metal",
     });
+    item_templates["Blacksteel ingot"] = new Material({
+        id: "Blacksteel ingot",
+        name: "Blacksteel ingot", 
+        description: "It doesn't suffer from any excessive impurities and can be used without worries.", 
+        value: 30,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "metal",
+    });
+    item_templates["Mithril ingot"] = new Material({
+        id: "Mithril ingot",
+        name: "Mithril ingot", 
+        description: "It doesn't suffer from any excessive impurities and can be used without worries.", 
+        value: 40,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "metal",
+    });
     item_templates["Piece of wolf rat leather"] = new Material({
         name: "Piece of wolf rat leather",
         description: "It's slightly damaged and seems useless for anything that requires precise work.",
@@ -1780,6 +1874,14 @@ item_templates["Royal Jelly"] = new Material({
         price_recovers: true,
         material_type: "wood",
     });
+    item_templates["Processed mahogany wood"] = new Material({
+        name: "Processed mahogany wood", 
+        description: "High quality wood, just waiting to be turned into a piece of equipment.",
+        value: 30,
+        saturates_market: true,
+        price_recovers: true,
+        material_type: "wood",
+    });
 
 })();
 
@@ -1815,23 +1917,20 @@ item_templates["Royal Jelly"] = new Material({
         description: "Imperial Regalia",
         value: 5000, 
     });
-    item_templates["Purest Darkness"] = new OtherItem({
-        name: "Purest Darkness", 
-        description: "Purest Darkness",
-        value: 5000, 
-    });
+
 }());
+
 
 //weapon components:
 (function(){
     item_templates["Cheap short iron blade"] = new WeaponComponent({
         name: "Cheap short iron blade", description: "Crude blade made of iron. Perfect length for a dagger, but could be also used for a spear",
         component_type: "short blade",
-        value: 90,
+        value: 70,
         component_tier: 1,
         name_prefix: "Cheap iron",
         attack_value: 5,
-        stats: {
+        component_stats: {
             crit_rate: {
                 flat: 0.06,
             },
@@ -1839,37 +1938,76 @@ item_templates["Royal Jelly"] = new Material({
                 multiplier: 1.20,
             },
             agility: {
-                flat: 1,
+                multiplier: 1.05,
             }
         }
     });
     item_templates["Short iron blade"] = new WeaponComponent({
         name: "Short iron blade", description: "A good iron blade. Perfect length for a dagger, but could be also used for a spear",
         component_type: "short blade",
-        value: 200,
+        value: 160,
         component_tier: 2,
         name_prefix: "Iron",
         attack_value: 8,
-        stats: {
+        component_stats: {
             crit_rate: {
-                flat: 0.1,
+                flat: 0.08,
             },
             attack_speed: {
                 multiplier: 1.30,
             },
             agility: {
-                flat: 2,
+                multiplier: 1.13,
             }
         }
     });
+    item_templates["Short blacksteel blade"] = new WeaponComponent({
+        name: "Short blacksteel blade", description: "A good blacksteel blade. Perfect length for a dagger, but could be also used for a spear",
+        component_type: "short blade",
+        value: 240,
+        component_tier: 3,
+        name_prefix: "Blacksteel",
+        attack_value: 11,
+        component_stats: {
+            crit_rate: {
+                flat: 0.1,
+            },
+            attack_speed: {
+                multiplier: 1.35,
+            },
+            agility: {
+                multiplier: 1.2,
+            }
+        }
+    });
+    item_templates["Short mithril blade"] = new WeaponComponent({
+        name: "Short mithril blade", description: "A good mithril blade. Perfect length for a dagger, but could be also used for a spear",
+        component_type: "short blade",
+        value: 360,
+        component_tier: 4,
+        name_prefix: "Mithril",
+        attack_value: 14,
+        component_stats: {
+            crit_rate: {
+                flat: 0.12,
+            },
+            attack_speed: {
+                multiplier: 1.40,
+            },
+            agility: {
+                multiplier: 1.28,
+            }
+        }
+    });
+	
     item_templates["Cheap long iron blade"] = new WeaponComponent({
         name: "Cheap long iron blade", description: "Crude blade made of iron, with a perfect length for a sword",
         component_type: "long blade",
-        value: 120,
+        value: 100,
         name_prefix: "Cheap iron",
         component_tier: 1,
         attack_value: 8,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 1.10,
             },
@@ -1881,11 +2019,11 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Long iron blade"] = new WeaponComponent({
         name: "Long iron blade", description: "Good blade made of iron, with a perfect length for a sword",
         component_type: "long blade",
-        value: 260,
+        value: 210,
         name_prefix: "Iron",
         component_tier: 2,
         attack_value: 13,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 1.15,
             },
@@ -1894,40 +2032,94 @@ item_templates["Royal Jelly"] = new Material({
             },
         }
     });
+    item_templates["Long blacksteel blade"] = new WeaponComponent({
+        name: "Long blacksteel blade", description: "Good blade made of blacksteel, with a perfect length for a sword",
+        component_type: "long blade",
+        value: 310,
+        name_prefix: "Blacksteel",
+        component_tier: 3,
+        attack_value: 18,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.2,
+            },
+            crit_rate: {
+                flat: 0.05,
+            },
+        }
+    });
+    item_templates["Long mithril blade"] = new WeaponComponent({
+        name: "Long mithril blade", description: "Good blade made of mithril, with a perfect length for a sword",
+        component_type: "long blade",
+        value: 450,
+        name_prefix: "Mithril",
+        component_tier: 4,
+        attack_value: 23,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.25,
+            },
+            crit_rate: {
+                flat: 0.06,
+            },
+        }
+    });	
     item_templates["Cheap iron axe head"] = new WeaponComponent({
         name: "Cheap iron axe head", description: "A heavy axe head made of low quality iron",
         component_type: "axe head",
-        value: 120,
+        value: 100,
         name_prefix: "Cheap iron",
         component_tier: 1,
         attack_value: 10,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.9,
             }
         }
     });
     item_templates["Iron axe head"] = new WeaponComponent({
-        name: "Iron axe head", description: "A heavy axe head made of good iron",
+        name: "Iron axe head", description: "A heavy axe head made of blacksteel",
         component_type: "axe head",
-        value: 260,
+        value: 210,
         name_prefix: "Iron",
         component_tier: 2,
         attack_value: 16,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.95,
             }
         }
     });
+    item_templates["Blacksteel axe head"] = new WeaponComponent({
+        name: "Blacksteel axe head", description: "A heavy axe head made of blacksteel",
+        component_type: "axe head",
+        value: 310,
+        name_prefix: "Blacksteel",
+        component_tier: 3,
+        attack_value: 22,
+    });
+   item_templates["Mithril axe head"] = new WeaponComponent({
+        name: "Mithril axe head", description: "A heavy axe head made of mithril",
+        component_type: "axe head",
+        value: 450,
+        name_prefix: "Mithril",
+        component_tier: 4,
+        attack_value: 28,
+		    component_stats: {
+            attack_speed: {
+                multiplier: 1.05,
+            }
+        }
+    });	
+	
     item_templates["Cheap iron hammer head"] = new WeaponComponent({
         name: "Cheap iron hammer head", description: "A crude ball made of low quality iron, with a small hole for the handle",
         component_type: "hammer head",
-        value: 120,
+        value: 100,
         name_prefix: "Cheap iron",
         component_tier: 1,
         attack_value: 12,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.8,
             }
@@ -1937,13 +2129,39 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Iron hammer head"] = new WeaponComponent({
         name: "Iron hammer head", description: "A crude ball made of iron, with a small hole for the handle",
         component_type: "hammer head",
-        value: 260,
+        value: 210,
         name_prefix: "Iron",
         component_tier: 2,
         attack_value: 19,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.85,
+            }
+        }
+    });
+    item_templates["Blacksteel hammer head"] = new WeaponComponent({
+        name: "Blacksteel hammer head", description: "A blocky piece of blacksteel, with a small hole for the handle",
+        component_type: "hammer head",
+        value: 300,
+        name_prefix: "Blacksteel",
+        component_tier: 3,
+        attack_value: 26,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.9,
+            }
+        }
+    });
+    item_templates["Mithril hammer head"] = new WeaponComponent({
+        name: "Mithril hammer head", description: "A blocky piece of mithril, with a small hole for the handle",
+        component_type: "hammer head",
+        value: 450,
+        name_prefix: "Mithril",
+        component_tier: 4,
+        attack_value: 33,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.95,
             }
         }
     });
@@ -1951,28 +2169,52 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Simple short wooden hilt"] = new WeaponComponent({
         name: "Simple short wooden hilt", description: "A short handle for a sword or maybe a dagger",
         component_type: "short handle",
-        value: 10,
+        value: 8,
         component_tier: 1,
     });
 
     item_templates["Short wooden hilt"] = new WeaponComponent({
         name: "Short wooden hilt", description: "A short handle for a sword or maybe a dagger",
         component_type: "short handle",
-        value: 40,
+        value: 32,
         component_tier: 2,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 1.05,
             }
         }
     });
 
+    item_templates["Short ash wood hilt"] = new WeaponComponent({
+        name: "Short ash wood hilt", description: "A short handle for a sword or maybe a dagger",
+        component_type: "short handle",
+        value: 48,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.1,
+            }
+        }
+    });
+    item_templates["Short mahogany wood hilt"] = new WeaponComponent({
+        name: "Short mahogany wood hilt", description: "A short handle for a sword or maybe a dagger",
+        component_type: "short handle",
+        value: 72,
+        component_tier: 4,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.15,
+            }
+        }
+    });	
+	
+
     item_templates["Simple medium wooden handle"] = new WeaponComponent({
         name: "Simple medium wooden handle", description: "A medium handle for an axe or a hammer",
         component_type: "medium handle",
-        value: 20,
+        value: 16,
         component_tier: 1,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.95,
             }
@@ -1982,17 +2224,40 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Medium wooden handle"] = new WeaponComponent({
         name: "Medium wooden handle", description: "A medium handle for an axe or a hammer",
         component_type: "medium handle",
-        value: 80,
+        value: 64,
         component_tier: 2,
     });
+
+    item_templates["Medium ash wood handle"] = new WeaponComponent({
+        name: "Medium ash wood handle", description: "A medium handle for an axe or a hammer",
+        component_type: "medium handle",
+        value: 96,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.05,
+            }
+        }
+    });
+    item_templates["Medium mahogany wood handle"] = new WeaponComponent({
+        name: "Medium mahogany wood handle", description: "A medium handle for an axe or a hammer",
+        component_type: "medium handle",
+        value: 144,
+        component_tier: 4,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.1,
+            }
+        }
+    });	
+	
 
     item_templates["Simple long wooden shaft"] = new WeaponComponent({
         name: "Simple long wooden shaft", description: "A long shaft for a spear, somewhat uneven",
         component_type: "long handle",
-        value: 30,
+        value: 24,
         component_tier: 1,
-        attack_multiplier: 1.5,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.9,
             },
@@ -2003,22 +2268,42 @@ item_templates["Royal Jelly"] = new Material({
         name: "Long wooden shaft", 
         description: "A long shaft for a spear, somewhat uneven",
         component_type: "long handle",
-        value: 120,
+        value: 100,
         component_tier: 2,
-        attack_multiplier: 1.5,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.95,
             },
         }
     });
+    item_templates["Long ash wood shaft"] = new WeaponComponent({
+        name: "Long ash wood shaft", 
+        description: "A long shaft for a spear.",
+        component_type: "long handle",
+        value: 150,
+        component_tier: 3,
+		
+    });
+	    item_templates["Long mahogany wood shaft"] = new WeaponComponent({
+        name: "Long mahogany wood shaft", 
+        description: "A long shaft for a spear.",
+        component_type: "long handle",
+        value: 225,
+        component_tier: 4,
+		   component_stats: {
+            attack_speed: {
+                multiplier: 1.05,
+            },
+        }
+    });
+	
 
     item_templates["Cheap short iron hilt"] = new WeaponComponent({
         name: "Cheap short iron hilt", description: "A short handle for a sword or maybe a dagger, heavy",
         component_type: "short handle",
-        value: 70,
+        value: 56,
         component_tier: 1,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.9,
             },
@@ -2031,11 +2316,34 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Short iron hilt"] = new WeaponComponent({
         name: "Short iron hilt", description: "A short handle for a sword or maybe a dagger, heavy",
         component_type: "short handle",
-        value: 100,
+        value: 80,
         component_tier: 2,
-        stats: {
+        component_stats: {
             attack_power: {
                 multiplier: 1.05,
+            }
+        }
+    });
+
+    item_templates["Short blacksteel hilt"] = new WeaponComponent({
+        name: "Short blacksteel hilt", description: "A short handle for a sword or maybe a dagger, heavy",
+        component_type: "short handle",
+        value: 120,
+        component_tier: 3,
+        component_stats: {
+            attack_power: {
+                multiplier: 1.1,
+            }
+        }
+    });
+    item_templates["Short mithril hilt"] = new WeaponComponent({
+        name: "Short mithril hilt", description: "A short handle for a sword or maybe a dagger, heavy",
+        component_type: "short handle",
+        value: 180,
+        component_tier: 4,
+        component_stats: {
+            attack_power: {
+                multiplier: 1.15,
             }
         }
     });
@@ -2043,9 +2351,9 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Cheap medium iron handle"] = new WeaponComponent({
         name: "Cheap medium iron handle", description: "A medium handle for an axe or a hammer, very heavy",
         component_type: "medium handle",
-        value: 80,
+        value: 64,
         component_tier: 1,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.7,
             },
@@ -2058,9 +2366,9 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Medium iron handle"] = new WeaponComponent({
         name: "Medium iron handle", description: "A medium handle for an axe or a hammer, very heavy",
         component_type: "medium handle",
-        value: 120,
+        value: 100,
         component_tier: 2,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.8,
             },
@@ -2070,12 +2378,41 @@ item_templates["Royal Jelly"] = new Material({
         }
     });
 
+    item_templates["Medium blacksteel handle"] = new WeaponComponent({
+        name: "Medium blacksteel handle", description: "A medium handle for an axe or a hammer, very heavy",
+        component_type: "medium handle",
+        value: 150,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.8,
+            },
+            attack_power: {
+                multiplier: 1.27,
+            }
+        }
+    });
+    item_templates["Medium mithril handle"] = new WeaponComponent({
+        name: "Medium mithril handle", description: "A medium handle for an axe or a hammer, very heavy",
+        component_type: "medium handle",
+        value: 225,
+        component_tier: 4,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.9,
+            },
+            attack_power: {
+                multiplier: 1.27,
+            }
+        }
+    });
+
     item_templates["Cheap long iron shaft"] = new WeaponComponent({
         name: "Cheap long iron shaft", description: "A long shaft for a spear, extremely heavy",
         component_type: "long handle",
-        value: 110,
+        value: 92,
         component_tier: 1,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.5,
             },
@@ -2089,14 +2426,92 @@ item_templates["Royal Jelly"] = new Material({
         name: "Long iron shaft", 
         description: "A long shaft for a spear,  extremely heavy",
         component_type: "long handle",
-        value: 160,
+        value: 128,
         component_tier: 2,
-        stats: {
+        component_stats: {
             attack_speed: {
                 multiplier: 0.6,
             },
             attack_power: {
                 multiplier: 1.6,
+            }
+        }
+    });
+
+    item_templates["Long blacksteel shaft"] = new WeaponComponent({
+        name: "Long blacksteel shaft", 
+        description: "A long shaft for a spear, extremely heavy",
+        component_type: "long handle",
+        value: 192,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.6,
+            },
+            attack_power: {
+                multiplier: 1.75,
+            }
+        }
+    });
+	
+    item_templates["Long mithril shaft"] = new WeaponComponent({
+        name: "Long mithril shaft", 
+        description: "A long shaft for a spear, extremely heavy",
+        component_type: "long handle",
+        value: 288,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.6,
+            },
+            attack_power: {
+                multiplier: 1.9,
+            }
+        }
+    });
+
+    item_templates["Short weak bone hilt"] = new WeaponComponent({
+        name: "Short weak bone hilt", description: "A short handle for a sword or maybe a dagger, made of a weak monster's bone",
+        component_type: "short handle",
+        value: 120,
+        component_tier: 3,
+        component_stats: {
+            attack_power: {
+                multiplier: 1.05,
+            },
+            attack_speed: {
+                multiplier: 1.05,
+            }
+        },
+    });
+
+    item_templates["Medium weak bone handle"] = new WeaponComponent({
+        name: "Medium weak bone handle", description: "A medium handle for an axe or a hammer, made of a weak monster's bone",
+        component_type: "medium handle",
+        value: 150,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.95,
+            },
+            attack_power: {
+                multiplier: 1.1,
+            },
+        }
+    });
+
+    item_templates["Long weak bone shaft"] = new WeaponComponent({
+        name: "Long weak bone shaft", 
+        description: "A long shaft for a spear, made of weak monster's bone",
+        component_type: "long handle",
+        value: 192,
+        component_tier: 3,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.8,
+            },
+            attack_power: {
+                multiplier: 1.5,
             }
         }
     });
@@ -2117,6 +2532,18 @@ item_templates["Royal Jelly"] = new Material({
             handle: "Simple long wooden shaft"
         }
     });
+    item_templates["Blacksteel spear"] = new Weapon({
+        components: {
+            head: "Short blacksteel blade",
+            handle: "Long wooden shaft"
+        }
+    });
+    item_templates["Mithril spear"] = new Weapon({
+        components: {
+            head: "Short mithril blade",
+            handle: "Long wooden shaft"
+        }
+    });
 
     item_templates["Cheap iron dagger"] = new Weapon({
         components: {
@@ -2128,6 +2555,18 @@ item_templates["Royal Jelly"] = new Material({
         components: {
             head: "Short iron blade",
             handle: "Simple short wooden hilt",
+        }
+    });
+    item_templates["Blacksteel dagger"] = new Weapon({
+        components: {
+            head: "Short blacksteel blade",
+            handle: "Short wooden hilt",
+        }
+    });
+    item_templates["Mithril dagger"] = new Weapon({
+        components: {
+            head: "Short mithril blade",
+            handle: "Short wooden hilt",
         }
     });
 
@@ -2143,6 +2582,18 @@ item_templates["Royal Jelly"] = new Material({
             handle: "Simple short wooden hilt",
         }
     });
+    item_templates["Blacksteel sword"] = new Weapon({
+        components: {
+            head: "Long blacksteel blade",
+            handle: "Short wooden hilt",
+        }
+    });
+    item_templates["Mithril sword"] = new Weapon({
+        components: {
+            head: "Long mithril blade",
+            handle: "Short wooden hilt",
+        }
+    });
 
     item_templates["Cheap iron axe"] = new Weapon({
         components: {
@@ -2154,6 +2605,18 @@ item_templates["Royal Jelly"] = new Material({
         components: {
             head: "Iron axe head",
             handle: "Simple medium wooden handle",
+        }
+    });
+    item_templates["Blacksteel axe"] = new Weapon({
+        components: {
+            head: "Blacksteel axe head",
+            handle: "Medium wooden handle",
+        }
+    });
+    item_templates["Mithril axe"] = new Weapon({
+        components: {
+            head: "Mithril axe head",
+            handle: "Medium wooden handle",
         }
     });
 
@@ -2169,6 +2632,19 @@ item_templates["Royal Jelly"] = new Material({
             handle: "Simple medium wooden handle",
         }
     });
+    item_templates["Blacksteel battle hammer"] = new Weapon({
+        components: {
+            head: "Blacksteel hammer head",
+            handle: "Medium wooden handle",
+        }
+    });
+    item_templates["Mithril battle hammer"] = new Weapon({
+        components: {
+            head: "Mithril hammer head",
+            handle: "Medium wooden handle",
+        }
+    });	
+
 })();
 
 //armor components:
@@ -2177,7 +2653,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Wolf leather helmet armor", 
         description: "Strenghtened wolf leather, ready to be used as a part of a helmet",
         component_type: "helmet exterior",
-        value: 300,
+        value: 600,
         component_tier: 2,
         full_armor_name: "Wolf leather helmet",
         defense_value: 2,
@@ -2192,7 +2668,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Boar leather helmet armor", 
         description: "Strong boar leather, ready to be used as a part of a helmet",
         component_type: "helmet exterior",
-        value: 500,
+        value: 1000,
         component_tier: 3,
         full_armor_name: "Boar leather helmet",
         defense_value: 3,
@@ -2208,7 +2684,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Wolf leather cuirass",
         description: "Simple cuirass made of solid wolf leather, all it needs now is something softer to wear under it.",
         component_type: "chestplate exterior",
-        value: 600,
+        value: 1200,
         component_tier: 2,
         full_armor_name: "Wolf leather armor",
         defense_value: 4,
@@ -2223,7 +2699,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Boar leather cuirass",
         description: "String cuirass made of boar leather.",
         component_type: "chestplate exterior",
-        value: 1000,
+        value: 2000,
         component_tier: 3,
         full_armor_name: "Boar leather armor",
         defense_value: 6,
@@ -2237,7 +2713,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Wolf leather greaves",
         description: "Greaves made of wolf leather. Just attach them onto some pants and you are ready to go.",
         component_type: "leg armor exterior",
-        value: 300,
+        value: 600,
         component_tier: 2,
         full_armor_name: "Wolf leather armored pants",
         defense_value: 2,
@@ -2252,7 +2728,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Boar leather greaves",
         description: "Greaves made of thick boar leather. Just attach them onto some pants and you are ready to go.",
         component_type: "leg armor exterior",
-        value: 500,
+        value: 1000,
         component_tier: 3,
         full_armor_name: "Boar leather armored pants",
         defense_value: 3,
@@ -2266,7 +2742,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Wolf leather glove armor",
         description: "Pieces of wolf leather shaped for gloves.",
         component_type: "glove exterior",
-        value: 300,
+        value: 600,
         component_tier: 2,
         full_armor_name: "Wolf leather gloves",
         defense_value: 2,
@@ -2276,7 +2752,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Boar leather glove armor",
         description: "Pieces of boar leather shaped for gloves.",
         component_type: "glove exterior",
-        value: 500,
+        value: 1000,
         component_tier: 3,
         full_armor_name: "Boar leather gloves",
         defense_value: 3,
@@ -2286,7 +2762,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Wolf leather shoe armor",
         description: "Pieces of wolf leather shaped for shoes.",
         component_type: "shoes exterior",
-        value: 300,
+        value: 600,
         component_tier: 2,
         full_armor_name: "Wolf leather shoes",
         defense_value: 2,
@@ -2296,7 +2772,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Boar leather shoe armor",
         description: "Pieces of boar leather shaped for shoes.",
         component_type: "shoes exterior",
-        value: 500,
+        value: 1000,
         component_tier: 3,
         full_armor_name: "Boar leather shoes",
         defense_value: 3,
@@ -2306,7 +2782,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Iron chainmail helmet armor",
         description: "Best way to keep your head in one piece",
         component_type: "helmet exterior",
-        value: 400,
+        value: 800,
         component_tier: 2,
         full_armor_name: "Iron chainmail helmet",
         defense_value: 4,
@@ -2323,7 +2799,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Iron chainmail vest",
         description: "Basic iron chainmail. Nowhere near as strong as a plate armor",
         component_type: "chestplate exterior",
-        value: 800,
+        value: 1600,
         component_tier: 2,
         full_armor_name: "Iron chainmail armor",
         defense_value: 8,
@@ -2340,7 +2816,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Iron chainmail greaves",
         description: "Greaves made of iron chainmail. Just attach them onto some pants and you are ready to go.",
         component_type: "leg armor exterior",
-        value: 400,
+        value: 800,
         component_tier: 2,
         full_armor_name: "Iron chainmail pants",
         defense_value: 4,
@@ -2357,7 +2833,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Iron chainmail glove",
         description: "Iron chainmail in a form ready to be applied onto a glove.",
         component_type: "glove exterior",
-        value: 400,
+        value: 800,
         component_tier: 2,
         full_armor_name: "Iron chainmail gloves",
         defense_value: 4,
@@ -2375,7 +2851,7 @@ item_templates["Royal Jelly"] = new Material({
         name: "Iron chainmail shoes",
         description: "Iron chainmail in a form ready to be applied onto a pair of shoes.",
         component_type: "shoes exterior",
-        value: 400,
+        value: 800,
         component_tier: 2,
         full_armor_name: "Iron chainmail boots",
         defense_value: 4,
@@ -2405,7 +2881,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Leather vest"] = new Armor({
         name: "Leather vest", 
         description: "Comfortable leather vest, offering a low protection.", 
-        value: 300,
+        value: 600,
         component_type: "chestplate interior",
         base_defense: 2,
         component_tier: 2,
@@ -2427,7 +2903,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Leather pants"] = new Armor({
         name: "Leather pants", 
         description: "Solid leather pants.", 
-        value: 300,
+        value: 600,
         component_type: "leg armor interior",
         base_defense: 2,
         component_tier: 2,
@@ -2450,7 +2926,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Leather hat"] = new Armor({
         name: "Leather hat", 
         description: "A nice leather hat to protect your head.", 
-        value: 300,
+        value: 600,
         component_type: "helmet interior",
         base_defense: 2,
         component_tier: 2,
@@ -2459,7 +2935,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Leather gloves"] = new Armor({
         name: "Leather gloves", 
         description: "Strong leather gloves, perfect for handling rough and sharp objects.", 
-        value: 300,
+        value: 600,
         component_type: "glove interior",
         base_defense: 1,
         component_tier: 2,
@@ -2481,7 +2957,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Leather shoes"] = new Armor({
         name: "Leather shoes", 
         description: "Solid shoes made of leather, a must have for any traveler", 
-        value: 300,
+        value: 600,
         component_type: "shoes interior",
         base_defense: 1,
         component_tier: 2,
@@ -2498,7 +2974,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Wool shirt"] = new Armor({
         name: "Wool shirt",
         description: "It's thick enough to weaken a blow, but you shouldn't hope for much. On the plus side, it's light and doesn't block your moves.", 
-        value: 300,
+        value: 600,
         component_type: "chestplate interior",
         base_defense: 1,
         component_tier: 2,
@@ -2515,7 +2991,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Wool pants"] = new Armor({
         name: "Wool pants", 
         description: "Nice woollen pants. Slightly itchy.",
-        value: 100,
+        value: 600,
         component_type: "leg armor interior",
         base_defense: 1,
         component_tier: 2,
@@ -2524,7 +3000,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Wool hat"] = new Armor({
         name: "Wool hat", 
         description: "Simple woollen hat to protect your head.",
-        value: 300,
+        value: 600,
         component_type: "helmet interior",
         base_defense: 1,
         component_tier: 2,
@@ -2541,7 +3017,7 @@ item_templates["Royal Jelly"] = new Material({
     item_templates["Wool gloves"] = new Armor({
         name: "Wool gloves",
         description: "Warm and comfy, but they don't provide much protection.",
-        value: 300,
+        value: 600,
         component_type: "glove interior",
         base_defense: 1,
         component_tier: 2,
@@ -2814,114 +3290,114 @@ item_templates["Royal Jelly"] = new Material({
     });
     item_templates["Upstart pickaxe"] = new Tool({
         name: "Upstart pickaxe",
-        description: "Upstart rod. +10% Tool Bonus",
-        value: 100,
+        description: "Upstart pickaxe. +10% Tool Bonus",
+        value: 1000,
 		tool_bonus: 10,
         equip_slot: "pickaxe",
     });
 	    item_templates["Upstart axe"] = new Tool({
         name: "Upstart axe",
-        description: "Upstart rod. +10% Tool Bonus",
-        value: 100,
+        description: "Upstart axe. +10% Tool Bonus",
+        value: 1000,
 		tool_bonus: 10,
         equip_slot: "axe",
     });
     item_templates["Upstart sickle"] = new Tool({
         name: "Upstart sickle",
-        description: "Upstart rod. +10% Tool Bonus",
-        value: 100,
+        description: "Upstart sickle. +10% Tool Bonus",
+        value: 1000,
 		tool_bonus: 10,
         equip_slot: "sickle",
     });
 	    item_templates["Upstart rod"] = new Tool({
         name: "Upstart rod",
         description: "Upstart rod. +10% Tool Bonus",
-        value: 100,
+        value: 1000,
 		tool_bonus: 10,
         equip_slot: "rod",
     });	
 
     item_templates["Journeyman pickaxe"] = new Tool({
         name: "Journeyman pickaxe",
-        description: "Journeyman rod. +20% Tool Bonus",
-        value: 1000,
+        description: "Journeyman pickaxe. +20% Tool Bonus",
+        value: 10000,
 		tool_bonus: 20,
         equip_slot: "pickaxe",
     });
 	    item_templates["Journeyman axe"] = new Tool({
         name: "Journeyman axe",
-        description: "Journeyman rod. +20% Tool Bonus",
-        value: 1000,
+        description: "Journeyman axe. +20% Tool Bonus",
+        value: 10000,
 		tool_bonus: 20,
         equip_slot: "axe",
     });
     item_templates["Journeyman sickle"] = new Tool({
         name: "Journeyman sickle",
-        description: "Journeyman rod. +20% Tool Bonus",
-        value: 1000,
+        description: "Journeyman sickle. +20% Tool Bonus",
+        value: 10000,
 		tool_bonus: 20,
         equip_slot: "sickle",
     });
 	    item_templates["Journeyman rod"] = new Tool({
         name: "Journeyman rod",
         description: "Journeyman rod. +20% Tool Bonus",
-        value: 1000,
+        value: 10000,
 		tool_bonus: 20,
         equip_slot: "rod",
     });
     item_templates["Expert pickaxe"] = new Tool({
         name: "Expert pickaxe",
-        description: "Expert rod. +35% Tool Bonus",
-        value: 5000,
+        description: "Expert pickaxe. +35% Tool Bonus",
+        value: 50000,
 		tool_bonus: 35,
         equip_slot: "pickaxe",
     });
 	    item_templates["Expert axe"] = new Tool({
         name: "Expert axe",
-        description: "Expert rod. +35% Tool Bonus",
-        value: 5000,
+        description: "Expert axe. +35% Tool Bonus",
+        value: 50000,
 		tool_bonus: 35,
         equip_slot: "axe",
     });
     item_templates["Expert sickle"] = new Tool({
         name: "Expert sickle",
-        description: "Expert rod. +35% Tool Bonus",
-        value: 5000,
+        description: "Expert sickle. +35% Tool Bonus",
+        value: 50000,
 		tool_bonus: 35,
         equip_slot: "sickle",
     });
 	    item_templates["Expert rod"] = new Tool({
         name: "Expert rod",
         description: "Expert rod. +35% Tool Bonus",
-        value: 5000,
+        value: 50000,
 		tool_bonus: 35,
         equip_slot: "rod",
     });
     item_templates["Super pickaxe"] = new Tool({
         name: "Super pickaxe",
         description: "A pickaxe so powerful it may well have been forged by the gods themselves. +50% Tool Bonus",
-        value: 10000,
+        value: 100000,
 		tool_bonus: 50,
         equip_slot: "pickaxe",
     });
 	    item_templates["Super axe"] = new Tool({
         name: "Super axe",
         description: "An axe so powerful it may well have been forged by the gods themselves. +50% Tool Bonus",
-        value: 10000,
+        value: 100000,
 		tool_bonus: 50,
         equip_slot: "axe",
     });
     item_templates["Super sickle"] = new Tool({
         name: "Super sickle",
         description: "A herb sickle so powerful it may well have been forged by the gods themselves. +50% Tool Bonus",
-        value: 10000,
+        value: 100000,
 		tool_bonus: 50,
         equip_slot: "sickle",
     });
 	    item_templates["Super rod"] = new Tool({
         name: "Super rod",
         description: "A fishing rod so powerful it may well have been forged by the gods themselves. +50% Tool Bonus",
-        value: 10000,
+        value: 100000,
 		tool_bonus: 50,
         equip_slot: "rod",
     });
@@ -2929,13 +3405,7 @@ item_templates["Royal Jelly"] = new Material({
 
 //usables:
 (function(){
-item_templates["Discount bread"] = new UsableItem({
-        name: "Discount bread", 
-        description: "Big piece of an old bread, still edible. Budget priced.", 
-        value: 5,
-		gluttony_value: 20,
-        effects: [{effect: "Basic meal", duration: 60}],
-    });
+
 	
 item_templates["Discount healing powder"] = new UsableItem({
         name: "Discount healing powder", 
@@ -2944,6 +3414,32 @@ item_templates["Discount healing powder"] = new UsableItem({
         effects: [{effect: "Weak healing powder", duration: 120}],
     });
 
+
+
+
+    item_templates["Weak healing powder"] = new UsableItem({
+        name: "Weak healing powder", 
+        description: "Not very potent, but can still make body heal noticeably faster for quite a while", 
+        value: 40,
+        effects: [{effect: "Weak healing powder", duration: 120}],
+    });
+
+    item_templates["Oneberry juice"] = new UsableItem({
+        name: "Oneberry juice", 
+        description: "Tastes kinda nice and provides a quick burst of healing", 
+        value: 80,
+		gluttony_value: 30,
+        effects: [{effect: "Weak healing potion", duration: 10}],
+    });
+
+
+item_templates["Discount bread"] = new UsableItem({
+        name: "Discount bread", 
+        description: "Big piece of an old bread, still edible. Budget priced.", 
+        value: 5,
+		gluttony_value: 20,
+        effects: [{effect: "Basic meal", duration: 60}],
+    });
 
 item_templates["Stale bread"] = new UsableItem({
         name: "Stale bread", 
@@ -2968,27 +3464,13 @@ item_templates["Stale bread"] = new UsableItem({
         effects: [{effect: "Basic meal", duration: 60}],
     });
 
-    item_templates["Weak healing powder"] = new UsableItem({
-        name: "Weak healing powder", 
-        description: "Not very potent, but can still make body heal noticeably faster for quite a while", 
-        value: 40,
-        effects: [{effect: "Weak healing powder", duration: 120}],
-    });
-
-    item_templates["Oneberry juice"] = new UsableItem({
-        name: "Oneberry juice", 
-        description: "Tastes kinda nice and provides a quick burst of healing", 
-        value: 80,
-		gluttony_value: 30,
-        effects: [{effect: "Weak healing potion", duration: 10}],
-    });
-
+//meat
     item_templates["Roasted rat meat"] = new UsableItem({
         name: "Roasted rat meat", 
         description: "Smell might be fine now, but it still seems like a bad idea to eat it",
         value: 10,
 		gluttony_value: 150,
-        effects: [{effect: "Cheap meat meal", duration: 30}, {effect: "Slight food poisoning", duration: 30}],
+        effects: [{effect: "Cheap meat meal", duration: 31}, {effect: "Slight food poisoning", duration: 30}],
     });
 
     item_templates["Roasted purified rat meat"] = new UsableItem({
@@ -2996,10 +3478,82 @@ item_templates["Stale bread"] = new UsableItem({
         description: "Smells alright and should be safe to eat, yet you still have some doubts",
         value: 20,
 		gluttony_value: 300,
-        effects: [{effect: "Cheap meat meal", duration: 30}],
+        effects: [{effect: "Cheap meat meal", duration: 31}],
+    });
+
+//fish dish
+
+    item_templates["Cooked Minnow"] = new UsableItem({
+        name: "Cooked Minnow", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 20,
+		gluttony_value: 300,
+        effects: [{effect: "Cheap fish dish", duration: 10}],
+    });
+    item_templates["Cooked Sardine"] = new UsableItem({
+        name: "Cooked Sardine", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 30,
+		gluttony_value: 400,
+        effects: [{effect: "Cheap fish dish", duration: 30}],
+    });
+    item_templates["Cooked Goldfish"] = new UsableItem({
+        name: "Cooked Goldfish", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 40,
+		gluttony_value: 500,
+        effects: [{effect: "Cheap fish dish", duration: 60}],
+    });
+	    item_templates["Cooked Plaice"] = new UsableItem({
+        name: "Cooked Plaice", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 50,
+		gluttony_value: 600,
+        effects: [{effect: "Simple fish dish", duration: 20}],
+    });
+	    item_templates["Cooked Bass"] = new UsableItem({
+        name: "Cooked Bass", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 60,
+		gluttony_value: 700,
+        effects: [{effect: "Simple fish dish", duration: 50}],
+    });
+	    item_templates["Cooked Crab"] = new UsableItem({
+        name: "Cooked Crab", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 70,
+		gluttony_value: 800,
+        effects: [{effect: "Simple fish dish", duration: 80}],
+    });
+	    item_templates["Cooked Haddock"] = new UsableItem({
+        name: "Cooked Haddock", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 80,
+		gluttony_value: 900,
+        effects: [{effect: "Ordinary fish dish", duration: 30}],
+    });
+	    item_templates["Cooked Carp"] = new UsableItem({
+        name: "Cooked Carp", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 90,
+		gluttony_value: 1000,
+        effects: [{effect: "Ordinary fish dish", duration: 60}],
+    });
+	    item_templates["Cooked Tuna"] = new UsableItem({
+        name: "Cooked Tuna", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 100,
+		gluttony_value: 1100,
+        effects: [{effect: "Ordinary fish dish", duration: 90}],
+    });
+	    item_templates["Cooked Catfish"] = new UsableItem({
+        name: "Cooked Catfish", 
+        description: "A powerful fishy smell belies a satisfactory taste.",
+        value: 110,
+		gluttony_value: 1200,
+        effects: [{effect: "Superior fish dish", duration: 40}],
     });
 })();
-
 
 //
 (function(){
@@ -3030,15 +3584,47 @@ item_templates["Stale bread"] = new UsableItem({
     });
 })();
 
-item_templates["Small Treasure Chest"] = new LootChestItem({
-    name: "Small Treasure Chest",
-    description: "A wooden chest containing random valuables.",
+
+
+item_templates["Shoddy Treasure Chest"] = new LootChestItem({
+    name: "Shoddy Treasure Chest",
+    description: "A shoddy wooden chest. You doubt it contains much of value.",
     value: 50,
-    gluttony_value: 0,
     item_type: "USABLE",
     tags: { loot_chest: true },
     loot: [
         { item_id: "Weak healing powder", chance: 100, min_count: 5, max_count: 15 },
+		{ money: true, chance: 100, min_amount: 50, max_amount: 120 }
+    ],
+});
+
+item_templates["Small Treasure Chest"] = new LootChestItem({
+    name: "Small Treasure Chest",
+    description: "A shoddy wooden chest. You doubt it contains much of value.",
+    value: 50,
+    item_type: "USABLE",
+    tags: { loot_chest: true },
+    loot: [
+        { item_id: "Weak healing powder", chance: 100, min_count: 5, max_count: 15 },
+		{ money: true, chance: 100, min_amount: 50, max_amount: 120 }
+    ],
+});
+
+item_templates["Sparkling Treasure Chest"] = new LootChestItem({
+    name: "Sparkling Treasure Chest",
+    description: "A sparkling ornate chest. It glimmers with promise.",
+    value: 50,
+    item_type: "USABLE",
+    tags: { loot_chest: true },
+	loot_pool: {
+    name: "magic_spellbooks_pool",
+    rolls: 2,
+    count: 1,
+    chance: 100
+		},
+    loot: [
+        { item_id: "Weak healing powder", chance: 100, min_count: 5, max_count: 15 },
+		{ money: true, chance: 100, min_amount: 50, max_amount: 120 }
     ],
 });
 
@@ -3055,5 +3641,6 @@ export {
     book_stats, loot_sold_count,
     rarity_multipliers,
 	getItemRarity, getItemFromKey,
-	getAdjustedReadingTime
+	getAdjustedReadingTime,
+	loot_pools
 };

@@ -216,7 +216,7 @@ body {
 	width: 600px;
 	height: fit-content;
 	border: 4px solid blueviolet;
-	z-index: 2;
+	z-index: 50;
 	bottom: 50px;
 	left: 300px;
  }
@@ -284,6 +284,8 @@ body {
 	color: gray;
 	cursor: not-allowed;
 }
+
+
 
 .action_travel:hover, .start_dialogue:hover, .start_trade:hover, .start_location_action:hover, .start_activity:hover, .location_choices:hover,
 .dialogue_textline:hover, .end_dialogue_button:hover, .dialogue_trade:hover, .choices_return_button:hover {
@@ -395,6 +397,10 @@ body {
 	display: block;
 }
 
+#character_health_div:hover .stat_tooltip {
+    display: block; /* or flex, depending on your layout */
+}
+
 .stat_tooltip {
 	display: none;
 	background-color: var(--tooltip_background_color);
@@ -411,6 +417,10 @@ body {
 	.stat_breakdown {
 		text-align: left;
 	}
+	
+#health_tooltip {
+	top: var(--stat_tooltip_top-50px);
+}
 
 .stat_slot_div:hover .stat_tooltip {
 	 display: block;
@@ -941,8 +951,7 @@ body {
 
 
 .craft_ammount_buttons {
-	display: inline-block;
-	border: 1px solid red;
+	display: inline-block !important;
 	width: 76px;
 	padding-bottom: 2px;
 	font-size: 16px;
@@ -951,7 +960,6 @@ body {
 .craft_ammount_button {
 	display: inline-block;
 	width: fit-content;
-	border: 1px solid red;
 	text-align: center;
 	padding: 3px 6px 3px 6px;
 	outline: 1px solid white;
@@ -1124,14 +1132,25 @@ i {
 	font-size: 16px;
 }
 
-#accept_trade_button, #cancel_trade_button, .trader_sorting_button {
+#accept_trade_button, #cancel_trade_button, #add_junk_button, .trader_sorting_button {
     float:left;
-	width: 198px;
 	text-align: center;
 	outline: 1px solid white;
 	margin: -1px 1px;
 	cursor: pointer;
 	font-size: 16px;
+}
+
+#accept_trade_button, #cancel_trade_button {
+	width: 149px;
+}
+
+#add_junk_button {
+	width: 95px;
+}
+
+.trader_sorting_button {
+width: 198px;
 }
 
 #accept_trade_button {
@@ -2137,7 +2156,7 @@ i {
 
 #trader_inventory_div {
     height: 311px;
-	width: 100%;
+	width: 102%;
 	overflow-y: scroll;
 }
 
@@ -2232,6 +2251,15 @@ danger_rating {
 .danger_rank_9  { background-color: rgba(232, 67, 147, 0.9); }
 .danger_rank_10 { background-color: rgba(255, 0, 0, 0.9); }
 
+.greyed_out_resource {
+    color: #999;
+    font-style: italic;
+    opacity: 0.8;
+}
 
+.greyed-out {
+    color: #999;
+    font-style: italic;
+}
 
 

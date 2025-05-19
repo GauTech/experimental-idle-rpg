@@ -134,6 +134,11 @@ function format_time(data) { //{time, long_names?}
     return formatted_time;
 }
 
+function is_night(time) {
+    time = time || current_game_time;
+    return (time.hour >= 20 || time.hour < 4);
+}
+
 const current_game_time = new Game_time({year: 999, month: 4, day: 1, hour: 8, minute: 0, day_count: 1});
 
-export {current_game_time, format_time};
+export {current_game_time, format_time, is_night};

@@ -2,7 +2,7 @@
 
 import { traders } from "./traders.js";
 import { 
-    update_displayed_trader, update_displayed_trader_inventory, update_displayed_character_inventory, exit_displayed_trade, update_displayed_money } from "./display.js";
+    update_displayed_trader, update_displayed_trader_inventory, update_displayed_character_inventory, exit_displayed_trade, update_displayed_money, log_message } from "./display.js";
 import { add_to_character_inventory, remove_from_character_inventory } from "./character.js";
 import { skills } from "./skills.js";
 import { getEquipmentValue, item_templates, loot_sold_count } from "./items.js";
@@ -187,43 +187,47 @@ function is_in_trade() {
 }
 
 function add_to_selling_list(selected_item) {
+    let {id, components, quality} = JSON.parse(selected_item.item_key);
+
+    // Check for KEYITEM type before anything else
+    if (id && item_templates[id]?.item_type === "KEYITEM") {
+        log_message("Cannot sell key items!");
+        return 0;
+    }
 
     const present_item = to_sell.items.find(a => a.item_key === selected_item.item_key);
-    //find if item is already present in the sell list
-
     let item_count_in_player = character.inventory[selected_item.item_key].count;
 
-    if(present_item) {
-        //item present in the list -> increase its count, up to what player has in inventory
-
-        if(item_count_in_player - present_item.count < selected_item.count) {
-            //trying to sell more that remains in inventory, so just add everything
+    if (present_item) {
+        // item present in the list -> increase its count, up to what player has in inventory
+        if (item_count_in_player - present_item.count < selected_item.count) {
+            // trying to sell more than remains in inventory
             selected_item.count = item_count_in_player - present_item.count;
             present_item.count = item_count_in_player;
         } else {
             present_item.count += selected_item.count;
         }
-
-    } else { 
-        if(item_count_in_player < selected_item.count) { 
-            //character has not enough: sell all available
+    } else {
+        if (item_count_in_player < selected_item.count) {
+            // character has not enough: sell all available
             selected_item.count = item_count_in_player;
         }
 
         to_sell.items.push(selected_item);
     }
 
-    let {id, components, quality} = JSON.parse(selected_item.item_key);
     let value;
-
-    if(id && item_templates[id].saturates_market) {
-        value = item_templates[id].getValueOfMultiple({additional_count_of_sold: (present_item?.count - selected_item.count || 0), count: selected_item.count});
-    } else if(id && !item_templates[id].saturates_market) { 
+    if (id && item_templates[id].saturates_market) {
+        value = item_templates[id].getValueOfMultiple({
+            additional_count_of_sold: (present_item?.count - selected_item.count || 0),
+            count: selected_item.count
+        });
+    } else if (id && !item_templates[id].saturates_market) {
         value = item_templates[id].getValue(quality) * selected_item.count;
     } else {
         value = getEquipmentValue(components, quality) * selected_item.count;
     }
-    
+
     to_sell.value += value;
     return value;
 }

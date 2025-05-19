@@ -1,7 +1,7 @@
 "use strict";
 
 import { current_game_time } from "./game_time.js";
-import { item_templates, getItem, book_stats, setLootSoldCount, loot_sold_count, recoverItemPrices, rarity_multipliers, getArmorSlot} from "./items.js";
+import { item_templates, getItem, book_stats, setLootSoldCount, loot_sold_count, recoverItemPrices, rarity_multipliers, getArmorSlot, loot_pools} from "./items.js";
 import { locations, get_all_main_locations } from "./locations.js";
 import { skills, weapon_type_to_skill, which_skills_affect_skill} from "./skills.js";
 import { dialogues } from "./dialogues.js";
@@ -85,6 +85,8 @@ const global_flags = {
 	is_ant_hive_beaten: false,
 	is_rare_ant_killed: false,
 	is_hero_level10: false,
+	is_hero_level20: false,
+	is_hero_level50: false,
 	is_mining_level20: false,
 	is_woodcutting_level20: false,
 	is_herbalism_level20: false,
@@ -106,7 +108,9 @@ let total_crafting_successes = 0;
 let total_kills = 0;
 let tags_bonus = 1;
 let type_bonus = 1;
-let counter_chance = 0.01;
+let counter_chance = 0.05;
+
+let gathered_materials = {};
 
 //current enemy
 let current_enemies = null;
@@ -181,11 +185,12 @@ const tickrate = 1;
 //stuff from options panel
 const options = {
     uniform_text_size_in_action: false,
-    auto_return_to_bed: false,
+    auto_return_to_bed: true,
     remember_message_log_filters: false,
     remember_sorting_options: false,
     combat_disable_autoswitch: false,
     auto_use_when_longest_runs_out: true,
+	log_total_gathering_gain: true,
 
 };
 
@@ -323,7 +328,10 @@ function option_combat_autoswitch(option) {
 }
 
 function roll_time_demon(location) {
-    if (Math.random() < 0.01) { // 1% 
+	
+	
+	
+    if (Math.random() < 0.01 && global_flags.is_hero_level10 == true) { // 1% 
 		locations["Time Demon"].is_finished = false;
         location.connected_locations.push({
             location: locations["Time Demon"],
@@ -338,6 +346,21 @@ function roll_item_discovery(location) {
 	return
     }
 }
+
+function option_log_gathering_result(option) {
+    const checkbox = document.getElementById("options_log_gathering_result");
+
+    if(checkbox.checked || option) {
+        options.log_total_gathering_gain = true;
+    } else {
+        options.log_total_gathering_gain = false;
+    }
+
+    if(option) {
+        checkbox.checked = option;
+    }
+}
+
 
 function change_location(location_name) {
     let location = locations[location_name];
@@ -494,7 +517,16 @@ function start_activity(selected_activity) {
     } else if(activities[current_activity.activity_name].type === "TRAINING") {
         //
     } else if(activities[current_activity.activity_name].type === "GATHERING") { 
-        //
+        
+        let has_proper_tool = !activities[current_activity.activity_name].required_tool_type || character.equipment[activities[current_activity.activity_name].required_tool_type];
+        //just check if slot is not empty
+
+        if(!has_proper_tool) {
+            log_message("You need to equip a proper tool to do that!");
+            current_activity = null;
+            return;
+        }
+        current_activity.gathered_materials = {};
     } else throw `"${activities[current_activity.activity_name].type}" is not a valid activity type!`;
 
     current_activity.gathering_time = 0;
@@ -508,15 +540,30 @@ function start_activity(selected_activity) {
 function end_activity() {
     
     log_message(`${character.name} finished ${current_activity.activity_name}`, "activity_finished");
+	console.log("activity ended");
+	console.log(options.log_total_gathering_gain);
     
     if(current_activity.earnings) {
-        character.money += current_activity.earnings;
         log_message(`${character.name} earned ${format_money(current_activity.earnings)}`, "activity_money");
-        update_displayed_money();
+        add_money_to_character(current_activity.earnings);
+    }
+	console.log("activity ended");
+
+    if(current_activity.gathered_materials && options.log_total_gathering_gain) {
+		console.log("if condition valid");
+		console.log(current_activity.gathered_materials);
+        const loot = []; 
+		
+		
+			 Object.keys(current_activity.gathered_materials).forEach(mat_key => {
+			loot.push({ item_id: mat_key, count: current_activity.gathered_materials[mat_key] });
+		});
+
+		log_loot({ loot_list: loot, is_a_summary: true }); 
     }
     end_activity_animation(); //clears the "animation"
     current_activity = null;
-    change_location(current_location.name);
+    change_location(current_location.id);
 }
 
 /**
@@ -701,17 +748,25 @@ function process_rewards({rewards = {}, source_type, source_name, is_first_clear
         });
     }
     
-    if(rewards.locations) {
-        //if(source_type === "location") {
-            for(let i = 0; i < rewards.locations.length; i++) {
-                unlock_location({location: locations[rewards.locations[i].location], skip_message: (inform_overall && rewards.locations[i].skip_message)});
-            }
-        /*} else {
-            for(let i = 0; i < rewards.locations.length; i++) {
-                unlock_location(locations[rewards.locations[i].location], rewards.locations[i].skip_message);
-            }
-        }*/
+if (rewards.locations) {
+    for (let i = 0; i < rewards.locations.length; i++) {
+        const loc_id = rewards.locations[i].location;
+        const skip_msg = rewards.locations[i].skip_message;
+
+        // Modify the location object temporarily to attach skip_message logic
+        const loc = locations[loc_id];
+
+        if (inform_overall && skip_msg) {
+            // Temporarily add unlock_text as empty to suppress message
+            const original_text = loc.unlock_text;
+            loc.unlock_text = ""; // Will suppress the message inside unlock_location
+            unlock_location(loc);
+            loc.unlock_text = original_text; // Restore original text
+        } else {
+            unlock_location(loc);
+        }
     }
+}
 
     if(rewards.flags) {
         for(let i = 0; i < rewards.flags.length; i++) {
@@ -848,13 +903,34 @@ function process_rewards({rewards = {}, source_type, source_name, is_first_clear
         }
     }
 
-    if(rewards.items && !only_unlocks) {
-        for(let i = 0; i < rewards.items.length; i++) {
-            const item = item_templates[rewards.items[i]];
-            log_message(`${character.name} obtained "${item.getName()} x${rewards.items[i].count||1}"`);
-            add_to_character_inventory([{item_key: item.getInventoryKey(), count: rewards.items[i].count}]);
-        }
-    }
+			if (rewards.items && !only_unlocks) {
+				console.log(rewards);
+				console.log(rewards.items);
+
+				const parsed_items = [];
+
+				for (let i = 0; i < rewards.items.length; i++) {
+					const reward_entry = rewards.items[i];
+					const item_key = typeof reward_entry === "string" ? reward_entry : reward_entry.item;
+					const count = reward_entry.count || 1;
+
+					const item = item_templates[item_key];
+
+					if (!item) {
+						console.warn(`Item template not found for key: ${item_key}`);
+						continue;
+					}
+
+					log_message(`${character.name} obtained "${item.getName()} x${count}"`);
+
+					parsed_items.push({
+						item: item,
+						count: count
+					});
+				}
+
+				add_to_character_inventory(parsed_items);
+			}
 
     if(rewards.reputation && !only_unlocks) {
         Object.keys(rewards.reputation).forEach(region => {
@@ -869,6 +945,10 @@ function process_rewards({rewards = {}, source_type, source_name, is_first_clear
             current_location = locations[rewards.move_to.location];
         }
     }
+}
+function add_money_to_character(money_num) {
+    character.money += money_num;
+    update_displayed_money();
 }
 
 //single tick of resting
@@ -1223,33 +1303,38 @@ if (
         }
     }
 
-for (let i = 0; i < textline.unlocks.items.length; i++) {
-    const entry = textline.unlocks.items[i];
-    let itemName, count;
+		for (let i = 0; i < textline.unlocks.items.length; i++) {
+			const entry = textline.unlocks.items[i];
+			let itemName, count, quality;
 
-    if (typeof entry === "string") {
-        itemName = entry;
-        count = 1;
-    } else {
-        itemName = entry.name;
-        count = entry.count || 1;
-    }
+			if (typeof entry === "string") {
+				itemName = entry;
+				count = 1;
+				quality = undefined;
+			} else {
+				itemName = entry.name;
+				count = entry.count || 1;
+				quality = entry.quality; // optional
+			}
 
-    const item = item_templates[itemName];
-    if (!item) {
-        console.warn(`Item "${itemName}" not found in templates.`);
-        continue;
-    }
+			const baseTemplate = item_templates[itemName];
+			if (!baseTemplate) {
+				console.warn(`Item "${itemName}" not found in templates.`);
+				continue;
+			}
 
-    log_message(`${character.name} obtained "${item.getName()}" x${count}`);
-    
-    const itemsToAdd = [];
-    for (let j = 0; j < count; j++) {
-        itemsToAdd.push({ item });
-    }
+			log_message(`${character.name} obtained "${baseTemplate.getName()}" x${count}${quality ? ` (Quality: ${quality})` : ''}`);
 
-    add_to_character_inventory(itemsToAdd);
-}
+			const itemsToAdd = [];
+			for (let j = 0; j < count; j++) {
+				const itemData = quality != null 
+					? getItem({ ...baseTemplate, quality }) 
+					: getItem({ ...baseTemplate });
+				itemsToAdd.push({ item: itemData });
+			}
+
+			add_to_character_inventory(itemsToAdd);
+		}
 
     if(textline.unlocks.money && typeof textline.unlocks.money === "number") {
         character.money += textline.unlocks.money;
@@ -1755,7 +1840,7 @@ function apply_on_strike_effects(attacker) {
     let pierce = attacker.on_strike.pierce || 0;
     let damage_multiplier = attacker.on_strike.multistrike || 1;
 
-const status_effects = ["poison", "freeze", "burn", "stun"];
+const status_effects = ["poison", "freeze", "burn", "stun", "toxic"];
 
 for (const effect_name of status_effects) {
     const effect_data = attacker.on_strike[effect_name];
@@ -1775,27 +1860,36 @@ for (const effect_name of status_effects) {
         if (Math.random() <= chance) {
             let stats = {};
             switch (effect_name) {
-                case "poison":
-                    stats = {
-                        health_regeneration_flat: { flat: -5 },
-                    };
-                    break;
-                case "freeze":
-                    stats = {
-                        attack_speed: { multiplier: 0.5 },
-                    };
-                    break;
-                case "burn":
-                    stats = {
-                        health_regeneration_flat: { flat: -5 },
-                    };
-                    break;
-                case "stun":
-                    stats = {
-                        attack_speed: { multiplier: 0.1 }, // placeholder
-                    };
-                    break;
-            }
+					case "poison":
+						stats = {
+							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 3});
+						break;
+						  case "toxic":
+						stats = {
+							health_loss_flat: { flat: (Math.round(-5 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 20});
+						break;
+					case "freeze":
+						stats = {
+							attack_speed: { multiplier: (Math.round(0.5 * (1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Cold resistance"], xp_to_add: 3});
+						break;
+					case "burn":
+						stats = {
+							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Heat resistance"], xp_to_add: 3});
+						break;
+					case "stun":
+						stats = {
+							attack_speed: { multiplier: 0.1 }, // placeholder
+						};
+						break;
+				}
 
             const effect = new ActiveEffect({
                 name: effect_name.charAt(0).toUpperCase() + effect_name.slice(1),
@@ -1808,7 +1902,9 @@ for (const effect_name of status_effects) {
 
             update_displayed_effects();
             character.stats.add_active_effect_bonus();
+			update_character_stats();
             update_displayed_stats();
+			
 
             log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
         }
@@ -1850,7 +1946,7 @@ function apply_on_connectedstrike_effects(attacker) {
     }
 
     // Handle status effects
-    const status_effects = ["poison", "freeze", "burn", "stun"];
+    const status_effects = ["poison", "freeze", "burn", "stun", "toxic"];
 
     for (const effect_name of status_effects) {
         const effect_data = data[effect_name];
@@ -1867,28 +1963,37 @@ function apply_on_connectedstrike_effects(attacker) {
 
             if (Math.random() <= chance) {
                 let stats = {};
-                switch (effect_name) {
-                    case "poison":
-                        stats = {
-                            health_regeneration_flat: { flat: -5 },
-                        };
-                        break;
-                    case "freeze":
-                        stats = {
-                            attack_speed: { multiplier: 0.5 },
-                        };
-                        break;
-                    case "burn":
-                        stats = {
-                            health_regeneration_flat: { flat: -5 },
-                        };
-                        break;
-                    case "stun":
-                        stats = {
-                            attack_speed: { multiplier: 0.1 },
-                        };
-                        break;
-                }
+					switch (effect_name) {
+					case "poison":
+						stats = {
+							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 3});
+						break;
+						  case "toxic":
+						stats = {
+							health_loss_flat: { flat: (Math.round(-5 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 20});
+						break;
+					case "freeze":
+						stats = {
+							attack_speed: { multiplier: (Math.round(0.5 * (1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Cold resistance"], xp_to_add: 3});
+						break;
+					case "burn":
+						stats = {
+							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))*10))/10 },
+						};
+						add_xp_to_skill({skill: skills["Heat resistance"], xp_to_add: 3});
+						break;
+					case "stun":
+						stats = {
+							attack_speed: { multiplier: 0.1 }, // placeholder
+						};
+						break;
+				}
 
                 const effect = new ActiveEffect({
                     name: effect_name.charAt(0).toUpperCase() + effect_name.slice(1),
@@ -1901,6 +2006,7 @@ function apply_on_connectedstrike_effects(attacker) {
 
                 update_displayed_effects();
                 character.stats.add_active_effect_bonus();
+				update_character_stats();
                 update_displayed_stats();
 
                 log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
@@ -2100,6 +2206,7 @@ function clear_all_ally_attack_loops() {
 
 function do_ally_combat_action(ally_index) {
     if (!current_party[ally_index]) return;
+	if (!current_enemies) return;
 
     const ally_id = current_party[ally_index];
     const ally = allies[ally_id];
@@ -2153,6 +2260,7 @@ function do_ally_combat_action(ally_index) {
                 }
 				
                 kill_enemy(target);
+				
 
                 if (target.on_death && Object.keys(target.on_death).length > 0) {
                     execute_death_effects(target.on_death);
@@ -2164,6 +2272,16 @@ function do_ally_combat_action(ally_index) {
             log_message(`${ally.name} has missed`, "hero_missed");
         }
     }
+	
+	            if(current_enemies != null && current_enemies.filter(enemy => enemy.is_alive).length == 0) { //set next loop if there's still an enemy left;
+                current_location.enemy_groups_killed += 1;
+                if(current_location.enemy_groups_killed > 0 && current_location.enemy_groups_killed % current_location.enemy_count == 0) {
+                    get_location_rewards(current_location);
+                }
+                document.getElementById("enemy_count_div").children[0].children[1].innerHTML = current_location.enemy_count - current_location.enemy_groups_killed % current_location.enemy_count;
+        
+                set_new_combat();;
+            } 
 }
 
 
@@ -2208,7 +2326,7 @@ function do_enemy_combat_action(enemy_id) {
 	damage_dealt *= damage_multiplier; // multistrike applied as damage multiplier.
     
     if(character.equipment["off-hand"]?.offhand_type === "shield") { //HAS SHIELD
-		       const hit_chance = get_hit_chance(attacker.stats.dexterity * Math.sqrt(attacker.stats.intuition ?? 1), (character.stats.full.evasion_points*(0.15+skills["Parrying"].get_level_bonus()))/evasion_chance_modifier);
+		       const hit_chance = get_hit_chance(attacker.stats.dexterity * Math.sqrt(attacker.stats.intuition ?? 1), (character.stats.full.evasion_points*character.stats.full.block_chance*(0.15+skills["Parrying"].get_level_bonus()))/evasion_chance_modifier);
 
         if(hit_chance < Math.random()) { //EVADED ATTACK
             const xp_to_add = character.wears_armor() ? attacker.xp_value : attacker.xp_value * 1.5; 
@@ -2476,7 +2594,7 @@ tags_bonus = 1; // returns to 1 if less than 1
 		
 		// Rare loot generation (0.1% chance)
 let rare_loot = [];
-if (Math.random() < 0.001 && Array.isArray(rare_items_pool) && rare_items_pool.length > 0) {
+if (Math.random() < 0.0001 && Array.isArray(rare_items_pool) && rare_items_pool.length > 0) {
     const rareItemName = rare_items_pool[Math.floor(Math.random() * rare_items_pool.length)];
     if (item_templates[rareItemName]) {
         rare_loot.push({ "item": getItem(item_templates[rareItemName]), "count": 1 });
@@ -2721,6 +2839,22 @@ function kill_enemy(target) {
     clear_enemy_attack_loop(enemy_id);
 }
 
+function kill_player({is_combat = true} = {}) {
+    if(is_combat) {
+        total_deaths++;
+        log_message(character.name + " has lost consciousness", "hero_defeat");
+
+        update_displayed_health();
+        if(options.auto_return_to_bed && last_location_with_bed) {
+            change_location(last_location_with_bed);
+            start_sleeping();
+        } else {
+            change_location(current_location.parent_location.id);
+        }
+    }
+}
+
+
 function use_stamina(num = 1, use_efficiency = true) {
     
     character.stats.full.stamina -= num/(use_efficiency * character.stats.full.stamina_efficiency || 1);
@@ -2919,10 +3053,16 @@ function add_xp_to_character(xp_to_add, should_info = true, use_bonus) {
     }
 
     update_displayed_character_xp(level_up);
-	
-	if(character.starting_xp.current_level > 10 ){
+		if(character.xp.current_level >= 10 ){
 		 global_flags.is_hero_level10 = true;
 	}
+		if(character.xp.current_level >= 20 ){
+		 global_flags.is_hero_level20 = true;
+	}
+			if(character.xp.current_level >= 50 ){
+		 global_flags.is_hero_level20 = true;
+	}
+	
 }
 
 
@@ -3050,135 +3190,212 @@ function clear_enemies() {
     current_enemies = null;
 }
 
-function use_recipe(target) {
-
+function use_recipe(target, craft_amount = 1) {
     const category = target.parentNode.parentNode.dataset.crafting_category;
     const subcategory = target.parentNode.parentNode.dataset.crafting_subcategory;
     const recipe_id = target.parentNode.dataset.recipe_id;
     const station_tier = current_location.crafting.tiers[category];
 
-    if(!category || !subcategory || !recipe_id) {
-        //shouldn't be possible to reach this
+    if (!category || !subcategory || !recipe_id) {
         throw new Error(`Tried to use a recipe but either category, subcategory, or recipe id was not passed: ${category} - ${subcategory} - ${recipe_id}`);
-    } else if(!recipes[category][subcategory][recipe_id]) {
-        //shouldn't be possible to reach this
+    } else if (!recipes[category][subcategory][recipe_id]) {
         throw new Error(`Tried to use a recipe that doesn't exist: ${category} -> ${subcategory} -> ${recipe_id}`);
     } else {
         const selected_recipe = recipes[category][subcategory][recipe_id];
         const recipe_div = document.querySelector(`[data-crafting_category="${category}"] [data-crafting_subcategory="${subcategory}"] [data-recipe_id="${recipe_id}"]`);
-        let leveled = false;
-        let result;
-        if(subcategory === "items") {
-            if(selected_recipe.get_availability()) {
-                total_crafting_attempts++;
-                const success_chance = selected_recipe.get_success_chance(station_tier);
-                result = selected_recipe.getResult();
-                const {result_id, count} = result;
-                
-                for(let i = 0; i < selected_recipe.materials.length; i++) {
-                    const key = item_templates[selected_recipe.materials[i].material_id].getInventoryKey();
-                    remove_from_character_inventory([{item_key: key, item_count: selected_recipe.materials[i].count}]);
-                } 
-                const exp_value = get_recipe_xp_value({category, subcategory, recipe_id});
-                if(Math.random() < success_chance) {
-                    total_crafting_successes++;
-                    add_to_character_inventory([{item: item_templates[result_id], count: count}]);
-                    
-                    log_message(`Created ${item_templates[result_id].getName()} x${count}`, "crafting");
+        
+if (subcategory === "items") {
+    let attempts = 0;
+    let leveled = false;
+    let success_count = 0;
 
-                    leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value});
-                } else {
-                    log_message(`Failed to create ${item_templates[result_id].getName()}!`, "crafting");
+    const recipe_materials = selected_recipe.materials.map(mat => {
+        const material_id = mat.material_id;
+        const count_required = mat.count;
 
-                    leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value/2});
-                }
+        const item_key = Object.keys(character.inventory).find(inv_key => {
+            const inv_item = character.inventory[inv_key].item;
+            return inv_item && inv_item.id === material_id;
+        });
 
-                update_item_recipe_visibility();
-                update_item_recipe_tooltips();
-                //do those two wheter success or fail since materials get used either way
+        return item_key ? { item_key, item_count: count_required } : null;
+    });
 
-                if(leveled) {
-                    //todo: reload all recipe tooltips of matching category
-                }
-            } else {
-                console.warn(`Tried to use an unavailable recipe!`);
-            }
-            
-        } else if(subcategory === "components" || selected_recipe.recipe_type === "component" ) {
-            //read the selected material, pass it as param
-
-            const material_div = recipe_div.children[1].querySelector(".selected_material");
-            if(!material_div) {
-                return;
-            } else {
-                const material_1_key = material_div.dataset.item_key;
-                const {id} = JSON.parse(material_1_key);
-                const recipe_material = selected_recipe.materials.filter(x=> x.material_id===id)[0];
-
-                if(recipe_material.count <= character.inventory[material_1_key]?.count) {
-                    total_crafting_attempts++;
-                    total_crafting_successes++;
-                    result = selected_recipe.getResult(character.inventory[material_1_key].item, station_tier);
-                    add_to_character_inventory([{item: result, count: 1}]);
-                    remove_from_character_inventory([{item_key: material_1_key, item_count: recipe_material.count}]);
-                    log_message(`Created ${result.getName()} [${result.quality}% quality]`, "crafting");
-                    
-                    const exp_value = get_recipe_xp_value({category, subcategory, recipe_id, material_count: recipe_material.count, rarity_multiplier: rarity_multipliers[result.getRarity()], result_tier: result.component_tier});
-                    
-                    leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value});
-                    material_div.classList.remove("selected_material");
-                    if(character.inventory[material_1_key]) { 
-                        //if item is still present in inventory + if there's not enough of it = change recipe color
-                        if(recipe_material.count > character.inventory[material_1_key].count) { 
-                            material_div.classList.add("recipe_unavailable");
-                        }
-                    } else {
-                        material_div.remove();
-                    }
-                    update_displayed_material_choice({category, subcategory, recipe_id, refreshing: true});
-                    //update_displayed_crafting_recipes();
-                } else {
-                    console.log("Tried to create an item without having necessary materials");
-                }
-            }
-            
-        } else if(subcategory === "equipment") {
-            //read the selected components, pass them as params
-            
-            const component_1_key = recipe_div.children[1].children[0].children[1].querySelector(".selected_component")?.dataset.item_key;
-            
-            const component_2_key = recipe_div.children[1].children[1].children[1].querySelector(".selected_component")?.dataset.item_key;
-
-            if(!component_1_key || !component_2_key) {
-                return;
-            } else {
-                if(!character.inventory[component_1_key] || !character.inventory[component_2_key]) {
-                    throw new Error(`Tried to create item with components that are not present in the inventory!`);
-                } else {
-                    total_crafting_attempts++;
-                    total_crafting_successes++;
-                    result = selected_recipe.getResult(character.inventory[component_1_key].item, character.inventory[component_2_key].item, station_tier);
-                    remove_from_character_inventory([{item_key: component_1_key}, {item_key: component_2_key}]);
-                    add_to_character_inventory([{item: result}]);
-
-                    log_message(`Created ${result.getName()} [${result.quality}% quality]`, "crafting");
-
-                    const id_1 = JSON.parse(component_1_key).id;
-                    const id_2 = JSON.parse(component_2_key).id;
-
-                    const exp_value = get_recipe_xp_value({category, subcategory, recipe_id, selected_components: [item_templates[id_1], item_templates[id_2]], rarity_multiplier: rarity_multipliers[result.getRarity()]})
-                    
-                    leveled = add_xp_to_skill({skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value});
-                    
-                    const component_keys = {};
-                    component_keys[component_1_key] = true;
-                    component_keys[component_2_key] = true;
-                    update_displayed_component_choice({category, recipe_id, component_keys});
-                }
-            }
-            //update_displayed_crafting_recipes();
-        }  
+    if (recipe_materials.includes(null)) {
+        console.warn("Missing required materials for crafting.");
+        return;
     }
+
+    const result = selected_recipe.getResult();
+    const { result_id, count } = result;
+
+    while (attempts < craft_amount && selected_recipe.get_availability()) {
+        const has_enough = recipe_materials.every(({ item_key, item_count }) =>
+            character.inventory[item_key]?.count >= item_count
+        );
+
+        if (!has_enough) break;
+
+        total_crafting_attempts++;
+        const success_chance = selected_recipe.get_success_chance(station_tier);
+
+        remove_from_character_inventory(recipe_materials);
+
+        const exp_value = get_recipe_xp_value({ category, subcategory, recipe_id });
+
+        if (Math.random() < success_chance) {
+            total_crafting_successes++;
+            add_to_character_inventory([{ item: item_templates[result_id], count }]);
+            success_count++;
+            if (craft_amount === 1) {
+                log_message(`Created ${item_templates[result_id].getName()} x${count}`, "crafting");
+            }
+            leveled = add_xp_to_skill({ skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value });
+        } else {
+            if (craft_amount === 1) {
+                log_message(`Failed to create ${item_templates[result_id].getName()}!`, "crafting");
+            }
+            leveled = add_xp_to_skill({ skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value / 2 });
+        }
+
+        attempts++;
+    }
+
+if (craft_amount > 1 && attempts > 0) {
+    log_message(`Crafted ${success_count}x [${item_templates[result_id].getName()}]. (${success_count} / ${attempts} success rate)`, "crafting");
+}
+
+    update_item_recipe_visibility();
+    update_item_recipe_tooltips();
+    if (leveled) {
+        // TODO: Reload all recipe tooltips of matching category
+    }
+} else if (subcategory === "components" || selected_recipe.recipe_type === "component") {
+    const material_div = recipe_div.children[1].querySelector(".selected_material");
+    if (!material_div) return;
+
+    const material_1_key = material_div.dataset.item_key;
+    const { id } = JSON.parse(material_1_key);
+    const recipe_material = selected_recipe.materials.find(x => x.material_id === id);
+
+    let attempts = 0;
+    let max_quality = 0;
+    let max_quality_count = 0;
+    let quality_name = "";
+
+    while (attempts < craft_amount && character.inventory[material_1_key]?.count >= recipe_material.count) {
+        total_crafting_attempts++;
+        total_crafting_successes++;
+        const result = selected_recipe.getResult(character.inventory[material_1_key].item, station_tier);
+        add_to_character_inventory([{ item: result, count: 1 }]);
+        remove_from_character_inventory([{ item_key: material_1_key, item_count: recipe_material.count }]);
+
+        if (craft_amount === 1) {
+            log_message(`Created ${result.getName()} [${result.quality}% quality]`, "crafting");
+        }
+
+        if (result.quality > max_quality) {
+            max_quality = result.quality;
+            max_quality_count = 1;
+            quality_name = result.getName();
+        } else if (result.quality === max_quality) {
+            max_quality_count++;
+        }
+
+        const exp_value = get_recipe_xp_value({
+            category, subcategory, recipe_id,
+            material_count: recipe_material.count,
+            rarity_multiplier: rarity_multipliers[result.getRarity()],
+            result_tier: result.component_tier
+        });
+
+        const leveled = add_xp_to_skill({
+            skill: skills[selected_recipe.recipe_skill],
+            xp_to_add: exp_value
+        });
+
+        material_div.classList.remove("selected_material");
+
+        if (character.inventory[material_1_key]) {
+            if (recipe_material.count > character.inventory[material_1_key].count) {
+                material_div.classList.add("recipe_unavailable");
+            }
+        } else {
+            material_div.remove();
+        }
+
+        update_displayed_material_choice({ category, subcategory, recipe_id, refreshing: true });
+
+        attempts++;
+    }
+
+if (craft_amount > 1 && attempts > 0) {
+    log_message(`Crafted ${attempts}x [${quality_name}].\n\n Highest quality = ${max_quality}% (x ${max_quality_count})`, "crafting");
+}
+}	else if (subcategory === "equipment") {
+    const component_1_key = recipe_div.children[1].children[0].children[1].querySelector(".selected_component")?.dataset.item_key;
+    const component_2_key = recipe_div.children[1].children[1].children[1].querySelector(".selected_component")?.dataset.item_key;
+
+    let attempts = 0;
+    let max_quality = 0;
+    let max_quality_count = 0;
+    let quality_name = "";
+
+    while (
+        attempts < craft_amount &&
+        component_1_key &&
+        component_2_key &&
+        character.inventory[component_1_key] &&
+        character.inventory[component_2_key]
+    ) {
+        total_crafting_attempts++;
+        total_crafting_successes++;
+        const result = selected_recipe.getResult(
+            character.inventory[component_1_key].item,
+            character.inventory[component_2_key].item,
+            station_tier
+        );
+
+        remove_from_character_inventory([{ item_key: component_1_key }, { item_key: component_2_key }]);
+        add_to_character_inventory([{ item: result }]);
+
+        if (craft_amount === 1) {
+            log_message(`Created ${result.getName()} [${result.quality}% quality]`, "crafting");
+        }
+
+        if (result.quality > max_quality) {
+            max_quality = result.quality;
+            max_quality_count = 1;
+            quality_name = result.getName();
+        } else if (result.quality === max_quality) {
+            max_quality_count++;
+        }
+
+        const id_1 = JSON.parse(component_1_key).id;
+        const id_2 = JSON.parse(component_2_key).id;
+
+        const exp_value = get_recipe_xp_value({
+            category, subcategory, recipe_id,
+            selected_components: [item_templates[id_1], item_templates[id_2]],
+            rarity_multiplier: rarity_multipliers[result.getRarity()]
+        });
+
+        const leveled = add_xp_to_skill({ skill: skills[selected_recipe.recipe_skill], xp_to_add: exp_value });
+
+        const component_keys = {};
+        component_keys[component_1_key] = true;
+        component_keys[component_2_key] = true;
+
+        update_displayed_component_choice({ category, recipe_id, component_keys });
+
+        attempts++;
+    }
+
+if (craft_amount > 1 && attempts > 0) {
+    log_message(`Crafted ${attempts}x [${quality_name}].\n\n Highest quality = ${max_quality}% (x ${max_quality_count})`, "crafting");
+}
+}
+	}
 }
 
 function character_equip_item(item_key) {
@@ -3242,45 +3459,78 @@ function use_item(item_key) {
 function open_loot_chest(item_key) {
     const { id } = JSON.parse(item_key);
     const chest = item_templates[id];
-
-    if (!chest || !Array.isArray(chest.loot)) {
+    if (!chest || (!Array.isArray(chest.loot) && !chest.loot_pool)) {
         console.error(`Invalid loot chest: ${id}`);
         return;
     }
 
     const itemsToAdd = [];
-    const lootMap = new Map(); // Map<item_name, {item, count}>
+    const lootMap = new Map(); // Map<item_id, { item, count }>
+    let totalMoney = 0;
 
-    for (const lootEntry of chest.loot) {
+	let finalLoot = [...(chest.loot || [])];
+
+	// Handle loot pool (if exists)
+	if (chest.loot_pool) {
+		console.log("loot_chest_pool logic started");
+		const poolResult = roll_loot_pool(chest.loot_pool);
+		if (poolResult.length > 0) {
+			console.log("loot_chest_pool roll success");
+			console.log(poolResult);
+			finalLoot = [...finalLoot, ...poolResult]; // append without mutating chest
+		}
+	}
+
+    // Regular loot
+    for (const lootEntry of finalLoot) {
         const roll = Math.random() * 100;
-        if (roll <= lootEntry.chance) {
-            const count = Math.floor(
-                Math.random() * (lootEntry.max_count - lootEntry.min_count + 1)
-            ) + lootEntry.min_count;
+        if (roll > lootEntry.chance) continue;
 
-            for (let i = 0; i < count; i++) {
-                const item = getItem(item_templates[lootEntry.item_id]);
-                const key = item.getInventoryKey();
-                itemsToAdd.push({ item, item_key: key });
-            }
+        // MONEY ENTRY
+        if (lootEntry.money) {
+            const amount = Math.floor(
+                Math.random() * (lootEntry.max_amount - lootEntry.min_amount + 1)
+            ) + lootEntry.min_amount;
+            totalMoney += amount;
+            continue;
+        }
 
-            // Track item counts for log_loot
-            const existing = lootMap.get(lootEntry.item_id);
-            if (existing) {
-                existing.count += count;
-            } else {
-                lootMap.set(lootEntry.item_id, {
-                    item: getItem(item_templates[lootEntry.item_id]),
-                    count: count
-                });
-            }
+        // ITEM ENTRY
+        const count = Math.floor(
+            Math.random() * (lootEntry.max_count - lootEntry.min_count + 1)
+        ) + lootEntry.min_count;
+
+        for (let i = 0; i < count; i++) {
+            const item = getItem(item_templates[lootEntry.item_id]);
+            const key = item.getInventoryKey();
+            itemsToAdd.push({ item, item_key: key });
+        }
+
+        // Update loot map for logging
+        const existing = lootMap.get(lootEntry.item_id);
+        if (existing) {
+            existing.count += count;
+        } else {
+            lootMap.set(lootEntry.item_id, {
+                item: getItem(item_templates[lootEntry.item_id]),
+                count: count
+            });
         }
     }
 
+    // Award Items
     if (itemsToAdd.length > 0) {
         add_to_character_inventory(itemsToAdd);
+    }
 
-        // Convert lootMap to loot_list for log_loot
+    // Award Money
+    if (totalMoney > 0) {
+        add_money_to_character(totalMoney);
+        log_message(`${character.name} earned ${format_money(totalMoney)}`);
+    }
+
+    // Log result
+    if (lootMap.size > 0) {
         const loot_list = Array.from(lootMap.values());
         log_loot(loot_list, false);
     } else {
@@ -3289,6 +3539,35 @@ function open_loot_chest(item_key) {
 
     remove_from_character_inventory([{ item_key }]);
 }
+
+function roll_loot_pool({ name, rolls, count, chance }) {
+    const pool = loot_pools[name];
+    if (!Array.isArray(pool)) {
+        console.error(`Loot pool "${name}" not found or invalid.`);
+        return [];
+    }
+
+    const additionalLoot = [];
+
+    for (let i = 0; i < rolls; i++) {
+        if (Math.random() * 100 > chance) continue;
+
+        const entry = pool[Math.floor(Math.random() * pool.length)];
+        if (!entry || !entry.item_id || !entry.chance) continue;
+
+        if (Math.random() * 100 > entry.chance) continue;
+
+        additionalLoot.push({
+            item_id: entry.item_id,
+            chance: 100,
+            min_count: count,
+            max_count: count
+        });
+    }
+
+    return additionalLoot;
+}
+
 
 function get_date() {
     const date = new Date();
@@ -3370,6 +3649,7 @@ function create_save() {
         save_data.total_crafting_attempts = total_crafting_attempts;
         save_data.total_crafting_successes = total_crafting_successes;
         save_data.total_kills = total_kills;
+		save_data.gathered_materials = gathered_materials;
         save_data.global_flags = global_flags;
 		save_data.global_battle_state = global_battle_state;
         save_data["character"] = {
@@ -3426,6 +3706,24 @@ function create_save() {
                     }
                 });
             }
+		            if(locations[key].actions) {
+                save_data["locations"][key]["actions"] = {};
+                Object.keys(locations[key].actions).forEach(action_key => {
+                    if(locations[key].actions[action_key].is_unlocked || locations[key].actions[action_key].is_finished) {
+                        save_data["locations"][key]["actions"][action_key] = {};
+
+                        if(locations[key].actions[action_key].is_unlocked) {
+                            save_data["locations"][key]["actions"][action_key].is_unlocked = true;
+                        }
+                        if(locations[key].actions[action_key].is_finished) {
+                            save_data["locations"][key]["actions"][action_key].is_finished = true;
+                        }
+                    }
+                    
+                });
+            }	
+			
+			
         }); //save locations' (and their activities') unlocked status and their killcounts
 
         save_data["activities"] = {};
@@ -3435,11 +3733,12 @@ function create_save() {
             }
         }); //save activities' unlocked status (this is separate from unlock status in location)
 
-        if(current_activity) {
+    if(current_activity) {
             save_data["current_activity"] = {activity_id: current_activity.id, 
                                              working_time: current_activity.working_time, 
                                              earnings: current_activity.earnings,
                                              gathering_time: current_activity.gathering_time,
+                                             gathered_materials: current_activity.gathered_materials,
                                             };
         }
         
@@ -3636,6 +3935,7 @@ global_battle_state = save_data.global_battle_state || {};
     total_crafting_attempts = save_data.total_crafting_attempts || 0;
     total_crafting_successes = save_data.total_crafting_successes || 0;
     total_deaths = save_data.total_deaths || 0;
+	gathered_materials = save_data.gathered_materials || {};
 
     name_field.value = save_data.character.name;
     character.name = save_data.character.name;
@@ -3659,6 +3959,8 @@ global_battle_state = save_data.global_battle_state || {};
         })
     }
     option_remember_filters(options.remember_message_log_filters);
+	
+	option_log_gathering_result(options.log_total_gathering_gain);
 
     //this can be removed at some point
     const is_from_before_eco_rework = compare_game_version("v0.3.5", save_data["game version"]) == 1;
@@ -4206,6 +4508,20 @@ if (save_data.current_party) {
                     }
                 }
             }
+			            if(save_data.locations[key].actions) {
+                Object.keys(save_data.locations[key].actions).forEach(action_key => {
+                    if(save_data.locations[key].actions[action_key].is_unlocked) {
+                        locations[key].actions[action_key].is_unlocked = true;
+                    }
+
+                    if(save_data.locations[key].actions[action_key].is_finished) {
+                        locations[key].actions[action_key].is_finished = true;
+                    }
+
+                });
+            }
+			
+			
         } else {
             console.warn(`Location "${key}" couldn't be found!`);
             return;
@@ -4266,19 +4582,21 @@ if (save_data.current_party) {
     if(save_data.current_activity) {
         //search for it in location from save_data
         const activity_id = save_data.current_activity.activity_id;
-        if(typeof activity_id !== "undefined" && current_location.activities[activity_id] && activities[activity_id]) {
+        if(typeof activity_id !== "undefined" && current_location.activities[activity_id] && activities[current_location.activities[activity_id].activity_name]) {
             
             start_activity(activity_id);
-            if(activities[activity_id].type === "JOB") {
+            if(activities[current_location.activities[activity_id].activity_name].type === "JOB") {
                 current_activity.working_time = save_data.current_activity.working_time;
                 current_activity.earnings = save_data.current_activity.earnings * ((is_from_before_eco_rework == 1)*10 || 1);
                 document.getElementById("action_end_earnings").innerHTML = `(earnings: ${format_money(current_activity.earnings)})`;
+            } else if(activities[current_location.activities[activity_id].activity_name].type === "GATHERING") {
+                current_activity.gathered_materials = save_data.current_activity.gathered_materials || {};
             }
 
             current_activity.gathering_time = save_data.current_activity.gathering_time;
             
         } else {
-            console.warn("Couldn't find saved activity! It might have been removed");
+            console.warn(`Couldn't find saved activity "${activity_id}"! It might have been removed`);
         }
     }
 
@@ -4491,15 +4809,49 @@ function update() {
 
                         const items = [];
 
-                        for(let i = 0; i < gained_resources.length; i++) {
-                            if(Math.random() > (1-gained_resources[i].chance)) {
-                                const count = Math.floor(Math.random()*(gained_resources[i].count[1]-gained_resources[i].count[0]+1))+gained_resources[i].count[0];
-                                items.push({item: item_templates[gained_resources[i].name], count: count});
-                            }
-                        }
+                        const {resources} = current_activity.gained_resources;
+const base_skill_names = activities[current_activity.activity_name].base_skills_names || [];
+
+for (let i = 0; i < resources.length; i++) {
+    const resource = resources[i];
+
+    // Extract per-resource requirement if present
+    let required_skill_level = resource.skill_required;
+
+    // If not present, fall back to global skill_required lower bound
+    if (required_skill_level === undefined) {
+        const global_req = current_activity.gained_resources.skill_required;
+        required_skill_level = Array.isArray(global_req) ? global_req[0] : global_req;
+    }
+
+    // Check if at least one base skill meets the requirement
+    const meetsRequirement = base_skill_names.some(skill_name => {
+        const skill = skills[skill_name];
+        return skill && skill.current_level >= required_skill_level;
+    });
+
+    if (!meetsRequirement) continue;
+
+    // Apply chance logic
+    const chance = Array.isArray(resource.chance) ? resource.chance[1] : resource.chance;
+    if (Math.random() > (1 - chance)) {
+        const countRange = Array.isArray(resource.ammount) ? resource.ammount[1] : [1, 1];
+        const count = Math.floor(Math.random() * (countRange[1] - countRange[0] + 1)) + countRange[0];
+
+        items.push({ item_key: resource.name, item: item_templates[resource.name], count });
+        gathered_materials[gained_resources[i].name] = (gathered_materials[resource.name] || 0) + count;
+	
+    }
+}
 
                         if(items.length > 0) {
                             log_loot(items, false);
+							
+							 for(let i = 0; i < items.length; i++) {
+                                current_activity.gathered_materials[items[i].item_key] = (current_activity.gathered_materials[items[i].item_key] + items[i].count || items[i].count);
+								
+                            }
+
                             add_to_character_inventory(items);
                         }
 
@@ -4574,6 +4926,9 @@ function update() {
         update_displayed_effect_durations();
         update_displayed_effects();
 
+
+
+
         //health regen
         if(character.stats.full.health_regeneration_flat) {
             character.stats.full.health += character.stats.full.health_regeneration_flat;
@@ -4581,6 +4936,20 @@ function update() {
         if(character.stats.full.health_regeneration_percent) {
             character.stats.full.health += character.stats.full.max_health * character.stats.full.health_regeneration_percent/100;
         }
+		
+      //health loss
+        if(character.stats.full.health_loss_flat) {
+            character.stats.full.health += character.stats.full.health_loss_flat;
+        }
+        if(character.stats.full.health_loss_percent) {
+            character.stats.full.health += character.stats.full.max_health * character.stats.full.health_loss_percent/100;
+        }
+
+        if(character.stats.full.health <= 0) {
+            kill_player({is_combat: "parent_location" in current_location});
+        }
+		
+		
         //stamina regen
         if(character.stats.full.stamina_regeneration_flat) {
             character.stats.full.stamina += character.stats.full.stamina_regeneration_flat;
@@ -4608,7 +4977,9 @@ function update() {
             character.stats.full.mana = character.stats.full.max_mana
         }
 
-        if(character.stats.full.health_regeneration_flat || character.stats.full.health_regeneration_percent) {
+       if(character.stats.full.health_regeneration_flat || character.stats.full.health_regeneration_percent 
+            || character.stats.full.health_loss_flat || character.stats.full.health_loss_percent
+        ) {
             update_displayed_health();
         }
         if(character.stats.full.stamina_regeneration_flat || character.stats.full.stamina_regeneration_percent) {
@@ -4617,6 +4988,7 @@ function update() {
         if(character.stats.full.mana_regeneration_flat || character.stats.full.mana_regeneration_percent) {
             update_displayed_mana();
         }
+
         
         save_counter += 1;
         if(save_counter >= save_period*tickrate) {
@@ -4848,6 +5220,7 @@ window.option_uniform_textsize = option_uniform_textsize;
 window.option_bed_return = option_bed_return;
 window.option_combat_autoswitch = option_combat_autoswitch;
 window.option_remember_filters = option_remember_filters;
+window.option_log_gathering_result = option_log_gathering_result;
 
 window.getDate = get_date;
 
@@ -4864,7 +5237,7 @@ if(save_key in localStorage || (is_on_dev() && dev_save_key in localStorage)) {
     update_displayed_xp_bonuses();
 }
 else {
-    add_to_character_inventory([{item: getItem({...item_templates["Cheap iron sword"], quality: 40})}, 
+    add_to_character_inventory([{item: getItem({...item_templates["Cheap iron dagger"], quality: 40})}, 
                                 {item: getItem({...item_templates["Cheap leather pants"], quality: 40})},
                                 {item: getItem(item_templates["Stale bread"]), count: 5},
                                 //{item: getItem(item_templates["Rat fang"]), count: 1000},

@@ -194,32 +194,7 @@ get_loot() {
         ]
     });
 
-    enemy_templates["Starving wolf"] = new Enemy({
-        name: "Starving wolf", description: "A large, wild and hungry canine", 
-        xp_value: 3, 
-        rank: 2,
-        tags: ["living", "beast"],
-        stats: {health: 150, attack: 25, agility: 34, dexterity: 34, intuition: 32, magic: 0, attack_speed: 1, defense: 12}, 
-        loot_list: [
-            {item_name: "Wolf fang", chance: 0.03},
-            {item_name: "Wolf pelt", chance: 0.01},
-        ],
-        size: "medium",
-    });
 
-    enemy_templates["Young wolf"] = new Enemy({
-        name: "Young wolf", 
-        description: "A small, wild canine", 
-        xp_value: 3, 
-        rank: 2,
-        tags: ["living", "beast"],
-        stats: {health: 120, attack: 25, agility: 34, dexterity: 30, intuition: 24, magic: 0, attack_speed: 1.4, defense: 6}, 
-        loot_list: [
-            {item_name: "Wolf fang", chance: 0.03},
-            {item_name: "Wolf pelt", chance: 0.01},
-        ],
-        size: "small",
-    });
 
     enemy_templates["Wolf"] = new Enemy({
         name: "Wolf", 
@@ -264,7 +239,16 @@ get_loot() {
         stats: {health: 1, attack: 1, agility: 1, dexterity: 1, intuition: 1, magic: 0, attack_speed: 1, defense: 1}, 
         loot_list: [
             //{item_name: "Bones", chance: 0.60},
-			{item_name: "Low quality iron ore", chance: 1}, {item_name: "Low quality iron ingot", chance: 1}, {item_name: "Piece of wood", chance: 1}, {item_name: "Piece of rough wood", chance: 1}, {item_name: "Iron ingot", chance: 1},
+			{item_name: "Low quality iron ore", chance: 1}, 
+			{item_name: "Low quality iron ingot", chance: 1}, 
+			{item_name: "Piece of wood", chance: 1}, 
+			{item_name: "Piece of rough wood", chance: 1, count: 5}, 
+			{item_name: "Wolf pelt", chance: 1, count: 5},
+			{item_name: "Wool", chance: 1, count: 5},
+			{item_name: "Boar hide", chance: 1, count: 5},
+			{item_name: "Piece of mahogany wood", chance: 1, count: 5},
+			{item_name: "Blacksteel ore", chance: 1, count: 5},
+			{item_name: "Mithril ore", chance: 1, count: 5},
         ],
     });
 	
@@ -345,7 +329,7 @@ Platinum Slime
         rank: 1,
         size: "small",
         tags: ["amorphous"],
-        stats: {health: 20, attack: 4, agility: 2, dexterity: 1, magic: 0, intuition: 1, attack_speed: 0.8, defense: 0}, //stat_total = 20 (discount atk speed, HP/10)
+        stats: {health: 20, attack: 2, agility: 2, dexterity: 1, magic: 0, intuition: 1, attack_speed: 0.8, defense: 0}, //stat_total = 20 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Goo", chance: 0.20},
         ],
@@ -353,10 +337,10 @@ Platinum Slime
 	
 	    enemy_templates["Voluminous Slime"] = new Enemy({
         name: "Voluminous Slime", 
-        description: "Voluminous Slime",
+        description: "A massive, quivering blob that smothers prey in its suffocating bulk.",
 		xp_value: 3, 
         rank: 2,
-        size: "medium",
+        size: "large",
         tags: ["amorphous"],
         stats: {health: 40, attack: 8, agility: 4, dexterity: 2, magic: 0, intuition: 2, attack_speed: 0.9, defense: 0}, 
         loot_list: [
@@ -366,7 +350,7 @@ Platinum Slime
 	
 	    enemy_templates["Acid Slime"] = new Enemy({
         name: "Acid Slime", 
-        description: "Acid Slime",
+        description: "Its gel burns flesh and melts weapons. It can even seep through armour.",
 		xp_value: 9, 
         rank: 3,
         size: "small",
@@ -381,12 +365,12 @@ Platinum Slime
 
 	    enemy_templates["Toxic Slime"] = new Enemy({
         name: "Toxic Slime", 
-        description: "Toxic Slime",
+        description: "A poison-filled menace that expels toxic fumes.",
 		xp_value: 27, 
         rank: 4,
         size: "small",
         tags: ["amorphous"],
-		on_strike: {poison: 200},
+		on_strike: {poison: 20},
         stats: {health: 160, attack: 56, agility: 8, dexterity: 44, magic: 0, intuition: 8, attack_speed: 1.2, defense: 6}, 
         loot_list: [
             {item_name: "Goo", chance: 0.80, count: 2},
@@ -395,7 +379,7 @@ Platinum Slime
 	
 	    enemy_templates["Plasma Slime"] = new Enemy({
         name: "Plasma Slime", 
-        description: "Plasma Slime",
+        description: "Crackling with energy, it explodes in violent arcs of lightning.",
 		xp_value: 81, 
         rank: 5,
         size: "small",
@@ -408,7 +392,7 @@ Platinum Slime
 
 	    enemy_templates["Magma Slime"] = new Enemy({
         name: "Magma Slime", 
-        description: "Magma Slime",
+        description: "A ball of living magma. Scalding hot, and prone to explode when critically injured.",
 		xp_value: 81, 
         rank: 6,
         size: "large",
@@ -418,16 +402,16 @@ Platinum Slime
             {item_name: "Burning Goo", chance: 1, count: 5},
         ],
 		on_death: {hero_damage: 4,},
-		on_strike: {burn: 100},
+		on_strike: { burn: { duration: 100, chance: 0.4 } },
 	});
 	    enemy_templates["Platinum Slime"] = new Enemy({
         name: "Platinum Slime", 
-        description: "Platinum Slime",
+        description: "The pinnacle of slimekind. Uses its dazzling speed to deftly avoid incoming attacks.",
 		xp_value: 1000, 
         rank: 8,
         size: "small",
         tags: ["amorphous"],
-        stats: {health: 20, attack: 20, agility: 1000, dexterity: 140, magic: 0, intuition: 100, attack_speed: 3, defense: 20}, 
+        stats: {health: 200, attack: 20, agility: 1000, dexterity: 140, magic: 0, intuition: 100, attack_speed: 3, defense: 20}, 
         loot_list: [
             {item_name: "Platinum Shard", chance: 1, count: 1},
         ],
@@ -479,7 +463,7 @@ enemy_templates["Venomous Spider"] = new Enemy({
         {item_name: "Venom Gland", chance: 0.50},
         {item_name: "Spider Fang", chance: 0.40},
     ],
-	on_strike: {poison: 200},
+	on_connectedstrike: {poison: 200},
 });
 
 enemy_templates["Heavyweight Spider"] = new Enemy({
@@ -489,7 +473,7 @@ enemy_templates["Heavyweight Spider"] = new Enemy({
     rank: 4,
     size: "medium",
     tags: ["arthropod"],
-    stats: {health: 130, attack: 38, agility: 12, dexterity: 18, magic: 0, intuition: 6, attack_speed: 0.9, defense: 27},
+    stats: {health: 130, attack: 45, agility: 12, dexterity: 18, magic: 0, intuition: 6, attack_speed: 0.7, defense: 27},
     loot_list: [
         {item_name: "Chitin Plate", chance: 0.50},
         {item_name: "Spider Fang", chance: 0.20},
@@ -498,13 +482,13 @@ enemy_templates["Heavyweight Spider"] = new Enemy({
 
 enemy_templates["Death-With-Legs"] = new Enemy({
     name: "Death-With-Legs", 
-    description: "A horrific predator spider that brings swift death.",
+    description: "A viscous predator. Strikes with deadly precision.",
 	xp_value: 625, 
     rank: 5,
     size: "large",
     tags: ["arthropod"],
 	on_strike: {pierce: 5},
-    stats: {health: 260, attack: 80, agility: 40, dexterity: 64, magic: 0, intuition: 16, attack_speed: 1.3, defense: 34},
+    stats: {health: 260, attack: 80, agility: 40, dexterity: 124, magic: 0, intuition: 16, attack_speed: 1.3, defense: 34},
     loot_list: [
         {item_name: "Venom Gland", chance: 0.60},
         {item_name: "Chitin Plate", chance: 0.40},
@@ -524,6 +508,7 @@ enemy_templates["Spider Queen"] = new Enemy({
         {item_name: "Spider Core", chance: 0.60},
         {item_name: "Royal Silk", chance: 0.40},
         {item_name: "Venom Gland", chance: 0.30},
+		{item_name: "Shoddy Treasure Chest", chance: 0.30},
     ],
 });
 // ant family
@@ -611,46 +596,146 @@ enemy_templates["Ant Queen"] = new Enemy({
         {item_name: "Royal Jelly", chance: 0.40},
         {item_name: "Ant Core", chance: 0.30},
         {item_name: "Chitin Plate", chance: 0.25},
+		{item_name: "Shoddy Treasure Chest", chance: 0.20},
     ],
 });
 
+//bone tournament
+
+
+    enemy_templates["Sir Bones"] = new Enemy({
+        name: "Sir Bones", 
+        description: "Sir Bones",
+		add_to_bestiary: false,
+		xp_value: 500, 
+        rank: 4,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 240, attack: 60, agility: 15, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });
+
+    enemy_templates["Randall Lionheart Esquire (Deceased)"] = new Enemy({
+        name: "Randall Lionheart Esquire (Deceased)", 
+        description: "Randall Lionheart Esquire (Deceased)",
+		add_to_bestiary: false,
+		xp_value: 700, 
+        rank: 4,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 180, attack: 70, agility: 25, dexterity: 66, magic: 0, intuition: 8, attack_speed: 1.3, defense: 12}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });
+	
+    enemy_templates["Randall Lionheart Esquire Jnr (Deceased)"] = new Enemy({
+        name: "Randall Lionheart Esquire Jnr (Deceased)", 
+        description: "Randall Lionheart Esquire Jnr (Deceased)",
+		add_to_bestiary: false,
+		xp_value: 1000, 
+        rank: 5,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 180, attack: 70, agility: 50, dexterity: 136, magic: 0, intuition: 8, attack_speed: 1.5, defense: 22}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });
+	
+    enemy_templates["Skele-Tony"] = new Enemy({
+        name: "Skele-Tony", 
+        description: "Skele-Tony",
+		add_to_bestiary: false,
+		xp_value: 1500, 
+        rank: 5,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 240, attack: 270, agility: 20, dexterity: 116, magic: 0, intuition: 8, attack_speed: 1.5, defense: 32}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });	
+	
+    enemy_templates["Morbid Champion"] = new Enemy({
+        name: "Morbid Champion", 
+        description: "Morbid Champion",
+		add_to_bestiary: false,
+		xp_value: 2000, 
+        rank: 5,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 340, attack: 270, agility: 40, dexterity: 136, magic: 5, intuition: 8, attack_speed: 1.3, defense: 52}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });		
+	
+	    enemy_templates["The Bone Prince"] = new Enemy({
+        name: "The Bone Prince", 
+        description: "The Bone Prince",
+		add_to_bestiary: false,
+		xp_value: 2400, 
+        rank: 6,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 440, attack: 370, agility: 140, dexterity: 236, magic: 1, intuition: 22, attack_speed: 1.3, defense: 42}, 
+        loot_list: [
+            {item_name: "Bones", chance: 1},
+        ],
+    });	
+
+/// mimic
+    enemy_templates["Mimic"] = new Enemy({
+        name: "Mimic", 
+        description: "A master of disguise that occasionally yields treasure. Very elusive.",
+		xp_value: 50, 
+        rank: 3,
+        size: "medium",
+        tags: ["beast"],
+        stats: {health: 400, attack: 24, agility: 4, dexterity: 4, magic: 0, intuition: 2, attack_speed: 1, defense: 2}, 
+        loot_list: [
+            {item_name: "Shoddy Treasure Chest", chance: 0.20},
+        ],
+    });
 
 //rank 1s
     enemy_templates["Shambling Corpse"] = new Enemy({
         name: "Shambling Corpse", 
-        description: "Shambling Corpse",
+        description: "A slow and plodding zombie. Packs a decent punch if it hits. IF.",
 		xp_value: 1, 
         rank: 1,
         size: "medium",
         tags: ["undead","humanoid"],
-		on_strike: {bark: ["Grooooan","Braaains"]},
+		on_strike: {bark: ["Grooooan","Braaains"], },
 		on_death: {
-		bark: "The monster lets out a final shriek!",
-
+		bark: "The monster lets out a final shriek and falls silent!",
+		
 },
         stats: {health: 20, attack: 12, agility: 2, dexterity: 2, magic: 0, intuition: 1, attack_speed: 0.8, defense: 1}, //stat_total = 20 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Rotten Flesh", chance: 0.20},
-			{item_name: "Small Treasure Chest", chance: 0.20},
         ],
     });
 	
     enemy_templates["Zombie Rat"] = new Enemy({
         name: "Zombie Rat", 
-        description: "Zombie Rat",
+        description: "The perfect union of Zombie and Rat. Weak but annoying.",
 		xp_value: 1, 
         rank: 1,
         size: "small",
         tags: ["undead","beast"],
         stats: {health: 10, attack: 6, agility: 5, dexterity: 5, magic: 0, intuition: 3, attack_speed: 0.9, defense: 0}, //stat_total = 20
         loot_list: [
-            {item_name: "Rotten Flesh", chance: 0.20},
+            {item_name: "Rotten Flesh", chance: 0.20}, {item_name: "Rat fang", chance: 0.40}
         ],
     });
 	
     enemy_templates["Bat"] = new Enemy({
         name: "Bat", 
-        description: "Bat",
+        description: "Rats with wings.",
 		xp_value: 1, 
         rank: 1,
         size: "small",
@@ -661,16 +746,16 @@ enemy_templates["Ant Queen"] = new Enemy({
         ],
     });
 
-    enemy_templates["Zombie Rat"] = new Enemy({
-        name: "Zombie Rat", 
-        description: "Zombie Rat",
+    enemy_templates["Frail Zombie"] = new Enemy({
+        name: "Frail Zombie", 
+        description: "It could fall apart at any moment. Especially if it takes a hit or two.",
 		xp_value: 1, 
         rank: 1,
-        size: "small",
+        size: "medium",
         tags: ["beast", "undead"],
-        stats: {health: 10, attack: 6, agility: 5, dexterity: 5, magic: 0, intuition: 3, attack_speed: 0.9, defense: 0}, //stat_total = 20
+        stats: {health: 10, attack: 6, agility: 5, dexterity: 5, magic: 0, intuition: 2, attack_speed: 0.9, defense: 0}, //stat_total = 20
         loot_list: [
-            {item_name: "Rotten Flesh", chance: 0.20}, {item_name: "Rat fang", chance: 0.40}
+            {item_name: "Rotten Flesh", chance: 0.20},
         ],
     });
 	
@@ -680,21 +765,22 @@ enemy_templates["Ant Queen"] = new Enemy({
 
     enemy_templates["Plague Rat"] = new Enemy({
         name: "Plague Rat", 
-        description: "Plague Rat",
+        description: "Scurrying little disease vectors.",
 		xp_value: 5, 
         rank: 2,
         size: "small",
         tags: ["beast"],
-        stats: {health: 30, attack: 10, agility: 11, dexterity: 11, magic: 0, intuition: 4, attack_speed: 0.9, defense: 1}, //stat_total = 40
+		on_connectedstrike: { poison: { duration: 10, chance: 0.2 } }, 
+        stats: {health: 30, attack: 3, agility: 11, dexterity: 11, magic: 0, intuition: 4, attack_speed: 0.9, defense: 1}, //stat_total = 40
         loot_list: [
             {item_name: "Rat meat chunks", chance: 0.10},
-			{item_name: "Rat fang", chance: 0.40}
+			{item_name: "Rat fang", chance: 0.40},
         ],
     });
 
     enemy_templates["Skeleton"] = new Enemy({
         name: "Skeleton", 
-        description: "Skeleton",
+        description: "Basic undead. Bone variety.",
 		xp_value: 5, 
         rank: 2,
         size: "medium",
@@ -707,7 +793,7 @@ enemy_templates["Ant Queen"] = new Enemy({
 	
     enemy_templates["Zombie"] = new Enemy({
         name: "Zombie", 
-        description: "Zombie",
+        description: "Run of the mill undead. Slow and clumsy, but still dangerous when massed.",
 		xp_value: 5, 
         rank: 2,
         size: "medium",
@@ -718,14 +804,33 @@ enemy_templates["Ant Queen"] = new Enemy({
         ],
     });
 
+/// rank 2 boss
+    enemy_templates["Royal Rat"] = new Enemy({
+        name: "Royal Rat", 
+        description: "The king of the sewers.",
+		xp_value: 50, 
+        rank: 2,
+        size: "medium",
+        tags: ["beast"],
+		on_connectedstrike: { poison: { duration: 10, chance: 1 } }, 
+        stats: {health: 300, attack: 3, agility: 11, dexterity: 11, magic: 0, intuition: 4, attack_speed: 1, defense: 1}, //stat_total = 40
+        loot_list: [
+            {item_name: "Rat meat chunks", chance: 0.10},
+			{item_name: "Rat fang", chance: 0.40},
+			{item_name: "Shoddy Treasure Chest", chance: 0.005}
+        ],
+    });
+
+
 /// rank 3s
     enemy_templates["Skeleton Archer"] = new Enemy({
         name: "Skeleton Archer", 
-        description: "Skeleton Archer",
+        description: "A skeleton that specialises in ranged ambushes.",
 		xp_value: 25, 
         rank: 3,
         size: "medium",
         tags: ["undead","humanoid"],
+		on_entry: { hero_damage: 1,},
         stats: {health: 70, attack: 34, agility: 4, dexterity: 28, magic: 0, intuition: 4, attack_speed: 1.2, defense: 3}, //stat_total = 80 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Bones", chance: 0.60},
@@ -734,7 +839,7 @@ enemy_templates["Ant Queen"] = new Enemy({
 	
     enemy_templates["Blighted One"] = new Enemy({
         name: "Blighted One", 
-        description: "Blighted One",
+        description: "A cursed undead.",
 		xp_value: 25, 
         rank: 3,
         size: "medium",
@@ -747,7 +852,7 @@ enemy_templates["Ant Queen"] = new Enemy({
 	
     enemy_templates["Decrepit Construct"] = new Enemy({
         name: "Decrepit Construct", 
-        description: "Decrepit Construct",
+        description: "An abandoned rogue construct. Robust but clumsy.",
 		xp_value: 25, 
         rank: 3,
         size: "large",
@@ -758,6 +863,49 @@ enemy_templates["Ant Queen"] = new Enemy({
         ],
     });
 
+    enemy_templates["Starving wolf"] = new Enemy({
+        name: "Starving wolf", 
+		description: "A large, wild and hungry canine", 
+        xp_value: 25, 
+        rank: 3,
+        tags: ["living", "beast"],
+        stats: {health: 150, attack: 20, agility: 27, dexterity: 27, intuition: 32, magic: 0, attack_speed: 1, defense: 12}, 
+        loot_list: [
+            {item_name: "Wolf fang", chance: 0.03},
+            {item_name: "Wolf pelt", chance: 0.01},
+        ],
+        size: "medium",
+    });
+
+    enemy_templates["Young wolf"] = new Enemy({
+        name: "Young wolf", 
+        description: "A small, wild canine", 
+        xp_value: 25, 
+        rank: 3,
+        tags: ["living", "beast"],
+        stats: {health: 120, attack: 20, agility: 27, dexterity: 25, intuition: 24, magic: 0, attack_speed: 1.4, defense: 6}, 
+        loot_list: [
+            {item_name: "Wolf fang", chance: 0.03},
+            {item_name: "Wolf pelt", chance: 0.01},
+        ],
+        size: "small",
+    });
+
+//// Rank 3 boss
+
+    enemy_templates["Skeleton Warlord"] = new Enemy({
+        name: "Skeleton Warlord", 
+        description: "A skeleton that specialises in ranged ambushes.",
+		xp_value: 50, 
+        rank: 3,
+        size: "medium",
+        tags: ["undead","humanoid"],
+        stats: {health: 140, attack: 44, agility: 6, dexterity: 28, magic: 0, intuition: 6, attack_speed: 1.2, defense: 5}, //stat_total = 80 (discount atk speed, HP/10)
+        loot_list: [
+            {item_name: "Bones", chance: 0.60},
+			{item_name: "Shoddy Treasure Chest", chance: 0.15},
+        ],
+    });
 
 
 //The order
@@ -772,9 +920,9 @@ Umbral Knight*/
 
     enemy_templates["Bloody Knight"] = new Enemy({
         name: "Bloody Knight", 
-        description: "Bloody Knight",
-		xp_value: 400, 
-        rank: 4,
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
+		xp_value: 80, 
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 60, agility: 30, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, // 1 stat x2
@@ -785,9 +933,9 @@ Umbral Knight*/
 
     enemy_templates["Famine Knight"] = new Enemy({
         name: "Famine Knight", 
-        description: "Famine Knight",
-		xp_value: 400, 
-        rank: 4,
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
+		xp_value: 80, 
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 60, agility: 30, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
@@ -798,12 +946,27 @@ Umbral Knight*/
 
     enemy_templates["Plague Knight"] = new Enemy({
         name: "Plague Knight", 
-        description: "Plague Knight",
-		xp_value: 400, 
-        rank: 4,
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
+		xp_value: 80, 
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
+		on_connectedstrike: { poison: { duration: 20, chance: 0.5 } }, 
         stats: {health: 160, attack: 60, agility: 30, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
+        loot_list: [
+            {item_name: "Order Badge", chance: 1},
+        ],
+    });
+	
+    enemy_templates["Frostbitten Knight"] = new Enemy({
+        name: "Frostbitten Knight", 
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
+		xp_value: 80, 
+        rank: 4.1,
+        size: "medium",
+        tags: ["undead","humanoid"],
+		on_connectedstrike: { freeze: { duration: 20, chance: 0.5 } }, 
+        stats: {health: 160, attack: 60, agility: 15, dexterity: 112, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
         loot_list: [
             {item_name: "Order Badge", chance: 1},
         ],
@@ -811,9 +974,9 @@ Umbral Knight*/
 	
     enemy_templates["Silent Knight"] = new Enemy({
         name: "Silent Knight", 
-        description: "Silent Knight",
-		xp_value: 400, 
-        rank: 4,
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
+		xp_value: 80, 
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 60, agility: 15, dexterity: 112, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
@@ -824,22 +987,24 @@ Umbral Knight*/
 	
     enemy_templates["Ash Knight"] = new Enemy({
         name: "Ash Knight", 
-        description: "Ash Knight",
-		xp_value: 400, 
-        rank: 4,
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
+		xp_value: 80, 
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
+		on_connectedstrike: { burn: { duration: 20, chance: 0.5 } }, 
         stats: {health: 160, attack: 120, agility: 15, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
         loot_list: [
             {item_name: "Order Badge", chance: 1},
+			{item_name: "Castle Key", chance: 1},
         ],
     });
 	
     enemy_templates["Storm Knight"] = new Enemy({
         name: "Storm Knight", 
-        description: "Storm Knight",
-		xp_value: 400, 
-        rank: 4,
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
+		xp_value: 80, 
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 120, agility: 15, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
@@ -850,9 +1015,9 @@ Umbral Knight*/
 	
     enemy_templates["Umbral Knight"] = new Enemy({
         name: "Umbral Knight", 
-        description: "Umbral Knight",
-		xp_value: 400, 
-        rank: 4,
+        description: "Undead knight. A knightly order braved the depths but all met gruesome ends.",
+		xp_value: 80, 
+        rank: 4.1,
         size: "medium",
         tags: ["undead","humanoid"],
         stats: {health: 160, attack: 60, agility: 15, dexterity: 112, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //1 stat x2
@@ -862,6 +1027,44 @@ Umbral Knight*/
     });
 
 //rank 4s
+
+    enemy_templates["Rogue Construct"] = new Enemy({
+        name: "Rogue Construct", 
+        description: "A haywire mining unit. Robust but clumsy.",
+		xp_value: 125, 
+        rank: 4,
+        size: "large",
+        tags: ["animated"],
+        stats: {health: 500, attack: 50, agility: 1, dexterity: 30, magic: 0, intuition: 1, attack_speed: 0.8, defense: 20}, //stat_total = 80 (discount atk speed, HP/10)
+        loot_list: [
+            {item_name: "Magic Stone", chance: 0.4},
+        ],
+    });
+    enemy_templates["Relay Drone"] = new Enemy({
+        name: "Relay Drone", 
+        description: "A transport automaton running amok.",
+		xp_value: 125, 
+        rank: 4,
+        size: "medium",
+        tags: ["animated"],
+        stats: {health: 200, attack: 20, agility: 30, dexterity: 30, magic: 0, intuition: 1, attack_speed: 1.2, defense: 8}, //stat_total = 80 (discount atk speed, HP/10)
+        loot_list: [
+            {item_name: "Magic Stone", chance: 0.4},
+        ],
+    });	
+    enemy_templates["Drone Foreman"] = new Enemy({
+        name: "Drone Foreman", 
+        description: "A commander unit among the mining drones.",
+		xp_value: 125, 
+        rank: 4,
+        size: "large",
+        tags: ["animated"],
+        stats: {health: 1000, attack: 60, agility: 10, dexterity: 70, magic: 0, intuition: 1, attack_speed: 1, defense: 30}, //boss
+        loot_list: [
+            {item_name: "Magic Stone", chance: 0.4},
+        ],
+    });	
+
 
     enemy_templates["Skeleton Elite"] = new Enemy({
         name: "Skeleton Elite", 
@@ -888,6 +1091,20 @@ Umbral Knight*/
             {item_name: "Rotten Flesh", chance: 0.80},
         ],
     });
+	
+enemy_templates["Rot Worshipper"] = new Enemy({
+    name: "Rot Worshipper", 
+    description: "Deranged cultist that worships poison, blight and decay.",
+	xp_value: 125, 
+    rank: 4,
+    size: "medium",
+    tags: ["humanoid"],
+    stats: {health: 120, attack: 50, agility: 20, dexterity: 46, magic: 0, intuition: 14, attack_speed: 1.4, defense: 4},
+    loot_list: [
+      
+    ],
+	on_connectedstrike: {poison: 20},
+});
 	
     enemy_templates["Spectre"] = new Enemy({
         name: "Spectre", 
@@ -954,6 +1171,20 @@ Umbral Knight*/
             {item_name: "Bones", chance: 1},
         ],
     });
+
+enemy_templates["Rot Warden"] = new Enemy({
+    name: "Rot Warden", 
+    description: "A more important member of the rot cult. It seems even anarchic cults have a hierachy.",
+	xp_value: 525, 
+    rank: 5,
+    size: "medium",
+    tags: ["humanoid"],
+    stats: {health: 250, attack: 100, agility: 30, dexterity: 126, magic: 0, intuition: 16, attack_speed: 1.4, defense: 9},
+    loot_list: [
+      
+    ],
+	on_connectedstrike: {poison: 40},
+});
 	
     enemy_templates["Fledging Vampire"] = new Enemy({
         name: "Fledging Vampire", 
@@ -1064,7 +1295,7 @@ Umbral Knight*/
 
     enemy_templates["Death Knight"] = new Enemy({
         name: "Death Knight", 
-        description: "Death Knight",
+        description: "A powerful undead knight. A great champion in life and formidable foe in death.",
 		xp_value: 13125, 
         rank: 7,
         size: "medium",
@@ -1120,12 +1351,13 @@ Umbral Knight*/
 //rank 8s
     enemy_templates["Artificial Hydra"] = new Enemy({
         name: "Artificial Hydra", 
-        description: "Artificial Hydra",
+        description: "An 8-headed abomindation. ",
 		xp_value: 65625, 
         rank: 8,
         size: "large",
         tags: ["abomination", "beast"],
-        stats: {health: 3520, attack: 968, agility: 380, dexterity: 680, magic: 0, intuition: 120, attack_speed: 2.5, defense: 60}, //stat_total = 2560 (discount atk speed, HP/10)
+		on_strike: {multistrike: 8},
+        stats: {health: 3520, attack: 268, agility: 380, dexterity: 680, magic: 0, intuition: 120, attack_speed: 2.5, defense: 60}, //stat_total = 2560 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Regenerating Flesh", chance: 0.8},
         ],
@@ -1133,12 +1365,12 @@ Umbral Knight*/
 
     enemy_templates["Zombie Dragon"] = new Enemy({
         name: "Zombie Dragon", 
-        description: "Zombie Dragon",
+        description: "A reanimated dragon. Deprived of its intellect, but powerful nonetheless.",
 		xp_value: 65625, 
         rank: 8,
         size: "large",
         tags: ["dragonoid", "undead"],
-        stats: {health: 2240, attack: 832, agility: 520, dexterity: 680, magic: 40, intuition: 224, attack_speed: 2, defense: 40}, //stat_total = 2560 (discount atk speed, HP/10)
+        stats: {health: 2240, attack: 932, agility: 520, dexterity: 680, magic: 40, intuition: 124, attack_speed: 2, defense: 40}, //stat_total = 2560 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 0.6},
         ],
@@ -1147,7 +1379,7 @@ Umbral Knight*/
 //special
     enemy_templates["Time Demon"] = new Enemy({
         name: "Time Demon", 
-        description: "Time Demon",
+        description: "A horror from beyond time and space. Its designs are unfathomable.",
 		xp_value: 99999, 
         rank: 8,
         size: "large",
@@ -1204,7 +1436,7 @@ Umbral Knight*/
 //rank 9
     enemy_templates["Black Dragon"] = new Enemy({
         name: "Black Dragon", 
-        description: "Black Dragon",
+        description: "A lesser dragon with an affinity with darkmess.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
@@ -1216,11 +1448,12 @@ Umbral Knight*/
     });
 	    enemy_templates["Fire Dragon"] = new Enemy({
         name: "Fire Dragon", 
-        description: "Fire Dragon",
+        description: "A lesser dragon with an affinity with fire.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
         tags: ["dragonoid", "fire"],
+		on_connectedstrike: { burn: { duration: 100, chance: 0.7 }},
         stats: {health: 4480, attack: 1704, agility: 1040, dexterity: 1340, magic: 80, intuition: 448, attack_speed: 2.4, defense: 60}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1228,11 +1461,12 @@ Umbral Knight*/
     });
     enemy_templates["Thunder Dragon"] = new Enemy({
         name: "Thunder Dragon", 
-        description: "Thunder Dragon",
+        description: "A lesser dragon with an affinity with thunder.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
         tags: ["dragonoid"],
+		on_connectedstrike: { stun: { duration: 10, chance: 0.7 }}, 
         stats: {health: 4480, attack: 1664, agility: 1040, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 80}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1240,11 +1474,12 @@ Umbral Knight*/
     });
 	    enemy_templates["Ice Dragon"] = new Enemy({
         name: "Ice Dragon", 
-        description: "Ice Dragon",
+        description: "A lesser dragon with an affinity with ice.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
         tags: ["dragonoid", "ice"],
+		on_connectedstrike: { freeze: { duration: 100, chance: 0.7 }}, 
         stats: {health: 4480, attack: 1664, agility: 1040, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 80}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1252,7 +1487,7 @@ Umbral Knight*/
     });
     enemy_templates["Earth Dragon"] = new Enemy({
         name: "Earth Dragon", 
-        description: "Earth Dragon",
+        description: "A lesser dragon with an affinity with earth.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
@@ -1264,7 +1499,7 @@ Umbral Knight*/
     });
     enemy_templates["Sea Dragon"] = new Enemy({
         name: "Sea Dragon", 
-        description: "Sea Dragon",
+        description: "A lesser dragon with an affinity with water.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
@@ -1278,7 +1513,7 @@ Umbral Knight*/
 //rank 9 bosses
     enemy_templates["Bloodstained Emperor"] = new Enemy({
         name: "Bloodstained Emperor", 
-        description: "Bloodstained Emperor",
+        description: "A fallen sovereign, presiding over an empire of dirt. Death is a mercy.",
 		xp_value: 60000, 
         rank: 9,
         size: "large",
@@ -1289,11 +1524,13 @@ Umbral Knight*/
         ],
 	 });
 
+
+//rank 10
     enemy_templates["Eclipse Dragon"] = new Enemy({
         name: "Eclipse Dragon", 
-        description: "Eclipse Dragon",
+        description: "An ancient and terrible dragon. Light itself shies away from it.",
 		xp_value: 999999, 
-        rank: 9,
+        rank: 10,
         size: "large",
         tags: ["dragonoid", "true dragon"],
         stats: {health: 44800, attack: 1664, agility: 1030, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 90}, //stat_total = 5120 (discount atk speed, HP/10)
@@ -1304,11 +1541,12 @@ Umbral Knight*/
     });
 	    enemy_templates["Hellfire Dragon"] = new Enemy({
         name: "Hellfire Dragon", 
-        description: "Hellfire Dragon",
+        description: "An ancient and terrible dragon. Its breath cam melt even the toughest steel.",
 		xp_value: 999999, 
-        rank: 9,
+        rank: 10,
         size: "large",
         tags: ["dragonoid", "fire", "true dragon"],
+		on_strike: {burn: 400},
         stats: {health: 44800, attack: 1704, agility: 1040, dexterity: 1340, magic: 80, intuition: 448, attack_speed: 2.4, defense: 60}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1317,11 +1555,12 @@ Umbral Knight*/
     });
     enemy_templates["Calamity Dragon"] = new Enemy({
         name: "Calamity Dragon", 
-        description: "Calamity Dragon",
+        description: "An ancient and terrible dragon. Wrecks devastation whereever it treads.",
 		xp_value: 999999, 
-        rank: 9,
+        rank: 10,
         size: "large",
         tags: ["dragonoid", "true dragon"],
+		
         stats: {health: 44800, attack: 1664, agility: 1040, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 80}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1330,11 +1569,12 @@ Umbral Knight*/
     });
 	    enemy_templates["Nightmare Dragon"] = new Enemy({
         name: "Nightmare Dragon", 
-        description: "Nightmare Dragon",
+        description: "An ancient and terrible dragon. Its breath freezes to the bone.",
 		xp_value: 999999, 
-        rank: 9,
+        rank: 10,
         size: "large",
         tags: ["dragonoid", "ice", "true dragon"],
+		on_strike: {freeze: 400},
         stats: {health: 44800, attack: 1664, agility: 1040, dexterity: 1360, magic: 80, intuition: 448, attack_speed: 2.4, defense: 80}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Dragon Bone", chance: 1},
@@ -1343,9 +1583,9 @@ Umbral Knight*/
     });
     enemy_templates["Primordial Dragon"] = new Enemy({
         name: "Primordial Dragon", 
-        description: "Primordial Dragon",
-		xp_value: 328125, 
-        rank: 9,
+        description: "An ancient and terrible dragon. It lived for centuries, and all expected it to live for centuries more.",
+		xp_value: 999999, 
+        rank: 10,
         size: "large",
         tags: ["dragonoid","true dragon"],
         stats: {health: 64800, attack: 1364, agility: 1080, dexterity: 1380, magic: 80, intuition: 448, attack_speed: 2.4, defense: 120}, //stat_total = 5120 (discount atk speed, HP/10)
@@ -1361,10 +1601,11 @@ Umbral Knight*/
         name: "Shadow", 
         description: "A perfect mirror of your power.",
 		add_to_bestiary: false,
-		xp_value: 60000, 
+		xp_value: 100, 
         rank: 9,
         size: "medium",
         tags: ["humanoid", "spirit"],
+		on_connectedstrike: { stun: { duration: 10, chance: 0.3 } }, 
         stats: {health: 1, attack: 1, agility: 1, dexterity: 1, magic: 1, intuition: 1, attack_speed: 1, defense: 1}, //stat_total = 5120 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Purest Darkness", chance: 1},
@@ -1372,6 +1613,7 @@ Umbral Knight*/
 		    custom_generate: function (template, context) {
         const player_stats = character.stats.full;
 		player_stats.attack = Math.round(character.stats.full.attack_power);
+		player_stats.health = Math.round(character.stats.full.max_health);
         return {
             override_stats: { ...player_stats },
             post_generate(enemy) {
@@ -1386,7 +1628,7 @@ Umbral Knight*/
 
     enemy_templates["Titan Turtle"] = new Enemy({
         name: "Titan Turtle", 
-        description: "Titan Turtle", 
+        description: "A great plodding beast. It would be dangerous if it had any inclination towards violence.", 
         xp_value: 1000,
         rank: 5,
         tags: ["aquatic", "beast"],

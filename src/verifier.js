@@ -6,10 +6,14 @@ import { item_templates } from "./items.js";
 import { locations } from "./locations.js";
 import { skills } from "./skills.js";
 import { traders } from "./traders.js";
+import { allies } from "./allies.js";
+import { magics } from "./magic.js";
 
 function Verify_Game_Objects() {
     let results = [0,0];
     let overall_start_time = performance.now();
+
+    // --- Item Verification ---
     let start_time = performance.now();
     let item_results = [0,0];
     console.log("Began verifying game objects.");
@@ -28,16 +32,6 @@ function Verify_Game_Objects() {
                 }
             }
         }
-        /*
-        UNNEEDED, check is already done in item creation
-        if(item.components) {
-            Object.values(item.components).forEach(component => {
-                if(!item_templates[component]) {
-                    console.error(`Component "${component}" of item "${key}" is not defined in item templates`);
-                    has_issue = true;
-                }
-            })
-        }*/
 
         if(item.stats) {
             Object.keys(item.stats).forEach(stat_key => {
@@ -52,7 +46,7 @@ function Verify_Game_Objects() {
                         }
                     });
                 }
-            })
+            });
         }
 
         item_results[0]++;
@@ -67,6 +61,7 @@ function Verify_Game_Objects() {
         console.log(`Finished verifying items in: ${Math.round(10000*(end_time-start_time))/10000}s\nNo issues were found.`);
     }
 
+    // --- Skill Verification ---
     start_time = performance.now();
     let skill_results = [0,0];
     console.log("Began verifying skills.");
@@ -104,7 +99,7 @@ function Verify_Game_Objects() {
                                     }
                                 });
                             });
-                        } else { //xp_multipliers
+                        } else {
                             Object.keys(milestone[milestone_reward_type_key]).forEach(skill_key => {
                                 if(skill_key !== "all" && skill_key !== "all_skill" && skill_key !== "hero" && !skills[skill_key]) {
                                     console.error(`Skill "${key}" has a milestone reward for a non-existent skill "${skill_key}"`);
@@ -114,18 +109,6 @@ function Verify_Game_Objects() {
                         }
                     }
                 });
-                /*
-                if(character.base_stats[stat_key] === undefined) {
-                    console.error(`Item "${key}" has a non-existent stat "${stat_key}"`);
-                    has_issue = true;
-                } else {
-                    Object.keys(skill.stats[stat_key]).forEach(stat_type_key => {
-                        if(stat_type_key !== "multiplier" && stat_type_key !== "flat") {
-                            console.error(`Item "${key}" has a non-existent stat type "${stat_type_key}" (should be 'multiplier' or 'flat')`);
-                            has_issue = true;
-                        }
-                    });
-                }*/
             });
         }
 
@@ -141,7 +124,7 @@ function Verify_Game_Objects() {
         console.log(`Finished verifying skills in: ${Math.round(10000*(end_time-start_time))/10000}s\nNo issues were found.`);
     }
 
-
+    // --- Location Verification ---
     start_time = performance.now();
     let location_results = [0,0];
     console.log("Began verifying locations.");
@@ -182,8 +165,6 @@ function Verify_Game_Objects() {
                     }
                 }   
             });
-        } else if(location.tags["Combat zone"]) {
-            
         }
 
         location_results[0]++;
@@ -198,8 +179,51 @@ function Verify_Game_Objects() {
         console.log(`Finished verifying locations in: ${Math.round(10000*(end_time-start_time))/10000}s\nNo issues were found.`);
     }
 
+    // --- Magic Verification ---
+    start_time = performance.now();
+    let magic_results = [0,0];
+    console.log("Began verifying magics.");
+    for(const [key,magic] of Object.entries(magics)) {
+        let has_issue = false;
+        if(key !== magic.names?.[0]) {
+            console.error(`Id mismatch: "${key}" - "${magic.names?.[0]}" in magic`);
+            has_issue = true;
+        }
+        magic_results[0]++;
+        magic_results[1] += has_issue;
+        results[0]++;
+        results[1] += has_issue;
+    }
+    end_time = performance.now();
+    if(magic_results[1] > 0) {
+        console.log(`Finished verifying magics in: ${Math.round(10000*(end_time-start_time))/10000}s\nFound issue in ${magic_results[1]} out of ${magic_results[0]}`);
+    } else {
+        console.log(`Finished verifying magics in: ${Math.round(10000*(end_time-start_time))/10000}s\nNo issues were found.`);
+    }
 
+    // --- Ally Verification ---
+    start_time = performance.now();
+    let ally_results = [0,0];
+    console.log("Began verifying allies.");
+    for(const [key,ally] of Object.entries(allies)) {
+        let has_issue = false;
+        if(key !== ally.ally_id) {
+            console.error(`Id mismatch: "${key}" - "${ally.ally_id}" in ally`);
+            has_issue = true;
+        }
+        ally_results[0]++;
+        ally_results[1] += has_issue;
+        results[0]++;
+        results[1] += has_issue;
+    }
+    end_time = performance.now();
+    if(ally_results[1] > 0) {
+        console.log(`Finished verifying allies in: ${Math.round(10000*(end_time-start_time))/10000}s\nFound issue in ${ally_results[1]} out of ${ally_results[0]}`);
+    } else {
+        console.log(`Finished verifying allies in: ${Math.round(10000*(end_time-start_time))/10000}s\nNo issues were found.`);
+    }
 
+    // --- Summary ---
     let overall_end_time = performance.now();
     if(results[1] > 0) {
         console.log(`Finished verifying game objects in: ${Math.round(10000*(overall_end_time-overall_start_time))/10000}s\nFound issue in ${results[1]} out of ${results[0]}`);

@@ -69,6 +69,15 @@ class Textline {
 		this.unlocks.allies = unlocks.allies || [];
 		this.unlocks.expels = unlocks.expels || [];
         this.unlocks.items = unlocks.items || []; //not so much unlocks as simply items that player will receive
+		
+		
+			/*	Can handles just the item name, or name+ count or name+quality.e.g.
+		
+					"Old pickaxe",
+					{ name: "Turtle Soup", count: 50 },
+					{ name: "Cheap iron dagger", quality: 40 },
+			*/
+
         
         this.required_flags = required_flags;
 
@@ -514,9 +523,10 @@ dialogues["Peddler"] = new Dialogue({
             "Peddler": new Textline({ 
                 name: "Hello?",
                 text: "Welcome friend! Assuming you're here to buy something of course."
-				+ "Life saving supplies, at reasonable prices. Ask about our “Don't Die Discount” today! Because an alive customer is a repeat customer!",
+				+ "\n\nLife saving supplies, at reasonable prices. Ask about our “Don't Die Discount” today! Because an alive customer is a repeat customer!\n\n And if you're looking for something to do there's always need for farmhands.",
                 unlocks: {
-					traders: ["village trader"],
+					traders: ["peddler"],
+					activities: [{location: "Sanctuary", activity: "fieldwork"}]
                 },
                 locks_lines: ["Peddler"],
             }),
@@ -528,7 +538,7 @@ dialogues["Mad Lumberjack"] = new Dialogue({
         name: "Mad Lumberjack",
         textlines: {
             "Mad Lumberjack": new Textline({ 
-                name: "Talk to the Mad Lumberjack",
+                name: "Hello",
                 text: "Boy!!!! Where's my lumber?",
                 unlocks: {
 					textlines: [{dialogue: "Mad Lumberjack", lines: ["LumberHuh"]}],
@@ -581,7 +591,7 @@ dialogues["Mad Miner"] = new Dialogue({
         name: "Mad Miner",
         textlines: {
             "Mad Miner": new Textline({ 
-                name: "Talk to the Mad Miner",
+                name: "Hello",
                 text: "Boy!!!! Where's my ore?",
                 unlocks: {
 					textlines: [{dialogue: "Mad Miner", lines: ["MinerHuh"]}],
@@ -604,7 +614,7 @@ dialogues["Mad Herbalist"] = new Dialogue({
         name: "Mad Herbalist",
         textlines: {
             "Mad Herbalist": new Textline({ 
-                name: "Talk to the Mad Herbalist",
+                name: "Hello",
                 text: "Boy!!!! Where's my herbs?",
                 unlocks: {
 					textlines: [{dialogue: "Mad Herbalist", lines: ["HerbHuh"]}],
@@ -1194,14 +1204,18 @@ dialogues["Kon1"] = new Dialogue({
 			"Kon1Advice": new Textline({ 
 				is_unlocked: false,
                 name: "Any advice?",
-                text: "Prepare yourself thoroughly before diving too deep. I believe there's a settlement of sorts somewhere around here, a place where wanderers gather for shared safety. If there is such a place then surely they'll offer supplies for the brave and errands for the earnest.",
+                text: "Prepare yourself thoroughly before diving too deep. I believe there's a settlement of sorts somewhere around here, a place where wanderers gather for shared safety. If there is such a place then surely they'll offer supplies for the brave and errands for the earnest. \n\n Warming yourself up a bit before you get to fighting is an idea too.",
 			}),
 			"Kon1Final": new Textline({ 
 				is_unlocked: false,
                 name: "Goodbye",
-                text: "Well, adventure calls. Hopefully neither of us stumbles into an early grave! Hah.",
+                text: "Well, adventure calls. Hopefully neither of us stumbles into an early grave! Hah. \n\n Oh and perhaps you'll find some use for this. A parting gift!",
 				unlocks: {
 					dialogues: ["Kon2"],
+					items: [
+					{ name: "Cheap iron sword", quality: 50 },
+					
+				],
                 },
             locks_lines: ["Kon1","Kon1What","Kon1Who","Kon1Final","Kon1Advice","Kon1Cause"],
             }),
@@ -1242,6 +1256,7 @@ dialogues["Kon3"] = new Dialogue({
         "Kon3_help": new Textline({
             name: "This may help. (Give 5 stale bread)",
             text: "You really have supplies to spare? Very well, I accept.\n\n Now let's see what I can do to earn my keep. \n\n Aha! Let me acompany you for a time, and I'll instruct you in the ways of knightly combar. After all, we're comrades that have broken bread together.",
+			is_unlocked: false,
             requires_items: {
                 item_template_key: "Stale bread",
                 quantity: 5
@@ -1256,6 +1271,7 @@ dialogues["Kon3"] = new Dialogue({
 		        "Kon3_nohelp": new Textline({ 
             name: "Need some help?",
             text: "Frankly yes. But it's mainly supplies I need. Even stale bread will do at this point.",
+			is_unlocked: false,
         }),
 	}
     });
@@ -1328,9 +1344,10 @@ dialogues["Shadow"] = new Dialogue({
 			"Shadow2": new Textline({
                 name: "?",
                 is_unlocked: false,
-                text: "Your struggle is futile, your efforts are pointless. \n\nThere are forces here that are forever beyond you. Accept the mercy of overwhelming defeat.",
-                unlocks: {
-                    locations: ["Shadow2"],
+                text: "Your struggle is futile, your efforts are pointless. \n\nThere are forces here that are forever beyond you. Accept the mercy of crushing defeat.",
+                required_flags: {yes: ["is_hero_level20"]},
+				unlocks: {
+                    locations: ["Shadow2",],
                 },
                 locks_lines: ["Shadow2"],
 							}),
@@ -1355,9 +1372,10 @@ dialogues["Shadow"] = new Dialogue({
 			"Shadow5": new Textline({
                 name: "?",
                 is_unlocked: false,
+				required_flags: {yes: ["is_hero_level50"]},
                 text: "Sweet oblivion beckons to me. May it swallow you as well.",
                 unlocks: {
-                    locations: ["Shadow5"],
+                    locations: ["Shadow5","Saw Demon","Chain Demon"],
                 },
                 locks_lines: ["Shadow5"],
 							}),

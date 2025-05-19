@@ -41,7 +41,7 @@ class Ally {
 		ally_id: "slayer",
         description: "A fearless veteran who bathes in the blood of his enemies.", //try to keep it short
         attack_power: 150,
-        attack_speed: 1.5,
+        attack_speed: 1.2,
 		AP: 300,
 		target_count: 2,
     });
@@ -51,7 +51,7 @@ class Ally {
 		ally_id: "captain",
         description: "Captain", //try to keep it short
         attack_power: 100,
-        attack_speed: 1.5,
+        attack_speed: 1.2,
 		AP: 300,
 		target_count: 2,
     });
@@ -61,7 +61,7 @@ class Ally {
 		ally_id: "knight",
         description: "Knight", //try to keep it short
         attack_power: 100,
-        attack_speed: 1.5,
+        attack_speed: 1.2,
 		AP: 300,
 		target_count: 2,
     });
@@ -70,7 +70,7 @@ class Ally {
 		ally_id: "scholar",
         description: "Scholar", //try to keep it short
         attack_power: 100,
-        attack_speed: 1.5,
+        attack_speed: 1.2,
 		AP: 300,
 		target_count: 2,
     });
