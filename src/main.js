@@ -540,8 +540,7 @@ function start_activity(selected_activity) {
 function end_activity() {
     
     log_message(`${character.name} finished ${current_activity.activity_name}`, "activity_finished");
-	console.log("activity ended");
-	console.log(options.log_total_gathering_gain);
+
     
     if(current_activity.earnings) {
         log_message(`${character.name} earned ${format_money(current_activity.earnings)}`, "activity_money");
@@ -550,8 +549,7 @@ function end_activity() {
 	console.log("activity ended");
 
     if(current_activity.gathered_materials && options.log_total_gathering_gain) {
-		console.log("if condition valid");
-		console.log(current_activity.gathered_materials);
+	
         const loot = []; 
 		
 		
@@ -904,8 +902,7 @@ if (rewards.locations) {
     }
 
 			if (rewards.items && !only_unlocks) {
-				console.log(rewards);
-				console.log(rewards.items);
+			
 
 				const parsed_items = [];
 
@@ -1444,7 +1441,7 @@ function consume_items_if_available(item_template_key, required_quantity) {
 
     character.remove_from_inventory(removalList);
     update_displayed_character_inventory();
-	console.log("Success");
+	
     return true;
 }
 
@@ -3472,11 +3469,10 @@ function open_loot_chest(item_key) {
 
 	// Handle loot pool (if exists)
 	if (chest.loot_pool) {
-		console.log("loot_chest_pool logic started");
+		
 		const poolResult = roll_loot_pool(chest.loot_pool);
 		if (poolResult.length > 0) {
-			console.log("loot_chest_pool roll success");
-			console.log(poolResult);
+		
 			finalLoot = [...finalLoot, ...poolResult]; // append without mutating chest
 		}
 	}
@@ -3783,8 +3779,12 @@ function create_save() {
                 };
             }
         });
-
+		
+		if(is_reading != null) {
         save_data["is_reading"] = JSON.stringify({ id: is_reading });
+		} else 
+		{
+		save_data["is_reading"] = is_reading;}
 
         save_data["is_sleeping"] = is_sleeping;
 
