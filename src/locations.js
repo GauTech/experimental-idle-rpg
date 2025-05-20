@@ -1619,10 +1619,21 @@ locations["Courtyard"].connected_locations.push({location: locations["Docks"]});
 
 locations["Castle"] = new Location({ 
         connected_locations: [{location: locations["Courtyard"]}],
-        description: "Castle",
+        description: "A grand cxastle. It has a advanced smithing facilities that you could make use of.",
         name: "Castle",
 		dialogues: ["Kon4"],
         is_unlocked: false,
+			   crafting: {
+            is_unlocked: true, 
+            use_text: "Try to craft something", 
+            tiers: {
+                crafting: 1,
+                forging: 3,
+                smelting: 3,
+                cooking: 1,
+                alchemy: 1,
+            },
+        },
     });
 	
 locations["Courtyard"].connected_locations.push({location: locations["Castle"]});
@@ -1709,12 +1720,23 @@ locations["Fallen Palace"].connected_locations.push({location: locations["Throne
 
 locations["Laboratory"] = new Location({ 
         connected_locations: [{location: locations["Fallen Palace"]}],
-        description: "Laboratory",
+        description: "A bizarre research facility. The tools here make it easier to assemble craft items.",
         name: "Laboratory",
         is_unlocked: true,
 		getBackgroundNoises: function() {
             let noises = ["*You hear equipment whirring*", "*You hear beakers bubbling*", ];
             return noises;
+        },
+		crafting: {
+            is_unlocked: true, 
+            use_text: "Try to craft something", 
+            tiers: {
+                crafting: 3,
+                forging: 1,
+                smelting: 1,
+                cooking: 1,
+                alchemy: 1,
+            },
         },
     });
 	
