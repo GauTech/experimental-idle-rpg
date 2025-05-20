@@ -58,7 +58,7 @@ const loot_pools = {
         { item_id: "The Spellblade Chronicles vol. 1", chance: 100, min_count: 1, max_count: 1 },
 		{ item_id: "Muscle Wizard Adventures", chance: 100, min_count: 1, max_count: 1 },
 		{ item_id: "Basic Barrier Magic", chance: 100, min_count: 1, max_count: 1 },
-		
+		{ item_id: "Practical Applications of Time  Travel", chance: 100, min_count: 1, max_count: 1 },
 		
 		
     ],
@@ -1227,7 +1227,22 @@ book_stats["The Spellblade Chronicles vol. 1"] = new BookData({
 	unlocks: {unlock_stance: "spellblade"},
 });
 
-
+book_stats["Practical Applications of Time  Travel"] = new BookData({
+    required_time: 100,
+    literacy_xp_rate: 1,
+	rewards: {
+        xp_multipliers: {
+            "Chronomancy": 1.1,
+        },
+		unlock_magic: "Haste"
+    },
+	repeat_rewards: {
+    xp: {
+        "Chronomancy": 1000,
+    }
+},
+	
+});
 
 
 //books
@@ -1303,6 +1318,11 @@ item_templates["Muscle Wizard Adventures"] = new Book({
     value: 2000,
 });
 item_templates["Basic Barrier Magic"] = new Book({
+    name: "Muscle Wizard Adventures",
+    description: "Muscle Wizard Adventures",
+    value: 2000,
+});
+item_templates["Practical Applications of Time  Travel"] = new Book({
     name: "Muscle Wizard Adventures",
     description: "Muscle Wizard Adventures",
     value: 2000,
