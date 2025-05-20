@@ -1647,10 +1647,21 @@ locations["Courtyard"].connected_locations.push({location: locations["Tower"]});
 
 locations["Upper Tower"] = new Location({ 
         connected_locations: [{location: locations["Tower"]}],
-        description: "The heights of the tower. It looms above the rest of the city.",
+        description: "The heights of the tower, looming above the rest of the city. The area houses various alchemy tools you could use to your advantage.",
         name: "Upper Tower",
 		dialogues: ["Scholar2","Scholar3"],
         is_unlocked: false,
+		   crafting: {
+            is_unlocked: true, 
+            use_text: "Try to craft something", 
+            tiers: {
+                crafting: 1,
+                forging: 1,
+                smelting: 1,
+                cooking: 1,
+                alchemy: 3,
+            },
+        },
     });
 	
 locations["Tower"].connected_locations.push({location: locations["Upper Tower"]});

@@ -55,7 +55,12 @@ const loot_pools = {
     magic_spellbooks_pool: [
         { item_id: "TRUE ULTIMATE POWER", chance: 100, min_count: 1, max_count: 1 },
         { item_id: "Old combat manual", chance: 100, min_count: 1, max_count: 1 },
-        { item_id: "ABC for kids", chance: 100, min_count: 1, max_count: 1 },
+        { item_id: "The Spellblade Chronicles vol. 1", chance: 100, min_count: 1, max_count: 1 },
+		{ item_id: "Muscle Wizard Adventures", chance: 100, min_count: 1, max_count: 1 },
+		{ item_id: "Basic Barrier Magic", chance: 100, min_count: 1, max_count: 1 },
+		
+		
+		
     ],
     // other pools...
 };
@@ -1019,6 +1024,39 @@ book_stats["ABC for kids"] = new BookData({
 },
 });
 
+
+book_stats["Muscle Wizard Adventures"] = new BookData({
+    required_time: 120,
+    literacy_xp_rate: 1,
+    rewards: {
+        xp_multipliers: {
+            Unarmed: 1.1,
+        },
+		unlock_magic: "Strengthen",
+    },
+	repeat_rewards: {
+    xp: {
+        Unarmed: 100,
+    }
+},
+});
+
+book_stats["Basic Barrier Magic"] = new BookData({
+    required_time: 120,
+    literacy_xp_rate: 1,
+    rewards: {
+        xp_multipliers: {
+            "Barrier Magic": 1.1,
+        },
+		unlock_magic: "Shield",
+    },
+	repeat_rewards: {
+    xp: {
+        "Barrier Magic": 100,
+    }
+},
+});
+
 book_stats["Peak Literature"] = new BookData({
     required_time: 120,
     literacy_xp_rate: 1,
@@ -1257,6 +1295,16 @@ item_templates["Power of Dreams"] = new Book({
 item_templates["TRUE ULTIMATE POWER"] = new Book({
     name: "TRUE ULTIMATE POWER",
     description: "TRUE ULTIMATE POWER",
+    value: 2000,
+});
+item_templates["Muscle Wizard Adventures"] = new Book({
+    name: "Muscle Wizard Adventures",
+    description: "Muscle Wizard Adventures",
+    value: 2000,
+});
+item_templates["Basic Barrier Magic"] = new Book({
+    name: "Muscle Wizard Adventures",
+    description: "Muscle Wizard Adventures",
     value: 2000,
 });
 

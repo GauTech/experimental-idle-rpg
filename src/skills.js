@@ -2029,7 +2029,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         category: "Gathering",
         base_xp_cost: 10,
         visibility_treshold: 4,
-        xp_scaling: 1.6,
+        xp_scaling: 1.4,
     });
 
     skills["Mining"] = new Skill({skill_id: "Mining",
@@ -2038,7 +2038,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         category: "Gathering",
         base_xp_cost: 10,
         visibility_treshold: 4,
-        xp_scaling: 1.6,
+        xp_scaling: 1.4,
     });
 	
     skills["Fishing"] = new Skill({skill_id: "Fishing",
@@ -2047,7 +2047,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         category: "Gathering",
         base_xp_cost: 10,
         visibility_treshold: 4,
-        xp_scaling: 1.6,
+        xp_scaling: 1.4,
     });
 
     skills["Herbalism"] = new Skill({skill_id: "Herbalism",
@@ -2056,7 +2056,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         category: "Gathering",
         base_xp_cost: 10,
         visibility_treshold: 4,
-        xp_scaling: 1.6,
+        xp_scaling: 1.4,
     });
 
     skills["Animal handling"] = new Skill({
@@ -2066,7 +2066,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
         category: "Gathering",
         base_xp_cost: 10,
         visibility_treshold: 4,
-        xp_scaling: 1.6,
+        xp_scaling: 1.4,
     });
 })();
 
