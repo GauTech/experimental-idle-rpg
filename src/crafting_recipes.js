@@ -328,7 +328,8 @@ forging_recipes.components["Long blade"] = new ComponentRecipe({
         {material_id: "Low quality iron ingot", count: 3, result_id: "Cheap long iron blade"}, 
         {material_id: "Iron ingot", count: 3, result_id: "Long iron blade"},
         {material_id: "Blacksteel ingot", count: 3, result_id: "Long blacksteel blade"},
-        {material_id: "Mithril ingot", count: 3, result_id: "Long mithril blade"}
+        {material_id: "Mithril ingot", count: 3, result_id: "Long mithril blade"},
+		{material_id: "Order Badge", count: 9, result_id: "Order Blade"},
     ],
     item_type: "Component",
     recipe_skill: "Forging",
@@ -799,7 +800,6 @@ crafting_recipes.components["Long shaft"] = new ComponentRecipe({
         recipe_level: [15,25],
         recipe_skill: "Smelting",
     });	
-	
 
     crafting_recipes.items["Processed rough wood"] = new ItemRecipe({
         name: "Processed rough wood",

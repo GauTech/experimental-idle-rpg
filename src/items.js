@@ -58,7 +58,7 @@ const loot_pools = {
         { item_id: "The Spellblade Chronicles vol. 1", chance: 100, min_count: 1, max_count: 1 },
 		{ item_id: "Muscle Wizard Adventures", chance: 100, min_count: 1, max_count: 1 },
 		{ item_id: "Basic Barrier Magic", chance: 100, min_count: 1, max_count: 1 },
-		{ item_id: "Practical Applications of Time  Travel", chance: 100, min_count: 1, max_count: 1 },
+		{ item_id: "Practical Applications of Time Travel", chance: 100, min_count: 1, max_count: 1 },
 		
 		
     ],
@@ -283,6 +283,7 @@ class ItemComponent extends Item {
         this.stackable = false;
         this.component_tier = item_data.component_tier || 1;
         this.stats = item_data.stats || {};
+		this.component_stats = item_data.component_stats || {};
         this.tags["equipment component"] = true;
         this.quality = Math.round(item_data.quality) || 100;
     }
@@ -330,6 +331,7 @@ class WeaponComponent extends ItemComponent {
             throw new Error(`No such weapon component type as ${item_data.component_type}`);
         }
         this.component_type = item_data.component_type;
+		this.component_stats = item_data.component_stats || {};
         //"short blade", "long blade", "axe blade", "hammer blade" for heads; "short handle", "medium handle", "long handle" for handles
 
         this.attack_value = item_data.attack_value || 0; //can skip this for weapon handles
@@ -344,6 +346,7 @@ class WeaponComponent extends ItemComponent {
         }
 
         this.name_prefix = item_data.name_prefix; //to create a name of an item, e.g. "Sharp iron" used to create spear results in "Sharp iron spear"
+		this.name_override = item_data.name_override; //override to make a complete item name
 
         this.tags["weapon component"] = true;
         this.tags["component"] = true;
@@ -357,6 +360,7 @@ class ShieldComponent extends ItemComponent {
             throw new Error(`No such shield component type as ${item_data.component_type}`);
         }
         this.component_type = item_data.component_type;
+		this.component_stats = item_data.component_stats || {};
 
         //properties below only matter for shield type component
         this.shield_strength = item_data.shield_strength; 
@@ -379,6 +383,7 @@ class ArmorComponent extends ItemComponent {
             throw new Error(`No such armor component type as ${item_data.component_type}`);
         }
         this.component_type = item_data.component_type;
+		this.component_stats = item_data.component_stats || {};
         this.defense_value = item_data.defense_value;
 
         this.stats = item_data.stats || {};
@@ -451,29 +456,32 @@ class Equippable extends Item {
     }
 
     calculateStats(quality){
-        const stats = {};
+     const stats = {};
         if(this.components) {
-
             //iterate over components
+			//console.log("this.components:", this.components);
             const components = Object.values(this.components).map(comp => item_templates[comp]).filter(comp => comp);
-            for(let i = 0; i < components.length; i++) {
-                Object.keys(components[i].stats).forEach(stat => {
-                    if(!stats[stat]) {
-                        stats[stat] = {};
-                    }
+			Object.values(this.components).forEach(id => {
+    if (!item_templates[id]) console.warn("Missing item_template for:", id);
+});
+	for (let i = 0; i < components.length; i++) {
+		const compStats = components[i].component_stats;
+		if (!compStats || typeof compStats !== "object")  continue; // SAFETY CHECK console.log(compStats); console.log(components);
+		
+		//console.log(compStats); console.log(components);
+		Object.keys(compStats).forEach(stat => {
+			if (!stats[stat]) stats[stat] = {};
 
-                    if(stat === "defense" || stat === "attack_power") { //skip it, it's to be added to the basic defense/attack instead
-                        return;
-                    }
+			if (["defense", "attack_power", "block_strength"].includes(stat)) return;
 
-                    if(components[i].stats[stat].multiplier) {
-                        stats[stat].multiplier = (stats[stat].multiplier || 1) * components[i].stats[stat].multiplier;
-                    }
-                    if(components[i].stats[stat].flat) {
-                        stats[stat].flat = (stats[stat].flat || 0) + components[i].stats[stat].flat;
-                    }
-                })
-            }
+			if (compStats[stat].multiplier) {
+				stats[stat].multiplier = (stats[stat].multiplier || 1) * compStats[stat].multiplier;
+			}
+			if (compStats[stat].flat) {
+				stats[stat].flat = (stats[stat].flat || 0) + compStats[stat].flat;
+			}
+		});
+	}
 
             //iterate over stats and apply rarity bonus if possible
             Object.keys(stats).forEach(stat => {
@@ -493,10 +501,33 @@ class Equippable extends Item {
                     }
                 }
             });
+        } else { //no components, only needs to apply quality to already present stats
+            Object.keys(this.component_stats).forEach(stat => {
+                stats[stat] = {};
+                if(this.component_stats[stat].multiplier){
+                    stats[stat].multiplier = 1;
+                    if(this.component_stats[stat].multiplier >= 1) {
+                        stats[stat].multiplier = Math.round(100 * (1 + (this.component_stats[stat].multiplier - 1) * rarity_multipliers[this.getRarity(quality)]))/100;
+                    } else {
+                        stats[stat].multiplier = Math.round(100 * this.component_stats[stat].multiplier)/100;
+                    }
+                }
+
+                if(this.component_stats[stat].flat){
+                    stats[stat].flat = 0;
+                    if(this.component_stats[stat].flat > 0) {
+                        stats[stat].flat = Math.round(100 * this.component_stats[stat].flat * rarity_multipliers[this.getRarity(quality)])/100;
+                    } else {
+                        stats[stat].flat = Math.round(100 * this.component_stats[stat].flat)/100;
+                    }
+                }
+            });
         }
 
         return stats;
     }
+	
+	
 }
 
 class Artifact extends Equippable {
@@ -803,8 +834,13 @@ class Weapon extends Equippable {
     } 
 
     getName() {
+	if(item_templates[this.components.head].name_override) {
+	return `${item_templates[this.components.head].name_override}`;
+				} else {
+				
         return `${item_templates[this.components.head].name_prefix} ${this.weapon_type === "hammer" ? "battle hammer" : this.weapon_type}`;
     }
+	}
 }
 
 //////////////////////////////
@@ -1227,7 +1263,7 @@ book_stats["The Spellblade Chronicles vol. 1"] = new BookData({
 	unlocks: {unlock_stance: "spellblade"},
 });
 
-book_stats["Practical Applications of Time  Travel"] = new BookData({
+book_stats["Practical Applications of Time Travel"] = new BookData({
     required_time: 100,
     literacy_xp_rate: 1,
 	rewards: {
@@ -1322,9 +1358,9 @@ item_templates["Basic Barrier Magic"] = new Book({
     description: "Muscle Wizard Adventures",
     value: 2000,
 });
-item_templates["Practical Applications of Time  Travel"] = new Book({
-    name: "Muscle Wizard Adventures",
-    description: "Muscle Wizard Adventures",
+item_templates["Practical Applications of Time Travel"] = new Book({
+    name: "Practical Applications of Time Travel",
+    description: "Practical Applications of Time Travel",
     value: 2000,
 });
 
@@ -2245,6 +2281,11 @@ item_templates["Chitin Shard"] = new Junk({
         component_type: "short handle",
         value: 8,
         component_tier: 1,
+		        component_stats: {
+            attack_speed: {
+                multiplier: 1.0,
+            }
+        }
     });
 
     item_templates["Short wooden hilt"] = new WeaponComponent({
@@ -2271,7 +2312,8 @@ item_templates["Chitin Shard"] = new Junk({
         }
     });
     item_templates["Short mahogany wood hilt"] = new WeaponComponent({
-        name: "Short mahogany wood hilt", description: "A short handle for a sword or maybe a dagger",
+        name: "Short mahogany wood hilt", 
+		description: "A short handle for a sword or maybe a dagger",
         component_type: "short handle",
         value: 72,
         component_tier: 4,
@@ -2589,11 +2631,40 @@ item_templates["Chitin Shard"] = new Junk({
             }
         }
     });
+	// special
+	
+	    item_templates["Order Blade"] = new WeaponComponent({
+        name: "Order Blade", 
+		description: "Good blade made of iron, with a perfect length for a sword",
+        component_type: "long blade",
+        value: 210,
+        name_prefix: "Order",
+		name_override: "Sword of the Order",
+        component_tier: 2,
+        attack_value: 14,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.15,
+            },
+            crit_rate: {
+                flat: 0.08,
+            },
+        }
+    });
+	
+	
 
 })();
 
 //weapons:
 (function(){
+		    item_templates["Sword of the Order"] = new Weapon({
+        components: {
+            head: "Order Blade",
+            handle: "Short wooden hilt",
+        }
+    });	
+	
     item_templates["Cheap iron spear"] = new Weapon({
         components: {
             head: "Cheap short iron blade",
@@ -2718,6 +2789,8 @@ item_templates["Chitin Shard"] = new Junk({
             handle: "Medium wooden handle",
         }
     });	
+
+	
 
 })();
 
