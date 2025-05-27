@@ -3131,6 +3131,49 @@ function get_location_rewards(location) {
             log_message(`You can now talk with the ${dialogue.name}`, "activity_unlocked");
         }
     }
+	if(location.repeatable_reward.items.length > 0){
+			for (let i = 0; i < location.repeatable_reward.items.length; i++) {
+			const entry = location.repeatable_reward.items[i];
+			let itemName, count, quality;
+
+			if (typeof entry === "string") {
+				itemName = entry;
+				count = 1;
+				quality = undefined;
+			} else {
+				itemName = entry.name;
+				count = entry.count || 1;
+				quality = entry.quality; // optional
+			}
+
+			const baseTemplate = item_templates[itemName];
+			if (!baseTemplate) {
+				console.warn(`Item "${itemName}" not found in templates.`);
+				continue;
+			}
+
+			log_message(`${character.name} obtained "${baseTemplate.getName()}" x${count}${quality ? ` (Quality: ${quality})` : ''}`);
+
+			const itemsToAdd = [];
+			for (let j = 0; j < count; j++) {
+				const itemData = quality != null 
+					? getItem({ ...baseTemplate, quality }) 
+					: getItem({ ...baseTemplate });
+				itemsToAdd.push({ item: itemData });
+			}
+
+			add_to_character_inventory(itemsToAdd);
+		}
+	}
+    if(location.repeatable_reward.money && typeof location.repeatable_reward.money === "number") {
+        character.money += location.repeatable_reward.money;
+        log_message(`${character.name} earned ${format_money(location.repeatable_reward.money)}`);
+        update_displayed_money();
+    }
+
+	
+	
+	
 
     //activities
     for(let i = 0; i < location.repeatable_reward.activities?.length; i++) {

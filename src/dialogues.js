@@ -1075,6 +1075,102 @@ dialogues["ExpLeader"] = new Dialogue({
 			}
     });
 	
+	
+dialogues["Magus"] = new Dialogue({
+        name: "Magus",
+        textlines: {
+           "Hello": new Textline({ 
+                name: "Hello?",
+                text: "Hmph. To think someone of my ability has to suffer the indignity of field research.\n\nYou. Help me in my endeavor. Collect the research papers scattered around the laboratory. As many as you can.",
+				unlocks: {
+					textlines: [{dialogue: "Magus", lines: ["What"]}],
+                },
+				locks_lines: ["Hello"],
+			}),
+           "What": new Textline({ 
+                name: "What's in it for me?",
+				is_unlocked: false,
+                text: "Fool. Don't you appreciate this great opportunity? Aiding my research is an honor that others would kill for.\n\nFine, I can share some trivial magics with you if that expedites things. Is that what motivates petty adventurers?",
+				unlocks: {
+					textlines: [{dialogue: "Magus", lines: ["ClaimRewardStrengthen","ClaimRewardIceBeam","ClaimRewardMirrorImage","ClaimRewardTeleport","ClaimRewardRegen"]}],
+                },
+				locks_lines: ["What"],
+			}),
+           "ClaimRewardStrengthen": new Textline({ 
+                name: "I have something for you. (Enhancement spell)",
+				is_unlocked: false,
+				requires_items: {
+                item_template_key: "Research paper",
+                quantity: 10
+            },
+                text: "Hmmph. At least you're useful for something.",
+				unlocks: {
+					magic: ["Strengthen"],
+                },
+				locks_lines: ["ClaimRewardStrengthen"],
+			}),
+			           "ClaimRewardMirrorImage": new Textline({ 
+                name: "I have something for you (Illusion spell).",
+				is_unlocked: false,
+				requires_items: {
+                item_template_key: "Research paper",
+                quantity: 10
+            },
+                text: "Hmmph. What took you so long?",
+				unlocks: {
+					magic: ["Mirror Image"],
+                },
+				locks_lines: ["ClaimRewardMirrorImage"],
+			}),
+						 "ClaimRewardIceBeam": new Textline({ 
+                name: "I have something for you (Damage spell).",
+				is_unlocked: false,
+				requires_items: {
+                item_template_key: "Research paper",
+                quantity: 10
+            },
+                text: "Hmmph. At least you're useful for something.",
+				unlocks: {
+					magic: ["Ice Beam"],
+                },
+				locks_lines: ["ClaimRewardIceBeam"],
+			}),
+									 "ClaimRewardTeleport": new Textline({ 
+                name: "I have something for you (Utility spell).",
+				is_unlocked: false,
+				requires_items: {
+                item_template_key: "Research paper",
+                quantity: 10
+            },
+                text: "Hmmph. At least you're useful for something.",
+				unlocks: {
+					magic: ["Teleport"],
+                },
+				locks_lines: ["ClaimRewardTeleport"],
+			}),
+									 "ClaimRewardRegen": new Textline({ 
+                name: "I have something for you (Healing spell).",
+				is_unlocked: false,
+				requires_items: {
+                item_template_key: "Research paper",
+                quantity: 10
+            },
+                text: "Hmmph. At least you're useful for something.",
+				unlocks: {
+					magic: ["Regen"],
+                },
+				locks_lines: ["ClaimRewardRegen"],
+			}),
+			
+			
+			
+			
+			}
+    });
+	
+
+	
+	
 dialogues["Fireseeker1"] = new Dialogue({
         name: "Fire Seeker",
         textlines: {

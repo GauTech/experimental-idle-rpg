@@ -1281,6 +1281,22 @@ enemy_templates["Rot Warden"] = new Enemy({
             {item_name: "Chimera Spine", chance: 0.6},
         ],
     });
+    enemy_templates["Artificial Cerberus"] = new Enemy({
+        name: "Artificial Cerberus", 
+        description: "A monster stitched together from a trio of crazed wolves.",
+		xp_value: 2625, 
+        rank: 6,
+        size: "large",
+        tags: ["abomination", "beast"],
+		on_strike: {multistrike: 3},
+        stats: {health: 880, attack: 100, agility: 95, dexterity: 170, magic: 0, intuition: 30, attack_speed: 1.3, defense: 20}, //stat_total = 640 (discount atk speed, HP/10)
+        loot_list: [
+              {item_name: "Wolf fang", chance: 0.4, count: 3},
+            {item_name: "Wolf pelt", chance: 0.5, count: 3},
+            {item_name: "High quality wolf fang", chance: 0.1}
+        ],
+    });
+	
 	
     enemy_templates["Baby Wyvern"] = new Enemy({
         name: "Baby Wyvern", 
@@ -1363,6 +1379,7 @@ enemy_templates["Rot Warden"] = new Enemy({
         stats: {health: 3520, attack: 268, agility: 380, dexterity: 680, magic: 0, intuition: 120, attack_speed: 2.5, defense: 60}, //stat_total = 2560 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Regenerating Flesh", chance: 0.8},
+			{item_name: "Sparkling Treasure Chest", chance: 0.5},
         ],
     });
 

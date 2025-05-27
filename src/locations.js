@@ -1045,7 +1045,7 @@ function get_equipped_tool_bonus(tool) {
         description: "A barren empty room, save for a stone slab.",
         name: "Burial Chamber",
 		dialogues: ["Shadow"],
-		traders: ["debug trader"],
+		//traders: ["debug trader"],
         is_unlocked: true,
         sleeping: {
             text: "Take a nap",
@@ -1425,8 +1425,8 @@ locations["Burial Chamber"].connected_locations.push({location: locations["Catac
     locations["Wandering Undead"] = new Combat_zone({
         description: "Deal with undead stragglers.", 
         enemy_count: 15, 
-		//enemy_groups_list: [["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie","Frail Zombie"],["Slime","Slime","Slime","Slime"],],
-        enemies_list: ["Pinata"],//debug enemy to level quick and test
+		enemy_groups_list: [["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie","Frail Zombie"],["Slime","Slime","Slime","Slime"],],
+        //enemies_list: ["Pinata"],//debug enemy to level quick and test
         types: [{type: "dark", stage: 1, xp_gain: 3}],
         enemy_stat_variation: 0.1,
         is_unlocked: true, 
@@ -1722,6 +1722,7 @@ locations["Laboratory"] = new Location({
         connected_locations: [{location: locations["Fallen Palace"]}],
         description: "A bizarre research facility. The tools here make it easier to assemble craft items.",
         name: "Laboratory",
+		dialogues: ["Magus"],
         is_unlocked: true,
 		getBackgroundNoises: function() {
             let noises = ["*You hear equipment whirring*", "*You hear beakers bubbling*", ];
@@ -2101,6 +2102,10 @@ locations["Escaped Slimes"] = new Combat_zone({
         },
         repeatable_reward: {
             xp: 1000,
+			items: [{name:"Research paper"}],//,{name:"Iron axe", count:1 }
+			money: 1,
+			
+			
         }
     });
 locations["Laboratory"].connected_locations.push({location: locations["Escaped Slimes"]});
@@ -3008,8 +3013,9 @@ locations["Royal Gardens"].connected_locations.push({location: locations["Palace
 
 locations["Loose Specimens"] = new Combat_zone({
         description: "Loose Specimens", 
-		types: [{type: "dark", stage: 2,  xp_gain: 10}],
-        enemies_list: ["Undead Abomination", "Lesser Chimera", "Baby Wyvern", "Decrepit Construct"],
+		types: [{type: "bright", stage: 2,  xp_gain: 10}],
+        enemies_list: ["Undead Abomination", "Lesser Chimera", "Baby Wyvern", "Decrepit Construct", "Artificial Cerberus"],
+		boss_list: ["Artificial Hydra"],
         enemy_count: 30, 
         enemy_group_size: [2,3],
         enemy_stat_variation: 0.2,
@@ -3021,6 +3027,7 @@ locations["Loose Specimens"] = new Combat_zone({
         },
         repeatable_reward: {
             xp: 1750,
+			items: [{name:"Research paper"}]
         }
     });
 locations["Laboratory"].connected_locations.push({location: locations["Loose Specimens"]});

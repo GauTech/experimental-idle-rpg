@@ -38,7 +38,6 @@ Many new skills:
 -Obliteration and Criticality as crit related skills
 -Counterattack function and related skill. Different stances can have different counterattack rates.
 -Salvaging skill increases droprates 
--Swimming skill as another activity
 -Fishing skill new gathering, with fishing rod as new tool
 -Many magic related skills. Each magic has an associated skill, but there are also some special ones like Magic Extension (increases durations), MultiCasting (increases target count), Magic Control (increases mana efficiency), Mana Expansion (increases mana stat).
 

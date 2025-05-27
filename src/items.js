@@ -1396,6 +1396,14 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         value: 10,
         saturates_market: false,
     });
+	    item_templates["Research paper"] = new OtherItem({
+        name: "Research paper", 
+        description: "The scribbled writings of a madman, but perhaps they hold value....", 
+        value: 10,
+        saturates_market: false,
+    });
+	
+	
 })();
 
 //lootable materials
