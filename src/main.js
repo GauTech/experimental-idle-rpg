@@ -1626,6 +1626,13 @@ function cast_magic(magicId) {
 			magic_cooldowns[magicId] = magic.cooldown;
 			add_xp_to_skill({skill: skills[magic.related_skill], xp_to_add: 1000});
 		}
+		
+			if (magic.special_effect == "Raise Dead"){
+			add_allies_to_party("skeleton1");
+			
+			magic_cooldowns[magicId] = magic.cooldown;
+			add_xp_to_skill({skill: skills[magic.related_skill], xp_to_add: 1000});
+		}
 		}
 
     update_displayed_mana();

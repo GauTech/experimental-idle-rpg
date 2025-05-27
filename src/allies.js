@@ -75,5 +75,15 @@ class Ally {
 		target_count: 2,
     });
 	
+    allies["skeleton1"] = new Ally({
+        name: "Skeleton",
+		ally_id: "skeleton1",
+        description: "Skeleton", //try to keep it short
+        attack_power: 60,
+        attack_speed: 1.2,
+		AP: 180,
+		target_count: 1,
+    });	
+	
 export {
     allies,};
