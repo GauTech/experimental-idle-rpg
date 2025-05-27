@@ -3131,8 +3131,8 @@ function get_location_rewards(location) {
             log_message(`You can now talk with the ${dialogue.name}`, "activity_unlocked");
         }
     }
-	if(location.repeatable_reward.items.length > 0){
-			for (let i = 0; i < location.repeatable_reward.items.length; i++) {
+
+			for (let i = 0; i < location.repeatable_reward.items?.length; i++) {
 			const entry = location.repeatable_reward.items[i];
 			let itemName, count, quality;
 
@@ -3164,7 +3164,7 @@ function get_location_rewards(location) {
 
 			add_to_character_inventory(itemsToAdd);
 		}
-	}
+
     if(location.repeatable_reward.money && typeof location.repeatable_reward.money === "number") {
         character.money += location.repeatable_reward.money;
         log_message(`${character.name} earned ${format_money(location.repeatable_reward.money)}`);
