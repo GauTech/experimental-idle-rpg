@@ -2019,7 +2019,7 @@ locations["Fire Pit"].connected_locations.push({location: locations["Lava Lake"]
 locations["Grave of Heroes"] = new Location({ 
         connected_locations: [{location: locations["Burrows"]},{location: locations["Catacomb Depths"]}],
         description: "Grave of Heroes",
-		dialogues: ["Slayer2"],
+		dialogues: ["Slayer2", "Necromancer"],
         name: "Grave of Heroes",
         is_unlocked: false,
     });

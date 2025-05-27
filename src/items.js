@@ -1474,6 +1474,13 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
         price_recovers: true,
         material_type: "bone",
     });
+	    item_templates["Elite skull"] = new Material({
+        name: "Elite skull", 
+        description: "The cranium of an above-average undead.",
+        value: 20,
+        price_recovers: true,
+        material_type: "bone",
+    });
 	
 
 	    item_templates["Slime Jelly"] = new Material({

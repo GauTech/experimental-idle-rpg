@@ -163,4 +163,14 @@ magics["Teleport"] = new Magic({
 	cooldown:600
 });
 
+magics["Raise Dead"] = new Magic({
+    names: {0: "Raise Dead"},
+    description: "Raise Dead",
+    mana_cost:10,
+	special_effect:["Raise Dead"],
+	related_skill: "Necromancy",
+	cooldown:600
+});
+
+
 export {magics};

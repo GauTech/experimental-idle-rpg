@@ -1167,7 +1167,75 @@ dialogues["Magus"] = new Dialogue({
 			
 			}
     });
+
+dialogues["Necromancer"] = new Dialogue({
+        name: "Necromancer",
+        textlines: {
+           "Hello": new Textline({ 
+                name: "Hello",
+                text: "Ah, such a vast repository of fine materials. \n\nA little unfortunate that said materials are running amok on their own, but you can't have everything… \n\nAh, a visitor? Are you here to press the dead into your service as well? No matter, there are bones enough for the both of us.",
+				unlocks: {
+					textlines: [{dialogue: "Necromancer", lines: ["What"]}],
+                },
+				locks_lines: ["Hello"],
+			}),
+           "What": new Textline({ 
+                name: "What are you doing?",
+				is_unlocked: false,
+                text: "Raising high quality undead. Or trying to.\n\nI've had a few setbacks, but these materials are worth great effort.",
+				unlocks: {
+					textlines: [{dialogue: "Necromancer", lines: ["Setback"]}],
+                },
+				locks_lines: ["What"],
+			}),
+           "Setback": new Textline({ 
+                name: "Setbacks?",
+				is_unlocked: false,
+                text: "The undead here are too wilful to assert control over. And vanquishing them, to raise them once more… presents some challenges as well.",
+				unlocks: {
+					textlines: [{dialogue: "Necromancer", lines: ["Help"]}],
+                },
+				locks_lines: ["Setback"],
+			}),
+			      "Help": new Textline({ 
+                name: "Need some help?",
+				is_unlocked: false,
+                text: "Hmmm. If that's a sincere offer, then retrieving some materials to get me started would make a world of difference. But what kind of price would you demand in return?",
+				unlocks: {
+					textlines: [{dialogue: "Necromancer", lines: ["Necromancy"]}],
+                },
+				locks_lines: ["Help"],
+			}),
+			      "Necromancy": new Textline({ 
+                name: "Then teach me about necromancy.",
+				is_unlocked: false,
+                text: "Hmmm. I'm loath to part with my secrets… but said secrets are worth little if I can't put them into practice….\n\nFine. I accept your bargain.\n\n 5 elite skulls, and I shall impart the miracle of raising the dead.",
+				unlocks: {
+					textlines: [{dialogue: "Necromancer", lines: ["ClaimReward"]}],
+                },
+				locks_lines: ["Necromancy"],
+			}),
+			
+					      "ClaimReward": new Textline({ 
+                name: "Here you go. (Give items)",
+				is_unlocked: false,
+				   requires_items: {
+                item_template_key: "Elite skull",
+                quantity: 5
+            },
+                text: "Excellent! \n\nNow, watch closely, apprentice. \n\n And rembember, with great power comes great opportunity to abuse that power bwahaha.",
+				unlocks: {
+					magic: ["Raise Dead"],
+                },
+				locks_lines: ["ClaimReward"],
+			}),
+			}
+    });
 	
+	
+	
+
+
 
 	
 	

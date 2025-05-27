@@ -1079,6 +1079,7 @@ Umbral Knight*/
         stats: {health: 160, attack: 60, agility: 15, dexterity: 56, magic: 0, intuition: 8, attack_speed: 1.2, defense: 5}, //stat_total = 160 (discount atk speed, HP/10)
         loot_list: [
             {item_name: "Bones", chance: 0.80},
+			{item_name: "Elite skull", chance: 0.05},
         ],
     });
 	
