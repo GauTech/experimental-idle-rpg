@@ -4,6 +4,8 @@ Known issues:
  Stance list also can't handle scrolling. (Could trim a stance instead).
 Reading book inside combat zone doesn't read the book but still shows reading display.
 Fix multistrike damage (can look what YAIR dev repo does). 
+Gathering tooltip isn't showing count ranges
+Fix rounding of ally combat stats in ally combat management div
 
 Design issues:
 At very high strength values unarmed is straight up better than using a basic weapon.

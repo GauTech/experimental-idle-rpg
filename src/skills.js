@@ -2410,7 +2410,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
 								max_level: 10,
 								max_level_bonus: 50,
 								max_level_coefficient: 10, 
-								xp_scaling: 3,
+								xp_scaling: 5,
 								is_unlocked: true,
 									get_effect_description: ()=> {
 										return `Multiplies atly attack power and AP by ${Math.round(skills["Leadership"].get_coefficient("multiplicative")*1000)/1000}`;

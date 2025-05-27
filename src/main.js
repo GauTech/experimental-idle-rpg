@@ -4971,6 +4971,7 @@ for (let i = 0; i < resources.length; i++) {
                 delete active_effects[key];
                 character.stats.add_active_effect_bonus();
                 update_character_stats();
+				update_displayed_stats();
             }
         });
         update_displayed_effect_durations();
