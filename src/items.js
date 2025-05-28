@@ -2103,6 +2103,9 @@ item_templates["Chitin Shard"] = new Junk({
             },
             agility: {
                 multiplier: 1.2,
+            },
+			         attack_points: {
+                multiplier: 1.25,
             }
         }
     });
@@ -2122,7 +2125,10 @@ item_templates["Chitin Shard"] = new Junk({
             },
             agility: {
                 multiplier: 1.28,
-            }
+            },
+				        attack_points: {
+                multiplier: 1.5,
+            },
         }
     });
 	
@@ -2172,6 +2178,9 @@ item_templates["Chitin Shard"] = new Junk({
             crit_rate: {
                 flat: 0.05,
             },
+						         attack_points: {
+                multiplier: 1.25,
+            }
         }
     });
     item_templates["Long mithril blade"] = new WeaponComponent({
@@ -2187,6 +2196,9 @@ item_templates["Chitin Shard"] = new Junk({
             },
             crit_rate: {
                 flat: 0.06,
+            },
+				        attack_points: {
+                multiplier: 1.5,
             },
         }
     });	
@@ -2213,7 +2225,8 @@ item_templates["Chitin Shard"] = new Junk({
         component_stats: {
             attack_speed: {
                 multiplier: 0.95,
-            }
+            },
+			
         }
     });
     item_templates["Blacksteel axe head"] = new WeaponComponent({
@@ -2223,6 +2236,12 @@ item_templates["Chitin Shard"] = new Junk({
         name_prefix: "Blacksteel",
         component_tier: 3,
         attack_value: 22,
+			    component_stats: {
+        attack_points: {
+                multiplier: 1.25,
+            }
+        }
+		
     });
    item_templates["Mithril axe head"] = new WeaponComponent({
         name: "Mithril axe head", description: "A heavy axe head made of mithril",
@@ -2234,7 +2253,10 @@ item_templates["Chitin Shard"] = new Junk({
 		    component_stats: {
             attack_speed: {
                 multiplier: 1.05,
-            }
+            },
+				        attack_points: {
+                multiplier: 1.5,
+            },
         }
     });	
 	
@@ -2275,6 +2297,9 @@ item_templates["Chitin Shard"] = new Junk({
         component_stats: {
             attack_speed: {
                 multiplier: 0.9,
+            },
+			 attack_points: {
+                multiplier: 1.25,
             }
         }
     });
@@ -2288,7 +2313,10 @@ item_templates["Chitin Shard"] = new Junk({
         component_stats: {
             attack_speed: {
                 multiplier: 0.95,
-            }
+            },
+				        attack_points: {
+                multiplier: 1.5,
+            },
         }
     });
 
@@ -2324,6 +2352,9 @@ item_templates["Chitin Shard"] = new Junk({
         component_stats: {
             attack_speed: {
                 multiplier: 1.1,
+            },
+			 attack_points: {
+                multiplier: 1.25,
             }
         }
     });
@@ -2336,7 +2367,11 @@ item_templates["Chitin Shard"] = new Junk({
         component_stats: {
             attack_speed: {
                 multiplier: 1.15,
-            }
+            },
+				        attack_points: {
+                multiplier: 1.5,
+            },
+			
         }
     });	
 	
@@ -2368,7 +2403,11 @@ item_templates["Chitin Shard"] = new Junk({
         component_stats: {
             attack_speed: {
                 multiplier: 1.05,
+            },
+			 attack_points: {
+                multiplier: 1.25,
             }
+			
         }
     });
     item_templates["Medium mahogany wood handle"] = new WeaponComponent({
@@ -2379,6 +2418,9 @@ item_templates["Chitin Shard"] = new Junk({
         component_stats: {
             attack_speed: {
                 multiplier: 1.1,
+            },
+			 attack_points: {
+                multiplier: 1.5,
             }
         }
     });	
@@ -2414,6 +2456,11 @@ item_templates["Chitin Shard"] = new Junk({
         component_type: "long handle",
         value: 150,
         component_tier: 3,
+			   component_stats: {
+            attack_points: {
+                multiplier: 1.25,
+            },
+        }
 		
     });
 	    item_templates["Long mahogany wood shaft"] = new WeaponComponent({
@@ -2425,6 +2472,9 @@ item_templates["Chitin Shard"] = new Junk({
 		   component_stats: {
             attack_speed: {
                 multiplier: 1.05,
+            },
+				        attack_points: {
+                multiplier: 1.5,
             },
         }
     });
@@ -2465,7 +2515,10 @@ item_templates["Chitin Shard"] = new Junk({
         component_stats: {
             attack_power: {
                 multiplier: 1.1,
-            }
+            },
+			        attack_points: {
+                multiplier: 1.25,
+            },
         }
     });
     item_templates["Short mithril hilt"] = new WeaponComponent({
@@ -2476,7 +2529,10 @@ item_templates["Chitin Shard"] = new Junk({
         component_stats: {
             attack_power: {
                 multiplier: 1.15,
-            }
+            },
+				        attack_points: {
+                multiplier: 1.5,
+            },
         }
     });
 
@@ -2506,7 +2562,8 @@ item_templates["Chitin Shard"] = new Junk({
             },
             attack_power: {
                 multiplier: 1.2,
-            }
+            },
+			
         }
     });
 
@@ -2521,7 +2578,10 @@ item_templates["Chitin Shard"] = new Junk({
             },
             attack_power: {
                 multiplier: 1.27,
-            }
+            },
+			        attack_points: {
+                multiplier: 1.25,
+            },
         }
     });
     item_templates["Medium mithril handle"] = new WeaponComponent({
@@ -2535,7 +2595,10 @@ item_templates["Chitin Shard"] = new Junk({
             },
             attack_power: {
                 multiplier: 1.27,
-            }
+            },
+				        attack_points: {
+                multiplier: 1.5,
+            },
         }
     });
 
@@ -2566,7 +2629,8 @@ item_templates["Chitin Shard"] = new Junk({
             },
             attack_power: {
                 multiplier: 1.6,
-            }
+            },
+			
         }
     });
 
@@ -2582,7 +2646,10 @@ item_templates["Chitin Shard"] = new Junk({
             },
             attack_power: {
                 multiplier: 1.75,
-            }
+            },
+			        attack_points: {
+                multiplier: 1.25,
+            },
         }
     });
 	
@@ -2598,7 +2665,10 @@ item_templates["Chitin Shard"] = new Junk({
             },
             attack_power: {
                 multiplier: 1.9,
-            }
+            },
+			        attack_points: {
+                multiplier: 1.5,
+            },
         }
     });
 
@@ -2613,7 +2683,10 @@ item_templates["Chitin Shard"] = new Junk({
             },
             attack_speed: {
                 multiplier: 1.05,
-            }
+            },
+			        attack_points: {
+                multiplier: 1.25,
+            },
         },
     });
 
@@ -2628,6 +2701,9 @@ item_templates["Chitin Shard"] = new Junk({
             },
             attack_power: {
                 multiplier: 1.1,
+            },
+			        attack_points: {
+                multiplier: 1.25,
             },
         }
     });
@@ -2644,7 +2720,10 @@ item_templates["Chitin Shard"] = new Junk({
             },
             attack_power: {
                 multiplier: 1.5,
-            }
+            },
+			        attack_points: {
+                multiplier: 1.25,
+            },
         }
     });
 	// special
