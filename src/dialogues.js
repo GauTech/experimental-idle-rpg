@@ -526,7 +526,7 @@ dialogues["Peddler"] = new Dialogue({
 				+ "\n\nLife saving supplies, at reasonable prices. Ask about our “Don't Die Discount” today! Because an alive customer is a repeat customer!\n\n And if you're looking for something to do there's always need for farmhands.",
                 unlocks: {
 					traders: ["peddler"],
-					activities: [{location: "Sanctuary", activity: "fieldwork"}]
+					activities: [{location: "Sanctuary", activity: "fieldwork"},{location: "Sanctuary", activity: "animal care"}]
                 },
                 locks_lines: ["Peddler"],
             }),

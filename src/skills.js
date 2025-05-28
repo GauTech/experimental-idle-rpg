@@ -1791,7 +1791,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
       } else {
           value = Math.round(value*100)/100;
       }
-      return `Multiplies agility by ${value}`;
+      return `Multiplies agility and dexterity by ${value}`;
     },
     
     });
@@ -1946,10 +1946,11 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
                 }
             }
         },
-		get_effect_description: ()=> {
+	
+		},
+			get_effect_description: ()=> {
                                     return `Multiplies strength, agility and dexterity by ${Math.round(skills["Climbing"].get_coefficient("multiplicative")*1000)/1000}`;
         },
-		},
     });
 	
 	skills["Swimming"] = new Skill({skill_id: "Swimming",
@@ -2013,10 +2014,11 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
                 }
             }
         },
-		get_effect_description: ()=> {
+	
+		},
+			get_effect_description: ()=> {
                                     return `Multiplies strength, agility and stamina by ${Math.round(skills["Climbing"].get_coefficient("multiplicative")*1000)/1000}`;
         },
-		},
     });
 
 })();
@@ -2816,7 +2818,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
     names: {0: "Precision"},
     max_level: 50,
     category: "Combat",
-    max_level_coefficient: 4,
+    max_level_coefficient: 10,
     base_xp_cost: 50,
     rewards: {
       milestones: {
@@ -2890,7 +2892,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
       } else {
           value = Math.round(value*100)/100;
       }
-      return `Multiplies dexterity by ${value}`;
+      return `Multiplies AP by ${value}`;
     },
 });
 })();

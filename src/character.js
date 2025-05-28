@@ -447,11 +447,11 @@ character.stats.add_weapon_type_bonuses = function() {
         if(character.equipment.weapon == null) {
                 character.stats.multiplier.skills.attack_power = skills["Unarmed"].get_coefficient();
                 character.stats.multiplier.skills.attack_speed = (skills["Unarmed"].get_coefficient("multiplicative")**0.3333);
-                character.stats.multiplier.skills.attack_points = (skills["Unarmed"].get_coefficient("multiplicative")**0.3333);
+                character.stats.multiplier.skills.attack_points = (skills["Precision"].get_coefficient("multiplicative") || 1) * (skills["Unarmed"].get_coefficient("multiplicative")**0.3333);
         } else {
                 character.stats.multiplier.skills.attack_speed = 1;
                 character.stats.multiplier.skills.attack_power = skills[weapon_type_to_skill[character.equipment.weapon.weapon_type]].get_coefficient();
-                character.stats.multiplier.skills.attack_points = skills[weapon_type_to_skill[character.equipment.weapon.weapon_type]].get_coefficient()**0.3333;
+                character.stats.multiplier.skills.attack_points = (skills["Precision"].get_coefficient("multiplicative") || 1) * skills[weapon_type_to_skill[character.equipment.weapon.weapon_type]].get_coefficient()**0.3333;
         }
 }
 
@@ -470,19 +470,11 @@ character.stats.add_all_skill_level_bonus = function() {
         character.stats.multiplier.skills.stamina_efficiency = skills["Running"].get_coefficient("multiplicative");
 		character.stats.multiplier.skills.mana_efficiency = skills["Mana Control"].get_coefficient("multiplicative");
 		character.stats.multiplier.skills.magic = skills["Magic Potency"].get_coefficient("multiplicative");
-        character.stats.multiplier.skills.strength = skills["Weightlifting"].get_coefficient("multiplicative");
-		character.stats.multiplier.skills.max_stamina = skills["Breathing"].get_coefficient("multiplicative");
+        character.stats.multiplier.skills.strength = skills["Weightlifting"].get_coefficient("multiplicative") *(skills["Breathing"].get_coefficient("multiplicative") || 1) * (skills["Swimming"].get_coefficient("multiplicative") || 1) * (skills["Climbing"].get_coefficient("multiplicative") || 1);
+		character.stats.multiplier.skills.max_stamina = skills["Breathing"].get_coefficient("multiplicative") * (skills["Swimming"].get_coefficient("multiplicative") || 1);
         character.stats.multiplier.skills.block_strength = 1 + 5*skills["Shield blocking"].get_level_bonus();
-        character.stats.multiplier.skills.agility = skills["Equilibrium"].get_coefficient("multiplicative");
-		character.stats.multiplier.skills.agility *= (skills["Breathing"].get_coefficient("multiplicative") || 1);
-		character.stats.multiplier.skills.strength *= (skills["Breathing"].get_coefficient("multiplicative") || 1);
-		character.stats.multiplier.skills.agility *= (skills["Swimming"].get_coefficient("multiplicative") || 1);
-		character.stats.multiplier.skills.strength *= (skills["Swimming"].get_coefficient("multiplicative") || 1);
-		character.stats.multiplier.skills.max_stamina *= (skills["Swimming"].get_coefficient("multiplicative") || 1);
-		character.stats.multiplier.skills.agility *= (skills["Climbing"].get_coefficient("multiplicative") || 1);
-		character.stats.multiplier.skills.strength *= (skills["Climbing"].get_coefficient("multiplicative") || 1);
-		character.stats.multiplier.skills.dexterity = skills["Precision"].get_coefficient("multiplicative");
-		character.stats.multiplier.skills.dexterity *= (skills["Climbing"].get_coefficient("multiplicative") || 1);
+        character.stats.multiplier.skills.agility = skills["Equilibrium"].get_coefficient("multiplicative") * (skills["Breathing"].get_coefficient("multiplicative") || 1) * (skills["Swimming"].get_coefficient("multiplicative") || 1) * (skills["Climbing"].get_coefficient("multiplicative") || 1);
+		character.stats.multiplier.skills.dexterity = (skills["Climbing"].get_coefficient("multiplicative") || 1) * (skills["Equilibrium"].get_coefficient("multiplicative") || 1);
 		character.stats.multiplier.skills.max_health = skills["Undying"].get_coefficient("multiplicative");
         
         character.stats.add_weapon_type_bonuses();
@@ -492,7 +484,7 @@ character.stats.add_all_skill_level_bonus = function() {
     }
 
 	if(character.stats.full.health < 0.1*(character.stats.full.max_health)) {
-       character.stats.flat.skills.strength = skills["Last Stand"].get_level_bonus();
+       character.stats.flat.skills.strength += skills["Last Stand"].get_level_bonus();
     }
 
 }

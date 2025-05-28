@@ -615,7 +615,7 @@ body {
 	display: var(--consumables_display);
 }
 
-.character_item_other, .character_item_loot, .character_item_material, .character_item_component {
+.character_item_other, .character_item_loot, .character_item_material, .character_item_component, .character_item_keyitem, .character_item_junk {
 	display: var(--other_display);
 }
 

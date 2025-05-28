@@ -3342,6 +3342,23 @@ locations["Time Demon"] = new Challenge_zone({
             availability_time: {start: 6, end: 20},
             skill_xp_per_tick: 1, 
         }),
+		
+		        "animal care": new LocationActivity({
+            activity_name: "animal care",
+            infinite: true,
+            starting_text: "Take care of local sheep in exchange for some wool",
+            skill_xp_per_tick: 3,
+            is_unlocked: true,
+            gained_resources: {
+                resources: [
+                    {name: "Wool", ammount: [[1,1], [1,3]], chance: [0.1, 1]},
+                ], 
+                time_period: [120, 60],
+                skill_required: [0, 10],
+                scales_with_skill: true,
+            },
+            require_tool: false,
+        }),
 	};
 		    locations["The Midden"].activities = {
         "salvaging": new LocationActivity({
