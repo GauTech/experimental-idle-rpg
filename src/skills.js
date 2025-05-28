@@ -471,7 +471,7 @@ function format_skill_rewards(milestone){
                                 names: {0: "Evasion"},                                
                                 description:"Ability to evade attacks", 
                                 max_level_coefficient: 2,
-                                base_xp_cost: 20,
+                                base_xp_cost: 30,
                                 category: "Combat",
                                 get_effect_description: ()=> {
                                     return `Multiplies your evasion chance by ${Math.round(skills["Evasion"].get_coefficient("multiplicative")*1000)/1000}`;
@@ -2468,6 +2468,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
                                 names: {0: "Battling", 15: "Battle Master"}, 
                                 description: "Your proficiency for fighting even opponents.", 
                                 category: "Combat",
+								base_xp_cost: 100,
 								max_level_coefficient: 1.4,
 								get_effect_description: ()=> {
 										return `Multiplies damage against medium sized enemies by ${Math.round(skills["Battling"].get_coefficient("multiplicative")*1000)/1000}`;

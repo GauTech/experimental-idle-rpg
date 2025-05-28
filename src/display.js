@@ -645,13 +645,19 @@ function end_activity_animation() {
         message_log.removeChild(message_log.getElementsByClassName(group_to_add)[0]);
     }
 
-    message.classList.add(class_to_add, group_to_add);
 
-    message.innerHTML = message_to_add + "<div class='message_border'> </>";
+		   // Get the current scroll state
+		const isScrolledToBottom = message_log.scrollHeight - message_log.scrollTop <= message_log.clientHeight + 5;
 
-    message_log.appendChild(message);
-    
-    message_log.scrollTop = message_log.scrollHeight;
+		// Add message content and styles
+		message.classList.add(class_to_add, group_to_add);
+		message.innerHTML = message_to_add + "<div class='message_border'> </div>";
+		message_log.appendChild(message);
+
+		// Only auto-scroll if the user was at (or near) the bottom
+		if (isScrolledToBottom) {
+			message_log.scrollTop = message_log.scrollHeight;
+		}
 
 }
 
