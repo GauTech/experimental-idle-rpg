@@ -1355,8 +1355,8 @@ item_templates["Muscle Wizard Adventures"] = new Book({
     value: 2000,
 });
 item_templates["Basic Barrier Magic"] = new Book({
-    name: "Muscle Wizard Adventures",
-    description: "Muscle Wizard Adventures",
+    name: "Basic Barrier Magic",
+    description: "Basic Barrier Magic",
     value: 2000,
 });
 item_templates["Practical Applications of Time Travel"] = new Book({

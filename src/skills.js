@@ -2659,7 +2659,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
 								xp_scaling: 2,
 								is_unlocked: true,
 								get_effect_description: ()=> {
-										return `Multiplies Pyromancy magic damage by ${Math.round(skills["Cryomancy"].get_coefficient("multiplicative")*1000)/1000}`;
+										return `Multiplies Cryomancy magic damage by ${Math.round(skills["Cryomancy"].get_coefficient("multiplicative")*1000)/1000}`;
 								},
 	});
    skills["Enhancement"] = new Skill({skill_id: "Enhancement", 

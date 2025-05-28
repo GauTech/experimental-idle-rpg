@@ -1512,7 +1512,7 @@ function unlock_magic(magic_id) {
     }
 }
 
-function cast_magic(magicId) {
+function cast_magic(magicId, is_auto_cast = false) {
     const magic = magics[magicId];
 	const base_duration = magic.duration;
 	let magic_duration = magic.duration;
@@ -1531,8 +1531,10 @@ function cast_magic(magicId) {
 
     // Handle target_effect spells (combat-only)
     if (magic.target_effect.length > 0) {
-        if (current_enemies === null) {
-            log_message("Can only cast combat spells in combat");
+		if (current_enemies === null) {
+            if (!is_auto_cast) {
+                log_message("Can only cast combat spells in combat");
+            }
             return;
         }
 
@@ -5114,7 +5116,7 @@ function handle_auto_cast_magic() {
 
         const checkbox = document.getElementById(`auto_magic_${magicId}`);
         if (checkbox && checkbox.checked && !magic_cooldowns[magicId]) {
-            cast_magic(magicId);
+            cast_magic(magicId, true); // auto-cast flag
         }
     });
 }
@@ -5366,6 +5368,7 @@ if(is_on_dev()) {
         update_other_save_load_button();
     }
 }
+
 
 
 

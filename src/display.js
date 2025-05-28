@@ -36,6 +36,7 @@ let activity_anim; //for the activity animation interval
 const action_div = document.getElementById("location_actions_div");
 const trade_div = document.getElementById("trade_div");
 
+
 const location_name_span = document.getElementById("location_name_span");
 const location_types_div = document.getElementById("location_types_div");
 const location_tooltip = document.getElementById("location_name_tooltip");
@@ -4570,6 +4571,38 @@ document.addEventListener("DOMContentLoaded", () => {
         console.warn("Add Junk button not found.");
     }
 });
+
+
+window.initializeMapInteractivity = function(){
+    for (const locationName in locations) {
+        const location = locations[locationName];
+        const regionId = `region-${locationName.replace(/ /g, "_")}`;
+        const regionEl = document.getElementById(regionId);
+
+        if (location.is_unlocked) {
+            if (regionEl) {
+                regionEl.style.display = "block";
+                regionEl.style.cursor = "pointer";
+                regionEl.addEventListener("click", () => change_location(locationName));
+            }
+
+            // Show connections to unlocked destinations
+            if (location.connected_locations) {
+                location.connected_locations.forEach(conn => {
+                    const dest = conn.location;
+                    if (dest && dest.is_unlocked) {
+                        const connectionId = `connection-${locationName.replace(/ /g, "_")}-${dest.name.replace(/ /g, "_")}`;
+                        const altId = `connection-${dest.name.replace(/ /g, "_")}-${locationName.replace(/ /g, "_")}`; // in case it's reversed
+                        const connEl = document.getElementById(connectionId) || document.getElementById(altId);
+                        if (connEl) connEl.style.display = "block";
+                    }
+                });
+            }
+        } else {
+            if (regionEl) regionEl.style.display = "none";
+        }
+    }
+}
 
 export {
     start_activity_animation,

@@ -1977,15 +1977,26 @@ width: 198px;
 			padding: 5px;
 		}
 
+
+#map {
+	left: 0px;
+	font-size: 20px;
+	cursor: pointer;
+}
+
 #time_and_location {
 	left: 410px;
 	width: 400px;
 	font-size: 20px;
 }
-		#location_name_div {
+			#location_name_div {
+			display: flex;
+			align-items: center;
+			margin-left: 50px;
+			gap: 50px; /* controls spacing between map and location name */
 			padding: 4px;
 			width: var(--location_name_div_width);
-			height:fit-content;
+			height: fit-content;
 			float: left;
 			z-index: 2;
 		}
@@ -2263,3 +2274,49 @@ danger_rating {
 }
 
 
+#mapOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+#mapContainer {
+    position: relative;
+    background: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+#closeMapBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: crimson;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+#svgMap svg {
+    width: 100%;
+    height: auto;
+}
+
+.map-region:hover {
+    opacity: 0.8;
+}
