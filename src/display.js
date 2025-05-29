@@ -158,6 +158,7 @@ const message_count = {
     message_events: 0,
     message_background: 0,
     message_crafting: 0,
+	message_rare_loot: 0,
 };
 
 const stats_divs = {strength: document.getElementById("strength_slot"), agility: document.getElementById("agility_slot"),
@@ -566,11 +567,16 @@ function end_activity_animation() {
             group_to_add = "message_loot";
             message_count.message_loot += 1;
             break;
-		 case "rare_loot":
-            class_to_add = "message_rare_loot";
-            group_to_add = "message_rare_loot";
-            message_count.message_loot += 1;
-         break;
+		case "rare_loot":
+			class_to_add = "message_rare_loot";
+			group_to_add = "message_rare_loot";
+			message_count.message_rare_loot += 1;
+			
+			const rareButton = document.getElementById('message_show_rare');
+			if (isAnyOtherButtonActive(rareButton.id)) {
+				rareButton.classList.add('sparkle');
+			}
+			break;
         case "gathered_loot":
             class_to_add = "message_items_obtained";
             group_to_add = "message_loot";
@@ -640,7 +646,7 @@ function end_activity_animation() {
 
     if(group_to_add === "message_combat" && message_count.message_combat > 80
     || group_to_add === "message_loot" && message_count.message_loot > 20
-	|| group_to_add === "message_loot" && message_count.message_rare_loot > 10
+	|| group_to_add === "message_rare_loot" && message_count.message_rare_loot > 10
     || group_to_add === "message_unlocks" && message_count.message_unlocks > 40
     || group_to_add === "message_events" && message_count.message_events > 20
     || group_to_add === "message_background" && message_count.message_background > 20
@@ -665,6 +671,16 @@ function end_activity_animation() {
 			message_log.scrollTop = message_log.scrollHeight;
 		}
 
+}
+
+function isAnyOtherButtonActive(currentButtonId) {
+    const allButtons = document.querySelectorAll('.message_control_button');
+    for (const button of allButtons) {
+        if (button.id !== currentButtonId && button.classList.contains('active_selection_button')) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function format_rewards(rewards) {

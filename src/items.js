@@ -411,6 +411,7 @@ class UsableItem extends Item {
         this.item_type = "USABLE";
         this.stackable = true;
         this.effects = item_data.effects || {};
+		this.cures = item_data.cures || [];
 
         this.tags["usable"] = true;
     }
@@ -2024,7 +2025,7 @@ item_templates["Chitin Shard"] = new Junk({
 (function(){
     item_templates["Order Badge"] = new OtherItem({
         name: "Order Badge", 
-        description: "A kmightly proof.",
+        description: "A knightly proof.",
         value: 200, 
     });
 }());
@@ -3665,6 +3666,19 @@ item_templates["Discount healing powder"] = new UsableItem({
         value: 40,
         effects: [{effect: "Weak healing powder", duration: 120}],
     });
+	
+    item_templates["Antidote"] = new UsableItem({
+        name: "Antidote", 
+        description: "Neutralizes common poisons.", 
+        value: 40,
+        cures: ["Poison"],
+    });
+item_templates["Panacea"] = new UsableItem({
+    name: "Panacea", 
+    description: "A miracle cure that removes all negative status effects", 
+    value: 200,
+    cures: ["Poison", "Freeze", "Burn", "Stun"] // etc.
+});
 
     item_templates["Oneberry juice"] = new UsableItem({
         name: "Oneberry juice", 

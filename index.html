@@ -966,7 +966,7 @@
                     <div id = "message_show_background" class = "message_control_button active_selection_button" onclick = "showBackgroundMessages()">
                         BGM
                     </div>
-					<div id = "message_show_background" class = "message_control_button active_selection_button" onclick = "showRareLoot()">
+					<div id = "message_show_rare" class = "message_control_button active_selection_button" onclick = "showRareLoot()">
                         Rare
                     </div>
                     
@@ -1129,13 +1129,38 @@
                 }
             }
 			
-			      function showRareLoot() {
-                if(document.documentElement.style.getPropertyValue('--message_rare_loot_display') !== "none") {
-                    document.documentElement.style.setProperty('--message_rare_loot_display', 'none');
-                } else {
-                    document.documentElement.style.setProperty('--message_rare_loot_display', 'inline-block');
-                }
-            }
+			function showRareLoot() {
+				// Get the current state of rare loot display (though we won't change it)
+				const isShowingOthers = document.documentElement.style.getPropertyValue('--message_combat_display') !== "none";
+				
+				// Toggle all other message types
+				if(isShowingOthers) {
+					// Hide all other message types
+					document.documentElement.style.setProperty('--message_combat_display', 'none');
+					document.documentElement.style.setProperty('--message_unlocks_display', 'none');
+					document.documentElement.style.setProperty('--message_loot_display', 'none');
+					document.documentElement.style.setProperty('--message_events_display', 'none');
+					document.documentElement.style.setProperty('--message_background_display', 'none');
+					document.documentElement.style.setProperty('--message_crafting_display', 'none');
+					
+					// Keep rare loot always visible
+					document.documentElement.style.setProperty('--message_rare_loot_display', 'inline-block');
+					
+					// Remove sparkle class if you want when showing only rare messages
+					const rareButton = document.getElementById('message_show_rare');
+					rareButton.classList.remove('sparkle');
+					rareButton.classList.add('active');
+				} else {
+					// Show all message types
+					document.documentElement.style.setProperty('--message_combat_display', 'inline-block');
+					document.documentElement.style.setProperty('--message_unlocks_display', 'inline-block');
+					document.documentElement.style.setProperty('--message_loot_display', 'inline-block');
+					document.documentElement.style.setProperty('--message_events_display', 'inline-block');
+					document.documentElement.style.setProperty('--message_background_display', 'inline-block');
+					document.documentElement.style.setProperty('--message_crafting_display', 'inline-block');
+					document.documentElement.style.setProperty('--message_rare_loot_display', 'inline-block');
+				}
+			}
             
             function showData() {
                 document.getElementById("data_box_div").style.display = "block";

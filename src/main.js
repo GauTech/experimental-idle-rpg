@@ -3492,6 +3492,7 @@ function use_item(item_key) {
     const item_effects = item.effects;
     const gluttony_value = item.gluttony_value;
     const mana_value = item.mana_value;
+    const cures = item.cures || []; // Get list of effects to cure or empty array if none
 
     add_xp_to_skill({ skill: skills["Gluttony"], xp_to_add: gluttony_value });
     add_xp_to_skill({ skill: skills["Mana Expansion"], xp_to_add: mana_value });
@@ -3504,6 +3505,25 @@ function use_item(item_key) {
     }
 
     let used = false;
+    
+    // First, cure any specified effects
+    if (cures.length > 0) {
+        cures.forEach(effectName => {
+            if (active_effects[effectName]) {
+                delete active_effects[effectName];
+                used = true;
+            }
+			update_displayed_effects();
+            character.stats.add_active_effect_bonus();
+			update_character_stats();
+            update_displayed_stats();
+        });
+    }
+	console.log(active_effects);
+	console.log(cures);
+	
+    
+    // Then apply new effects
     for (let i = 0; i < item_effects.length; i++) {
         const duration = item_effects[i].duration;
         if (!active_effects[item_effects[i].effect] || active_effects[item_effects[i].effect].duration < duration) {

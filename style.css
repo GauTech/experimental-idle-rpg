@@ -2139,6 +2139,35 @@ width: 198px;
 	.message_crafting {
 		display: var(--message_crafting_display);
 	}
+	.message_rare_loot {
+		display: var(--message_rare_loot_display);
+	}
+
+.message_control_button.sparkle {
+    animation: sparkle 1.5s infinite;
+    position: relative;
+}
+
+.message_control_button.active {
+    background: rgba(255, 178, 0, 0.8);
+}
+
+.message_control_button.sparkle::after {
+    content: "!";
+    color: #ff0;
+    font-weight: bold;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
 
 #money_div {
 	color: white;

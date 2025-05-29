@@ -135,7 +135,7 @@ stances["berserk"] = new Stance({
     related_skill: "Berserker's stride",
     stat_multipliers: {
         attack_power: 1.4,
-        hit_chance: 1.4,
+        attack_points: 1.4,
         agility: 0.4,
         block_strength: 0.4,
     },
@@ -169,7 +169,7 @@ stances["magic"] = new Stance({
 	target_count: 4,
     stat_multipliers: {
         magic_power: 2.0,
-        hit_chance: 1.2,
+        attack_points: 1.2,
         agility: 0.4,
         block_strength: 0.2,
     },
@@ -186,7 +186,7 @@ stances["spellblade"] = new Stance({
 	target_count: 4,
     stat_multipliers: {
         magic_power: 3.0,
-        hit_chance: 1.2,
+        attack_points: 1.2,
         agility: 0.6,
         block_strength: 0.3,
     },
@@ -203,7 +203,7 @@ stances["archmage"] = new Stance({
 	target_count: 4,
     stat_multipliers: {
         magic_power: 8.0,
-        hit_chance: 1.2,
+        attack_points: 1.2,
         agility: 0.2,
         block_strength: 0.1,
     },

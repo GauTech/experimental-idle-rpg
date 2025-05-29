@@ -286,6 +286,8 @@ class TradeItem {
 			new TradeItem({item_name: "Stale bread", count: [10,100]}),
             new TradeItem({item_name: "Fresh bread", count: [5,10]}),
             new TradeItem({item_name: "Weak healing powder", count: [5,10]}),
+			new TradeItem({item_name: "Antidote", count: [5,10]}),
+			new TradeItem({item_name: "Panacea", count: [1,3]}),
 
             new TradeItem({item_name: "ABC for kids", count: [1], chance: 1}),
 			new TradeItem({item_name: "Ye olde dictionary", count: [1], chance: 1}),
