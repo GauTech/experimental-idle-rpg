@@ -379,6 +379,9 @@ function create_item_tooltip_content({item, options={}}) {
         for(let i = 0; i < item.effects.length; i++) {
             item_tooltip += create_effect_tooltip(item.effects[i].effect, item.effects[i].duration).outerHTML;
         }
+		  if(item.gluttony_value) {
+            item_tooltip += `<br><br>Gluttony Value: ${item.gluttony_value}  `;
+        }
     } else if(item.item_type === "BOOK") {
         if(!book_stats[item.name].is_finished) {
             item_tooltip += `<br><br>Time to read: ${item.getRemainingTime()} minutes`;
