@@ -411,6 +411,7 @@ Platinum Slime
         rank: 8,
         size: "small",
         tags: ["amorphous"],
+		on_connectedstrike: {bark: ["zip","glop"], },
         stats: {health: 200, attack: 20, agility: 1000, dexterity: 140, magic: 0, intuition: 100, attack_speed: 3, defense: 20}, 
         loot_list: [
             {item_name: "Platinum Shard", chance: 1, count: 1},
@@ -440,10 +441,10 @@ enemy_templates["Spider Ambusher"] = new Enemy({
     rank: 4,
     size: "small",
     tags: ["arthropod"],
-			    on_entry: {
-        bark: "Hiss!",
-        hero_damage: 2,
-    },
+	on_entry: {
+		bark: { message: "Hiss!", chance: 0.5 },
+		hero_damage: 2,
+	},
     stats: {health: 70, attack: 38, agility: 34, dexterity: 36, magic: 0, intuition: 12, attack_speed: 1.3, defense: 3},
     loot_list: [
         {item_name: "Spider Silk", chance: 0.50},
@@ -712,10 +713,9 @@ enemy_templates["Ant Queen"] = new Enemy({
         rank: 1,
         size: "medium",
         tags: ["undead","humanoid"],
-		on_strike: {bark: ["Grooooan","Braaains"], },
+		on_connectedstrike: {bark: ["Grooooan","Braaains"], },
 		on_death: {
-		bark: "The monster lets out a final shriek and falls silent!",
-		
+		bark: { message: "The monster lets out a final shriek and falls silent!", chance: 0.5 },
 },
         stats: {health: 20, attack: 12, agility: 2, dexterity: 2, magic: 0, intuition: 1, attack_speed: 0.8, defense: 1}, //stat_total = 20 (discount atk speed, HP/10)
         loot_list: [
@@ -1650,7 +1650,7 @@ enemy_templates["Rot Warden"] = new Enemy({
     enemy_templates["Titan Turtle"] = new Enemy({
         name: "Titan Turtle", 
         description: "A great plodding beast. It would be dangerous if it had any inclination towards violence.", 
-        xp_value: 1000,
+        xp_value: 30,
         rank: 5,
         tags: ["aquatic", "beast"],
         size: "large",

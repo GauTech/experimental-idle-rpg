@@ -2021,6 +2021,25 @@ function apply_on_connectedstrike_effects(attacker) {
     }
 }
 
+function maybe_log_bark(bark) {
+    if (!bark) return;
+
+    // If it's a string or string array
+    if (typeof bark === "string" && bark.trim().length > 0) {
+        log_message(`"${bark}"`, "background");
+    } else if (Array.isArray(bark) && bark.length > 0) {
+        const message = bark.shift();
+        if (typeof message === "string") {
+            log_message(`"${message}"`, "background");
+        }
+    } else if (typeof bark === "object" && bark.message) {
+        const chance = typeof bark.chance === "number" ? bark.chance : 1.0;
+        if (Math.random() <= chance) {
+            maybe_log_bark(bark.message); // Recursively handle inner message
+        }
+    }
+}
+
 /**
  * 
  * @param {Number} base_cooldown basic cooldown based on attack speeds of enemies and character (ignoring stamina penalty) 
@@ -2653,8 +2672,8 @@ function execute_death_effects(on_death) {
     if (!on_death) return;
 
     // Handle death bark
-    if (typeof on_death.bark === "string" && on_death.bark.trim().length > 0) {
-        log_message(`"${on_death.bark}"`, "background");
+	 if (on_death.bark != null) {
+        maybe_log_bark(on_death.bark);
     }
 
     // Handle setting global flags
@@ -2702,8 +2721,8 @@ function enemy_entrance_effects(on_entry) {
     if (!on_entry) return;
 
     // Handle entrance bark
-    if (typeof on_entry.bark === "string" && on_entry.bark.trim().length > 0) {
-        log_message(`"${on_entry.bark}"`, "background");
+    if (on_entry.bark != null) {
+        maybe_log_bark(on_entry.bark);
     }
 
     // Handle setting global flags

@@ -34,7 +34,7 @@ class Skill {
                   max_level_coefficient = 1, 
                   max_level_bonus = 0, 
                   base_xp_cost = 40, 
-                  visibility_treshold = 10,
+                  visibility_treshold = 50,
                   get_effect_description = () => { return ''; }, 
                   parent_skill = null, 
                   rewards, 
@@ -539,67 +539,7 @@ function format_skill_rewards(milestone){
                                     }});								
 	
     
-     skills["Unarmed"] = new Skill({skill_id: "Unarmed", 
-                                    names: {0: "Unarmed", 10: "Brawling", 20: "Martial arts"}, 
-                                    description: "It's definitely, unquestionably, undoubtedly better to just use a weapon instead of doing this. But sure, why not?",
-                                    category: "Combat",
-                                    get_effect_description: ()=> {
-                                        return `Multiplies damage dealt in unarmed combat by ${Math.round(skills["Unarmed"].get_coefficient("multiplicative")*1000)/1000}. 
-Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarmed"].get_coefficient("multiplicative")**0.3333)*1000)/1000}`;
-                                    },
-                                    max_level_coefficient: 64, //even with 8x more it's still gonna be worse than just using a weapon lol
-                                    rewards: {
-                                        milestones: {
-                                            2: {
-                                                stats: {
-                                                    "strength": {flat: 1},
-                                                },
-                                                xp_multipliers: {
-                                                    Weightlifting: 1.05,
-                                                }
-                                            },
-                                            4: {
-                                                stats: {
-                                                    "strength": {flat: 1},
-                                                    "dexterity": {flat: 1},
-                                                }
-                                            },
-                                            6: {
-                                                stats: {
-                                                    "strength": {flat: 1},
-                                                    "dexterity": {flat: 1},
-                                                    "agility": {flat: 1},
-                                                },
-                                                xp_multipliers: {
-                                                    Weightlifting: 1.1,
-                                                }
-                                            },
-                                            8: {
-                                                stats: {
-                                                    "strength": {flat: 1},
-                                                    "dexterity": {flat: 1},
-                                                    "agility": {flat: 1},
-                                                }
-                                            },
-                                            10: {
-                                                stats: {
-                                                    "strength": {flat: 2},
-                                                    "dexterity": {flat: 1},
-                                                    "agility": {flat: 1},
-                                                },
-                                                xp_multipliers: {
-                                                    Running: 1.2,
-                                                }
-                                            },
-                                            12: {
-                                                stats: {
-                                                    "strength": {flat: 2},
-                                                    "dexterity": {flat: 2},
-                                                    "agility": {flat: 2},
-                                                }
-                                            },
-                                        }
-                                    }});
+     
 
 							
 })();
@@ -1273,6 +1213,68 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
                                     }
                                  },
                                 max_level_coefficient: 8});
+								
+skills["Unarmed"] = new Skill({skill_id: "Unarmed", 
+                                    names: {0: "Unarmed", 10: "Brawling", 20: "Martial arts"}, 
+                                    description: "It's definitely, unquestionably, undoubtedly better to just use a weapon instead of doing this. But sure, why not?",
+                                    category: "Weapon",
+                                    get_effect_description: ()=> {
+                                        return `Multiplies damage dealt in unarmed combat by ${Math.round(skills["Unarmed"].get_coefficient("multiplicative")*1000)/1000}. 
+Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarmed"].get_coefficient("multiplicative")**0.3333)*1000)/1000}`;
+                                    },
+                                    max_level_coefficient: 64, //even with 8x more it's still gonna be worse than just using a weapon lol
+                                    rewards: {
+                                        milestones: {
+                                            2: {
+                                                stats: {
+                                                    "strength": {flat: 1},
+                                                },
+                                                xp_multipliers: {
+                                                    Weightlifting: 1.05,
+                                                }
+                                            },
+                                            4: {
+                                                stats: {
+                                                    "strength": {flat: 1},
+                                                    "dexterity": {flat: 1},
+                                                }
+                                            },
+                                            6: {
+                                                stats: {
+                                                    "strength": {flat: 1},
+                                                    "dexterity": {flat: 1},
+                                                    "agility": {flat: 1},
+                                                },
+                                                xp_multipliers: {
+                                                    Weightlifting: 1.1,
+                                                }
+                                            },
+                                            8: {
+                                                stats: {
+                                                    "strength": {flat: 1},
+                                                    "dexterity": {flat: 1},
+                                                    "agility": {flat: 1},
+                                                }
+                                            },
+                                            10: {
+                                                stats: {
+                                                    "strength": {flat: 2},
+                                                    "dexterity": {flat: 1},
+                                                    "agility": {flat: 1},
+                                                },
+                                                xp_multipliers: {
+                                                    Running: 1.2,
+                                                }
+                                            },
+                                            12: {
+                                                stats: {
+                                                    "strength": {flat: 2},
+                                                    "dexterity": {flat: 2},
+                                                    "agility": {flat: 2},
+                                                }
+                                            },
+                                        }
+                                    }});								
 
     skills["Wands"] = new Skill({skill_id: "Wands", 
                                 parent_skill: "Weapon mastery",
@@ -2486,6 +2488,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
                                 description: "Criticality", 
                                 category: "Combat",
 								max_level_bonus: 0.3,
+								base_xp_cost: 100,
 								get_effect_description: ()=> {
 										return `Increases crit rate by ${skills["Criticality"].get_level_bonus().toPrecision(3)}`;
 								},
@@ -2498,6 +2501,7 @@ Multiplies AP with daggers by ${Math.round((skills["Daggers"].get_coefficient("m
                                 names: {0: "Obliteration"}, 
                                 description: "Obliteration", 
                                 category: "Combat",
+								base_xp_cost: 100,
 								max_level_bonus: 1,
 								get_effect_description: ()=> {
 										return `Increases crit multiplier by ${skills["Obliteration"].get_level_bonus().toPrecision(3)}`;

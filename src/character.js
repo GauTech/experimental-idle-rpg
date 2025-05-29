@@ -594,7 +594,7 @@ character.update_stats = function () {
         character.stats.full.attack_power = (character.stats.full.strength/10) * character.stats.total_multiplier.attack_power;
     }
     
-    character.stats.full.magic_power = (character.stats.full.magic) * character.stats.total_multiplier.magic_power;
+    character.stats.full.magic_power = (character.stats.full.magic) * 10 * character.stats.total_multiplier.magic_power;
 		
 	character.stats.total_flat.attack_power = character.stats.full.attack_power/character.stats.total_multiplier.attack_power;
 	character.stats.total_flat.magic_power = character.stats.full.magic_power/character.stats.total_multiplier.magic_power;

@@ -1427,7 +1427,6 @@ locations["Burial Chamber"].connected_locations.push({location: locations["Catac
         enemy_count: 15, 
 		enemy_groups_list: [["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Shambling Corpse"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie"],["Frail Zombie","Frail Zombie"],["Slime","Slime","Slime","Slime"],],
         //enemies_list: ["Pinata"],//debug enemy to level quick and test
-        types: [{type: "dark", stage: 1, xp_gain: 3}],
         enemy_stat_variation: 0.1,
         is_unlocked: true, 
         name: "Wandering Undead", 
@@ -2214,7 +2213,7 @@ locations["Titan Turtle"] = new Challenge_zone({
         name: "Titan Turtle",
         parent_location: locations["Docks"],
         first_reward: {
-            xp: 2000,
+            xp: 3000,
         },
         repeatable_reward: {
             textlines: [{dialogue: "Gourmet", lines: ["KilledIt"]}],

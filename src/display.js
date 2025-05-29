@@ -543,6 +543,10 @@ function end_activity_animation() {
             group_to_add = "message_combat";
             message_count.message_combat += 1;
             break;
+		  case "status_effect":
+            group_to_add = "message_combat";
+            message_count.message_combat += 1;
+            break;
         case "hero_blocked":
             group_to_add = "message_combat";
             message_count.message_combat += 1;
@@ -564,7 +568,7 @@ function end_activity_animation() {
             break;
 		 case "rare_loot":
             class_to_add = "message_rare_loot";
-            group_to_add = "message_loot";
+            group_to_add = "message_rare_loot";
             message_count.message_loot += 1;
          break;
         case "gathered_loot":
@@ -636,6 +640,7 @@ function end_activity_animation() {
 
     if(group_to_add === "message_combat" && message_count.message_combat > 80
     || group_to_add === "message_loot" && message_count.message_loot > 20
+	|| group_to_add === "message_loot" && message_count.message_rare_loot > 10
     || group_to_add === "message_unlocks" && message_count.message_unlocks > 40
     || group_to_add === "message_events" && message_count.message_events > 20
     || group_to_add === "message_background" && message_count.message_background > 20
@@ -4573,35 +4578,71 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-window.initializeMapInteractivity = function(){
-    for (const locationName in locations) {
-        const location = locations[locationName];
-        const regionId = `region-${locationName.replace(/ /g, "_")}`;
-        const regionEl = document.getElementById(regionId);
+window.initializeMapInteractivity = function() {
+    // Handle regions
+    const regionElements = document.querySelectorAll('[data-cell-id^="region-"]');
+    regionElements.forEach(regionEl => {
+        const fullId = regionEl.getAttribute("data-cell-id"); // e.g. "region-Docks"
+        const baseId = fullId.replace("region-", "").replace(/_/g, " ");
+        const location = locations[baseId];
 
-        if (location.is_unlocked) {
-            if (regionEl) {
-                regionEl.style.display = "block";
-                regionEl.style.cursor = "pointer";
-                regionEl.addEventListener("click", () => change_location(locationName));
-            }
+        if (location && location.is_unlocked) {
+            regionEl.style.display = "block";
+            regionEl.style.cursor = "pointer";
+            //regionEl.addEventListener("click", () => change_location(baseId));
+							regionEl.addEventListener("click", () => {
+					change_location(baseId);
+					const mapOverlay = document.getElementById("mapOverlay");
+					if (mapOverlay) {
+						mapOverlay.style.display = "none";
+					}
+				});
+			
 
-            // Show connections to unlocked destinations
-            if (location.connected_locations) {
-                location.connected_locations.forEach(conn => {
-                    const dest = conn.location;
-                    if (dest && dest.is_unlocked) {
-                        const connectionId = `connection-${locationName.replace(/ /g, "_")}-${dest.name.replace(/ /g, "_")}`;
-                        const altId = `connection-${dest.name.replace(/ /g, "_")}-${locationName.replace(/ /g, "_")}`; // in case it's reversed
-                        const connEl = document.getElementById(connectionId) || document.getElementById(altId);
-                        if (connEl) connEl.style.display = "block";
-                    }
-                });
+            // Highlight current location using the <rect> fill
+            const rect = regionEl.querySelector("rect");
+			
+	
+            if (rect) {
+                if (baseId === current_location.name) {
+                    rect.style.fill = "#41fa29"; // bright green
+                    rect.style.fillOpacity = "0.5";
+                } else {
+                    // Optionally reset to a default style
+                   
+					rect.style.fill = "#ffffff";
+					rect.style.fillOpacity = "0.0";
+                   
+                }
             }
         } else {
-            if (regionEl) regionEl.style.display = "none";
+            regionEl.style.display = "none";
         }
-    }
+    });
+
+    // Handle connections
+    const connectionElements = document.querySelectorAll('[data-cell-id^="connection-"]');
+    connectionElements.forEach(connEl => {
+        const fullId = connEl.getAttribute("data-cell-id");
+        const match = fullId.match(/^connection-(.+?)(\d+)$/);
+        if (match) {
+            const baseId = match[1].replace(/_/g, " ");
+            const location = locations[baseId];
+            connEl.style.display = (location && location.is_unlocked) ? "block" : "none";
+        }
+    });
+
+    // Handle markers
+    const markerElements = document.querySelectorAll('[data-cell-id^="marker-"]');
+    markerElements.forEach(markerEl => {
+        const fullId = markerEl.getAttribute("data-cell-id");
+        const match = fullId.match(/^marker-(.+?)(\d+)$/);
+        if (match) {
+            const baseId = match[1].replace(/_/g, " ");
+            const location = locations[baseId];
+            markerEl.style.display = (location && location.is_unlocked) ? "block" : "none";
+        }
+    });
 }
 
 export {
