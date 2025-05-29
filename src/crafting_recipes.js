@@ -329,7 +329,7 @@ forging_recipes.components["Long blade"] = new ComponentRecipe({
         {material_id: "Iron ingot", count: 3, result_id: "Long iron blade"},
         {material_id: "Blacksteel ingot", count: 3, result_id: "Long blacksteel blade"},
         {material_id: "Mithril ingot", count: 3, result_id: "Long mithril blade"},
-		{material_id: "Order Badge", count: 9, result_id: "Order Blade"},
+		{material_id: "Order Badge", count: 8, result_id: "Order Blade"},
     ],
     item_type: "Component",
     recipe_skill: "Forging",

@@ -16,7 +16,7 @@ class Location {
                 id,
                 description, 
                 connected_locations, 
-                is_unlocked = true, 
+                is_unlocked = false, 
                 is_finished = false,
                 dialogues = [], 
                 traders = [],
@@ -1573,7 +1573,7 @@ locations["Sewer Depths"].connected_locations.push({location: locations["Deep Se
             text: "Rest in a vacant home",
             xp: 3},		
         crafting: {
-            is_unlocked: true, 
+            is_unlocked: false, 
             use_text: "Try to craft something", 
             tiers: {
                 crafting: 1,
@@ -1602,7 +1602,7 @@ locations["Docks"] = new Location({
         description: "Docks",
         name: "Docks",
 		dialogues: ["Fisherman","Gourmet"],
-        is_unlocked: true,
+        is_unlocked: false,
 		getBackgroundNoises: function() {
             let noises = [];
             if(current_game_time.hour > 10 && current_game_time.hour <= 20) {
@@ -1649,7 +1649,7 @@ locations["Tower"] = new Location({
 			}
 		},
         name: "Tower",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Courtyard"].connected_locations.push({location: locations["Tower"]});
@@ -1680,7 +1680,7 @@ locations["The Midden"] = new Location({
         connected_locations: [{location: locations["Docks"]},{location: locations["Putrid Bog"]}],
         description: ["The Midden"],
         name: "The Midden",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Docks"].connected_locations.push({location: locations[["The Midden"]]});
@@ -1700,7 +1700,7 @@ locations["Fallen Palace"] = new Location({
         description: "Fallen Palace",
         name: "Fallen Palace",
 		dialogues: ["Kon5"],
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Castle"].connected_locations.push({location: locations["Fallen Palace"]});
@@ -1709,7 +1709,7 @@ locations["Throne Room"] = new Location({
         connected_locations: [{location: locations["Fallen Palace"]}],
         description: "Throne Room",
         name: "Throne Room",
-        is_unlocked: true,
+        is_unlocked: false,
 		sleeping: {
             text: "Rest in the Royal Bedchamber",
             xp: 200},	
@@ -1722,7 +1722,7 @@ locations["Laboratory"] = new Location({
         description: "A bizarre research facility. The tools here make it easier to assemble craft items.",
         name: "Laboratory",
 		dialogues: ["Magus"],
-        is_unlocked: true,
+        is_unlocked: false,
 		getBackgroundNoises: function() {
             let noises = ["*You hear equipment whirring*", "*You hear beakers bubbling*", ];
             return noises;
@@ -1746,7 +1746,7 @@ locations["Royal Gardens"] = new Location({
         connected_locations: [{location: locations["Fallen Palace"]}],
         description: "Royal Gardens",
         name: "Royal Gardens",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Fallen Palace"].connected_locations.push({location: locations["Royal Gardens"]});
@@ -1755,7 +1755,7 @@ locations["Vivarium"] = new Location({
         connected_locations: [{location: locations["Laboratory"]}],
         description: "Vivarium",
         name: "Vivarium",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Laboratory"].connected_locations.push({location: locations["Vivarium"]});
@@ -1764,7 +1764,7 @@ locations["The Roost"] = new Location({
         connected_locations: [{location: locations["Vivarium"]}],
         description: "The nesting ground of many great dragons. Tread carefully.",
         name: "The Roost",
-        is_unlocked: true,
+        is_unlocked: false,
 		background_noises: ["ROAR", "*You hear wings flapping*",],
     });
 	
@@ -1774,7 +1774,7 @@ locations["The Maelstrom"] = new Location({
         connected_locations: [{location: locations["The Roost"]}],
         description: "The Maelstrom",
         name: "The Maelstrom",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["The Roost"].connected_locations.push({location: locations["The Maelstrom"]});
@@ -1783,7 +1783,7 @@ locations["Well of Souls"] = new Location({
         connected_locations: [{location: locations["Vivarium"]}],
         description: "Well of Souls",
         name: "Well of Souls",
-        is_unlocked: true,
+        is_unlocked: false,
 		getBackgroundNoises: function() {
             let noises = ["*You hear energy swooshing*", ];
             return noises;
@@ -1796,7 +1796,7 @@ locations["Glacier Wing"] = new Location({
         connected_locations: [{location: locations["Laboratory"]}],
         description: "Glacier Wing",
         name: "Glacier Wing",
-        is_unlocked: true,
+        is_unlocked: false,
 		ambient_damage: 10,
 		ambient_damage_type: "Cold",
 		ambient_damage_related_skill: "Cold resistance",
@@ -1808,7 +1808,7 @@ locations["The Frozen Flame"] = new Location({
         connected_locations: [{location: locations["Glacier Wing"]}],
         description: "The Frozen Flame",
         name: "The Frozen Flame",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Glacier Wing"].connected_locations.push({location: locations["The Frozen Flame"]});
@@ -1817,7 +1817,7 @@ locations["Prison"] = new Location({
         connected_locations: [{location: locations["Castle"]}],
         description: "Prison",
         name: "Prison",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Castle"].connected_locations.push({location: locations["Prison"]});
@@ -1826,7 +1826,7 @@ locations["Penitent Halls"] = new Location({
         connected_locations: [{location: locations["Prison"]}],
         description: "Penitent Halls",
         name: "Penitent Halls",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Prison"].connected_locations.push({location: locations["Penitent Halls"]});
@@ -1835,7 +1835,7 @@ locations["Castle Ramparts"] = new Location({
         connected_locations: [{location: locations["Castle"]}],
         description: "Castle Ramparts",
         name: "Castle Ramparts",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Castle"].connected_locations.push({location: locations["Castle Ramparts"]});
@@ -1844,7 +1844,7 @@ locations["Castle Barracks"] = new Location({
         connected_locations: [{location: locations["Castle"]},{location: locations["Castle Ramparts"]}],
         description: "Castle Barracks",
         name: "Castle Barracks",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Castle"].connected_locations.push({location: locations["Castle Barracks"]});
@@ -1885,7 +1885,7 @@ locations["Forest"] = new Location({
 
             return noises;
         },
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Cavern"].connected_locations.push({location: locations["Forest"]});
 locations["Sanctuary"].connected_locations.push({location: locations["Forest"]});
@@ -1987,7 +1987,7 @@ locations["Spider Brood"] = new Combat_zone({
         },
         repeatable_reward: {
             xp: 1000,
-			locations: [{location: "Fire Pit"}],
+			locations: [{location: "Fire Pit"},{location: "Lava Lake"}],
         }
     });
 locations["The Nest"].connected_locations.push({location: locations["Spider Brood"]});
@@ -2008,7 +2008,7 @@ locations["Lava Lake"] = new Location({
         connected_locations: [{location: locations["Fire Pit"]}],
         description: "Lava Lake",
         name: "Lava Lake",
-        is_unlocked: true,
+        is_unlocked: false,
 		ambient_damage: 10,
 		ambient_damage_type: "Heat",
 		ambient_damage_related_skill: "Heat resistance",
@@ -2048,7 +2048,7 @@ locations["Forgotten Vault"] = new Location({
         description: "Forgotten Vault",
 		dialogues: ["Slayer5"],
         name: "Forgotten Vault",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Ruined Kingdom"].connected_locations.push({location: locations["Forgotten Vault"]});
 
@@ -2056,7 +2056,7 @@ locations["Execution Chamber"] = new Location({
         connected_locations: [{location: locations["Forgotten Vault"]},{location: locations["Penitent Halls"]}],
         description: "Execution Chamber",
         name: "Execution Chamber",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Penitent Halls"].connected_locations.push({location: locations["Execution Chamber"]});
 
@@ -2065,7 +2065,7 @@ locations["Cathedral of the Damned"] = new Location({
         description: "Cathedral of the Damned",
 		dialogues: ["Slayer6"],
         name: "Cathedral of the Damned",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Forgotten Vault"].connected_locations.push({location: locations["Cathedral of the Damned"]});
 locations["Execution Chamber"].connected_locations.push({location: locations["Cathedral of the Damned"]});
@@ -2074,7 +2074,7 @@ locations["Unholy Sanctum"] = new Location({
         connected_locations: [{location: locations["Well of Souls"]},{location: locations["Cathedral of the Damned"]}],
         description: "Unholy Sanctum",
         name: "Unholy Sanctum",
-        is_unlocked: true,
+        is_unlocked: false,
     });
 locations["Well of Souls"].connected_locations.push({location: locations["Unholy Sanctum"]});
 locations["Cathedral of the Damned"].connected_locations.push({location: locations["Unholy Sanctum"]});
@@ -2459,7 +2459,7 @@ locations["Frostbitten Knight"] = new Challenge_zone({
             xp: 100,
 			skill: 100,
 			related_skill: "Fate Mastery",
-			locations: [{location: "Courtyard"}],
+			locations: [{location: "Courtyard"},{location: "Tower"},{location: "Docks"},{location: "The Midden"},{location: "Burning Fields"}],
         }
     });
 locations["Backstreets"].connected_locations.push({location: locations["Frostbitten Knight"]});
@@ -2966,7 +2966,7 @@ locations["Bridge Crossing"] = new Combat_zone({
         },
         repeatable_reward: {
             xp: 1280,
-			locations: [{location:"Ruined Kingdom"}],
+			locations: [{location:"Ruined Kingdom"},{location:"Forgotten Vault"},{location:"Cathedral of the Damned"},{location:"Unholy Sanctum"}],
         }
     });
 locations["Ancient Bridge"].connected_locations.push({location: locations["Bridge Crossing"], custom_text: "Cross the bridge"});
@@ -3842,7 +3842,7 @@ function get_all_main_locations() {
 								       skill_xp: {
             "Lockpicking": 100,
         },
-		locations: [{location: "Backstreets"}],
+		locations: [{location: "Backstreets"},{location: "Forest"},{location: "Sanctuary"}],
 
 			 },
 			            loss_rewards: {
@@ -3983,7 +3983,8 @@ function get_all_main_locations() {
             attempt_duration: 6,
             success_chances: [1],
             rewards: {
-				locations: [{location: "Castle"}],
+				locations: [{location: "Castle"},{location: "Castle Ramparts"},{location: "Castle Barracks"},{location: "Prison"},{location: "Penitent Halls"},{location: "Execution Chamber"},
+				{location: "Fallen Palace"},{location: "Royal Gardens"},{location: "Throne Room"},{location: "Laboratory"},{location: "Vivarium"},{location: "Glacier Wing"},{location: "The Frozen Flame"},{location: "The Roost"},{location: "The Maelstrom"},{location: "Well of Souls"}],
 			 },
         }),
 	}
