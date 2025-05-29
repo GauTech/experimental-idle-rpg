@@ -330,6 +330,19 @@ class TradeItem {
             new TradeItem({item_name: "Wolf leather armor", count: [1], chance: 0.3, quality: [60, 120]}),
             new TradeItem({item_name: "Wolf leather armored pants", count: [1], chance: 0.3, quality: [60, 120]}),
             new TradeItem({item_name: "Wolf leather helmet", count: [1], chance: 0.3, quality: [60, 120]}),
+			
+			new TradeItem({item_name: "Upstart axe",quality: [100,100], chance: 0.05, count: [1]}),
+			new TradeItem({item_name: "Upstart pickaxe",quality: [100,100], chance: 0.05, count: [1]}),
+			new TradeItem({item_name: "Upstart sickle",quality: [100,100], chance: 0.05, count: [1]}),
+			new TradeItem({item_name: "Upstart rod",quality: [100,100], chance: 0.05, count: [1]}),
+			
+			new TradeItem({item_name: "Journeyman axe",quality: [100,100], chance: 0.01, count: [1]}),
+			new TradeItem({item_name: "Journeyman pickaxe",quality: [100,100], chance: 0.01, count: [1]}),
+			new TradeItem({item_name: "Journeyman sickle",quality: [100,100], chance: 0.01, count: [1]}),
+			new TradeItem({item_name: "Journeyman rod",quality: [100,100], chance: 0.01, count: [1]}),
+			
+			
+			
     ];
 })();
 export {traders};
