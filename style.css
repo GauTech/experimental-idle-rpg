@@ -134,7 +134,7 @@ body {
  }
  
  .message_rare_loot {
-    color: pink;
+    color: rgba(255, 178, 0, 0.8);
     font-weight: bold;
     animation: sparkle 1s ease-in-out;
 	display: var(--message_rare_loot_display);
@@ -2121,6 +2121,9 @@ width: 198px;
 			margin: 1px;
 			cursor: pointer;
 		}
+		.special {
+			background: rgba(28, 244, 113, 0.8);
+		}
 	.message_combat {
 		display: var(--message_combat_display);
 	}
@@ -2148,8 +2151,12 @@ width: 198px;
     position: relative;
 }
 
-.message_control_button.active {
-    background: rgba(255, 178, 0, 0.8);
+.message_control_button.special {
+    background: rgba(28, 244, 113, 0.8) !important;
+}
+
+.message_control_button.special.active {
+    background: rgba(255, 178, 0, 0.8) !important; 
 }
 
 .message_control_button.sparkle::after {
@@ -2159,7 +2166,7 @@ width: 198px;
     position: absolute;
     top: -5px;
     right: -5px;
-    background: rgba(0,0,0,0.7);
+    background: rgba(28, 244, 113, 0.8);
     border-radius: 50%;
     width: 15px;
     height: 15px;

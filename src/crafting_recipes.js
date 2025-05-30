@@ -297,7 +297,7 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
     } else if (subcategory === "components" || selected_recipe.recipe_type === "component") {
         const result_level = 8*result_tier
 
-        exp_value = Math.max(exp_value,result_tier * 4 * material_count, 1.3**(result_tier * 4 * material_count));
+        exp_value = Math.max(exp_value,result_tier * 4 * material_count, 1.3**(result_tier * Math.min(material_count,5)));
         exp_value = Math.round(Math.max(1,exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier));
     } else {
         const result_level =  8*Math.max(selected_components[0].component_tier,selected_components[1].component_tier);
@@ -316,7 +316,8 @@ forging_recipes.components["Short blade"] = new ComponentRecipe({
         {material_id: "Low quality iron ingot", count: 2, result_id: "Cheap short iron blade"}, 
         {material_id: "Iron ingot", count: 2, result_id: "Short iron blade"},
         {material_id: "Blacksteel ingot", count: 2, result_id: "Short blacksteel blade"},
-        {material_id: "Mithril ingot", count: 2, result_id: "Short mithril blade"}
+        {material_id: "Mithril ingot", count: 2, result_id: "Short mithril blade"},
+		{material_id: "Platinum Shard", count: 5, result_id: "Short platinum blade"}
     ],
     item_type: "Component",
     recipe_skill: "Forging"
@@ -330,6 +331,7 @@ forging_recipes.components["Long blade"] = new ComponentRecipe({
         {material_id: "Blacksteel ingot", count: 3, result_id: "Long blacksteel blade"},
         {material_id: "Mithril ingot", count: 3, result_id: "Long mithril blade"},
 		{material_id: "Order Badge", count: 8, result_id: "Order Blade"},
+		{material_id: "Platinum Shard", count: 10, result_id: "Long platinum blade"}
     ],
     item_type: "Component",
     recipe_skill: "Forging",
@@ -341,7 +343,8 @@ forging_recipes.components["Axe head"] = new ComponentRecipe({
         {material_id: "Low quality iron ingot", count: 4, result_id: "Cheap iron axe head"}, 
         {material_id: "Iron ingot", count: 4, result_id: "Iron axe head"},
         {material_id: "Blacksteel ingot", count: 4, result_id: "Blacksteel axe head"},
-        {material_id: "Mithril ingot", count: 4, result_id: "Mithril axe head"}
+        {material_id: "Mithril ingot", count: 4, result_id: "Mithril axe head"},
+		{material_id: "Platinum Shard", count: 15, result_id: "Platinum axe head"}
     ],
     item_type: "Component",
     recipe_skill: "Forging"
@@ -353,7 +356,8 @@ forging_recipes.components["Hammer head"] = new ComponentRecipe({
         {material_id: "Low quality iron ingot", count: 4, result_id: "Cheap iron hammer head"}, 
         {material_id: "Iron ingot", count: 4, result_id: "Iron hammer head"},
         {material_id: "Blacksteel ingot", count: 4, result_id: "Blacksteel hammer head"},
-        {material_id: "Mithril ingot", count: 4, result_id: "Mithril hammer head"}
+        {material_id: "Mithril ingot", count: 4, result_id: "Mithril hammer head"},
+		{material_id: "Platinum Shard", count: 15, result_id: "Platinum hammer head"}
     ],
     item_type: "Component",
     recipe_skill: "Forging",

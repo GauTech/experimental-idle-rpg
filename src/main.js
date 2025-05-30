@@ -186,7 +186,7 @@ const tickrate = 1;
 const options = {
     uniform_text_size_in_action: false,
     auto_return_to_bed: true,
-    remember_message_log_filters: false,
+    remember_message_log_filters: true,
     remember_sorting_options: false,
     combat_disable_autoswitch: false,
     auto_use_when_longest_runs_out: true,
@@ -1037,6 +1037,24 @@ function end_sleeping() {
     is_sleeping = false;
     change_location(current_location.name);
     end_activity_animation();
+}
+
+
+function end_actions(){
+    if(is_reading) {
+        end_reading();
+    } 
+    if(is_rereading) {
+        end_rereading();
+    } 
+
+    if(is_sleeping) {
+        end_sleeping();
+    }
+    if(current_activity) {
+        end_activity();
+    }
+	close_crafting_window;
 }
 
 function start_reading(book_key) {
@@ -2640,6 +2658,12 @@ if (rare_loot.length > 0) {
 			add_xp_to_skill({skill: skills[bestSkill], xp_to_add: target.xp_value});
 			}
 		
+		//if(character.equipment.weapon != null)
+	if (item_templates[character.equipment?.weapon.id].special_effects.length > 0) {
+    execute_weapon_special_effects(item_templates[character.equipment.weapon.id].special_effects);
+}			
+		
+
 		if (target.on_death && Object.keys(target.on_death).length > 0) {
 			execute_death_effects(target.on_death)
 }
@@ -2665,6 +2689,35 @@ if (rare_loot.length > 0) {
         update_displayed_health_of_enemies();
     } else {
         log_message(character.name + " has missed", "hero_missed");
+    }
+}
+
+
+function execute_weapon_special_effects(special_effects) {
+    for (const effect of special_effects) {
+        switch (effect.name) {
+            case "greed":
+                // Handle greed effect
+                add_money_to_character(effect.value);
+                break;
+                
+            case "leech":
+                // Handle leech effect
+                character.stats.full.health += effect.value;
+				update_character_stats();
+                break;
+				
+			    case "siphon":
+                // Handle siphon effect
+                character.stats.full.mana += effect.value; 
+				update_character_stats();
+                break;
+                
+            // Add more cases for other special effects as needed
+                
+            default:
+                console.warn(`Unknown special effect: ${effect.name}`);
+        }
     }
 }
 
@@ -3519,8 +3572,7 @@ function use_item(item_key) {
             update_displayed_stats();
         });
     }
-	console.log(active_effects);
-	console.log(cures);
+	
 	
     
     // Then apply new effects
@@ -3922,6 +3974,7 @@ function create_save() {
             loot: document.documentElement.style.getPropertyValue('--message_loot_display') !== "none",
             background: document.documentElement.style.getPropertyValue('--message_background_display') !== "none",
             crafting: document.documentElement.style.getPropertyValue('--message_crafting_display') !== "none",
+			rare: document.documentElement.style.getPropertyValue('--message_rare_loot_display') !== "none",
         };
 
         return JSON.stringify(save_data);
@@ -5429,4 +5482,5 @@ export { current_enemies, can_work,
 		unlock_combat_stance,
 		current_party,
 		global_battle_state,
+		end_actions,
  };

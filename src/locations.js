@@ -1568,12 +1568,13 @@ locations["Sewer Depths"].connected_locations.push({location: locations["Deep Se
        	dialogues: ["Mad Lumberjack","Smith","Peddler","Fallen","Scholar1","Fireseeker1","Occultist"],
         traders: ["peddler","smith trader"],
         name: "Sanctuary",
+		is_unlocked: false, 
 		background_noises: ["Fresh bread. Get your fresh bread! And less than fresh bread too.", "Another one disappeared in the depths this week. Shame.", "*You hear the hammering of iron.*" ],
         sleeping: {
             text: "Rest in a vacant home",
             xp: 3},		
         crafting: {
-            is_unlocked: false, 
+            is_unlocked: true, 
             use_text: "Try to craft something", 
             tiers: {
                 crafting: 1,
@@ -1994,13 +1995,24 @@ locations["The Nest"].connected_locations.push({location: locations["Spider Broo
 
 locations["Fire Pit"] = new Location({ 
         connected_locations: [{location: locations["The Nest"]}],
-        description: "Fire Pit",
+        description: "Roaring flames whirl around the area. If you're feeling brave you could use them to roast things.",
 		dialogues: ["Fireseeker5"],
         name: "Fire Pit",
         is_unlocked: false,
 		ambient_damage: 5,
 		ambient_damage_type: "Heat",
 		ambient_damage_related_skill: "Heat resistance",
+				crafting: {
+            is_unlocked: true, 
+            use_text: "Try to craft something", 
+            tiers: {
+                crafting: 1,
+                forging: 1,
+                smelting: 1,
+                cooking: 3,
+                alchemy: 1,
+            },
+        },
     });
 locations["The Nest"].connected_locations.push({location: locations["Fire Pit"]});
 

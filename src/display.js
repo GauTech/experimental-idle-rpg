@@ -14,7 +14,8 @@ import { current_enemies, options,
 	magic_cooldowns,
 	favourite_consumables,
 	current_party,
-    global_flags} from "./main.js";
+    global_flags,
+	end_actions} from "./main.js";
 import { dialogues } from "./dialogues.js";
 import { activities } from "./activities.js";
 import { format_time, current_game_time } from "./game_time.js";
@@ -369,6 +370,34 @@ function create_item_tooltip_content({item, options={}}) {
             });
         }
         item_tooltip += "<br>";
+		// In the case of weapons, check if this item has special effects in its template
+		        if(item.equip_slot === "weapon") {
+            
+        
+		const itemTemplate = item_templates[item.id];
+		if (itemTemplate.special_effects && itemTemplate.special_effects.length > 0) {
+			item_tooltip += "<br>Special Effects:<br>";
+			
+			for (const effect of itemTemplate.special_effects) {
+				// Format each effect based on its name and value
+				switch (effect.name) {
+					case "greed":
+						item_tooltip += `Greed: +${effect.value} money per kill<br>`;
+						break;
+						
+					case "leech":
+						item_tooltip += `Life Leech: ${effect.value} HP restored per kill<br>`;
+						break;
+						
+					// Add more cases for other effects as needed
+					default:
+						// Fallback for any unhandled effects
+						item_tooltip += `\n• ${effect.name}: ${effect.value}`;
+				}
+			}
+		}
+		}	
+		
     } 
     else if (item.item_type === "USABLE") {
         item_tooltip += `<br>`;
@@ -4610,6 +4639,7 @@ window.initializeMapInteractivity = function() {
             regionEl.style.cursor = "pointer";
             //regionEl.addEventListener("click", () => change_location(baseId));
 							regionEl.addEventListener("click", () => {
+					end_actions;
 					change_location(baseId);
 					const mapOverlay = document.getElementById("mapOverlay");
 					if (mapOverlay) {

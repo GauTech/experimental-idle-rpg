@@ -692,7 +692,7 @@ dialogues["Anthropologist"] = new Dialogue({
             "Doing": new Textline({ 
 				is_unlocked: false,
                 name: "What are you doing here?",
-                text: "There's rare breed of special ant that only be found here. A marvelous creature I've dubbed the Genetically Perfect Super Ant. Oh, it's as elusive as it is beautiful. The research value of such a specimen is incalculable!",
+                text: "There's a rare breed of special ant that can only be found here. A marvelous creature I've dubbed the Genetically Perfect Super Ant. Oh, it's as elusive as it is beautiful. The research value of such a specimen is incalculable!",
                 unlocks: {
 					textlines: [{dialogue: "Anthropologist", lines: ["KilledIt"]}],
                 },

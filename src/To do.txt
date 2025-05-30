@@ -6,6 +6,9 @@ Reading book inside combat zone doesn't read the book but still shows reading di
 Fix multistrike damage (can look what YAIR dev repo does). 
 Gathering tooltip isn't showing count ranges
 Fix rounding of ally combat stats in ally combat management div
+Fix bug with enemies dying twice if killed by counterattacks or magic
+Fix bug with map fast travel and magic teleport interacting poorly with activities
+Spread active effects into 2nd column if > 8 active effects
 
 Design issues:
 At very high strength values unarmed is straight up better than using a basic weapon.

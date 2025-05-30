@@ -966,9 +966,9 @@
                     <div id = "message_show_background" class = "message_control_button active_selection_button" onclick = "showBackgroundMessages()">
                         BGM
                     </div>
-					<div id = "message_show_rare" class = "message_control_button active_selection_button" onclick = "showRareLoot()">
-                        Rare
-                    </div>
+					<div id="message_show_rare" class="message_control_button special" onclick="showRareLoot()">
+						Rare
+					</div>
                     
                 </div>
             </div>
@@ -1129,38 +1129,51 @@
                 }
             }
 			
-			function showRareLoot() {
-				// Get the current state of rare loot display (though we won't change it)
-				const isShowingOthers = document.documentElement.style.getPropertyValue('--message_combat_display') !== "none";
-				
-				// Toggle all other message types
-				if(isShowingOthers) {
-					// Hide all other message types
-					document.documentElement.style.setProperty('--message_combat_display', 'none');
-					document.documentElement.style.setProperty('--message_unlocks_display', 'none');
-					document.documentElement.style.setProperty('--message_loot_display', 'none');
-					document.documentElement.style.setProperty('--message_events_display', 'none');
-					document.documentElement.style.setProperty('--message_background_display', 'none');
-					document.documentElement.style.setProperty('--message_crafting_display', 'none');
-					
-					// Keep rare loot always visible
-					document.documentElement.style.setProperty('--message_rare_loot_display', 'inline-block');
-					
-					// Remove sparkle class if you want when showing only rare messages
+							// Store original filter states
+				let originalFilterStates = {};
+
+				function showRareLoot() {
 					const rareButton = document.getElementById('message_show_rare');
-					rareButton.classList.remove('sparkle');
-					rareButton.classList.add('active');
-				} else {
-					// Show all message types
-					document.documentElement.style.setProperty('--message_combat_display', 'inline-block');
-					document.documentElement.style.setProperty('--message_unlocks_display', 'inline-block');
-					document.documentElement.style.setProperty('--message_loot_display', 'inline-block');
-					document.documentElement.style.setProperty('--message_events_display', 'inline-block');
-					document.documentElement.style.setProperty('--message_background_display', 'inline-block');
-					document.documentElement.style.setProperty('--message_crafting_display', 'inline-block');
-					document.documentElement.style.setProperty('--message_rare_loot_display', 'inline-block');
+					const isActive = rareButton.classList.contains('active');
+					
+					if (!isActive) {
+						// Entering rare mode - save current states
+						originalFilterStates = {
+							combat: document.documentElement.style.getPropertyValue('--message_combat_display'),
+							unlocks: document.documentElement.style.getPropertyValue('--message_unlocks_display'),
+							loot: document.documentElement.style.getPropertyValue('--message_loot_display'),
+							events: document.documentElement.style.getPropertyValue('--message_events_display'),
+							background: document.documentElement.style.getPropertyValue('--message_background_display'),
+							crafting: document.documentElement.style.getPropertyValue('--message_crafting_display')
+						};
+						
+						// Hide all other message types
+						document.documentElement.style.setProperty('--message_combat_display', 'none');
+						document.documentElement.style.setProperty('--message_unlocks_display', 'none');
+						document.documentElement.style.setProperty('--message_loot_display', 'none');
+						document.documentElement.style.setProperty('--message_events_display', 'none');
+						document.documentElement.style.setProperty('--message_background_display', 'none');
+						document.documentElement.style.setProperty('--message_crafting_display', 'none');
+						
+						// Show rare loot
+						document.documentElement.style.setProperty('--message_rare_loot_display', 'inline-block');
+						
+						// Update button state
+						rareButton.classList.remove('sparkle');
+						rareButton.classList.add('active');
+					} else {
+						// Exiting rare mode - restore original states
+						document.documentElement.style.setProperty('--message_combat_display', originalFilterStates.combat || 'inline-block');
+						document.documentElement.style.setProperty('--message_unlocks_display', originalFilterStates.unlocks || 'inline-block');
+						document.documentElement.style.setProperty('--message_loot_display', originalFilterStates.loot || 'inline-block');
+						document.documentElement.style.setProperty('--message_events_display', originalFilterStates.events || 'inline-block');
+						document.documentElement.style.setProperty('--message_background_display', originalFilterStates.background || 'inline-block');
+						document.documentElement.style.setProperty('--message_crafting_display', originalFilterStates.crafting || 'inline-block');
+						
+						// Update button state
+						rareButton.classList.remove('active');
+					}
 				}
-			}
             
             function showData() {
                 document.getElementById("data_box_div").style.display = "block";

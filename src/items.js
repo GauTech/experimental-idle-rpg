@@ -770,6 +770,15 @@ class Weapon extends Equippable {
             throw new Error(`No such weapon head as: ${item_data.components.head}`);
         }
         this.components.head = item_data.components.head; //only the name
+		const name = item_data.id;
+		
+		this.special_effects = item_data.special_effects || [];
+		
+			/*		special_effects: [  // <-- Defined once in the template
+			{ name: "greed", value: 1 }, gain 1 money on enemy kill
+			{ name: "leech", value: 5 }, gain 5 hp on enemy kill
+			{ name: "siphon", value: 1 }, gain 1 mana on enemy kill
+		]*/
 
         if(!item_templates[item_data.components.handle]) {
             throw new Error(`No such weapon handle as: ${item_data.components.handle}`);
@@ -802,6 +811,7 @@ class Weapon extends Equippable {
 
         this.tags["weapon"] = true;
         this.tags[this.weapon_type] = true;
+		
         if(!this.id) {
             this.id = this.getName();
         }
@@ -834,11 +844,23 @@ class Weapon extends Equippable {
         }
         return round_item_price(this.value);
     } 
-
+		
     getName() {
-	if(item_templates[this.components.head].name_override) {
-	return `${item_templates[this.components.head].name_override}`;
-				} else {
+		if (item_templates[this.components.head].name_override) {
+			const override = item_templates[this.components.head].name_override;
+			
+			if (typeof override === 'string') {
+				return override;
+			}
+			else if (typeof override === 'object') {
+				// Object format: {default: "Name", dagger: "Ducat Dirk", spear: "Gilded Glaive"}
+				if (this.weapon_type && override[this.weapon_type]) {
+					return override[this.weapon_type];
+				}
+				return override.default || '';
+			}
+			return '';
+		} else {
 				
         return `${item_templates[this.components.head].name_prefix} ${this.weapon_type === "hammer" ? "battle hammer" : this.weapon_type}`;
     }
@@ -2244,6 +2266,8 @@ item_templates["Chitin Shard"] = new Junk({
         }
 		
     });
+	
+
    item_templates["Mithril axe head"] = new WeaponComponent({
         name: "Mithril axe head", description: "A heavy axe head made of mithril",
         component_type: "axe head",
@@ -2318,6 +2342,88 @@ item_templates["Chitin Shard"] = new Junk({
 				        attack_points: {
                 multiplier: 1.5,
             },
+        }
+    });
+	
+    item_templates["Short platinum blade"] = new WeaponComponent({
+        name: "Short platinum blade", description: "A good platinum blade. Perfect length for a dagger, but could be also used for a spear",
+        component_type: "short blade",
+        value: 240,
+        component_tier: 3,
+        name_prefix: "Platinum",
+		name_override: {
+			dagger: "Ducat Dirk",
+			spear: "Gilded Glaive"
+		},
+        attack_value: 11,
+        component_stats: {
+            crit_rate: {
+                flat: 0.1,
+            },
+            attack_speed: {
+                multiplier: 1.35,
+            },
+            agility: {
+                multiplier: 1.2,
+            },
+			         attack_points: {
+                multiplier: 1.25,
+            }
+        }
+    });
+	
+	
+	
+    item_templates["Long platinum blade"] = new WeaponComponent({
+        name: "Long platinum blade", description: "Good blade made of platinum, with a perfect length for a sword",
+        component_type: "long blade",
+        value: 310,
+        name_prefix: "Platinum",
+		name_override: "Coin Cutlass",
+        component_tier: 3,
+        attack_value: 18,
+        component_stats: {
+            attack_speed: {
+                multiplier: 1.2,
+            },
+            crit_rate: {
+                flat: 0.05,
+            },
+						         attack_points: {
+                multiplier: 1.25,
+            }
+        }
+    });
+	    item_templates["Platinum axe head"] = new WeaponComponent({
+        name: "Platinum axe head", description: "A heavy axe head made of platinum",
+        component_type: "axe head",
+        value: 310,
+        name_prefix: "Platinum",
+		name_override: "Banker’s Battleaxe",
+        component_tier: 3,
+        attack_value: 22,
+			    component_stats: {
+        attack_points: {
+                multiplier: 1.25,
+            }
+        }
+		
+    });
+    item_templates["Platinum hammer head"] = new WeaponComponent({
+        name: "Platinum hammer head", description: "A blocky piece of platinum, with a small hole for the handle",
+        component_type: "hammer head",
+        value: 300,
+        name_prefix: "Platinum",
+		name_override: "Money Mallet",
+        component_tier: 3,
+        attack_value: 26,
+        component_stats: {
+            attack_speed: {
+                multiplier: 0.9,
+            },
+			 attack_points: {
+                multiplier: 1.25,
+            }
         }
     });
 
@@ -2821,7 +2927,7 @@ item_templates["Chitin Shard"] = new Junk({
         components: {
             head: "Long iron blade",
             handle: "Simple short wooden hilt",
-        }
+        },
     });
     item_templates["Blacksteel sword"] = new Weapon({
         components: {
@@ -2846,7 +2952,7 @@ item_templates["Chitin Shard"] = new Junk({
         components: {
             head: "Iron axe head",
             handle: "Simple medium wooden handle",
-        }
+        },
     });
     item_templates["Blacksteel axe"] = new Weapon({
         components: {
@@ -2884,6 +2990,56 @@ item_templates["Chitin Shard"] = new Junk({
             head: "Mithril hammer head",
             handle: "Medium wooden handle",
         }
+    });	
+
+
+   item_templates["Gilded Glaive"] = new Weapon({
+        components: {
+            head: "Short platinum blade",
+            handle: "Long wooden shaft"
+        },
+		special_effects: [  
+			{ name: "greed", value: 2 },
+		]
+    });
+
+    item_templates["Ducat Dirk"] = new Weapon({
+        components: {
+            head: "Short platinum blade",
+            handle: "Short wooden hilt",
+        },
+				special_effects: [  
+			{ name: "greed", value: 1 },
+		]
+    });
+    item_templates["Coin Cutlass"] = new Weapon({
+        components: {
+            head: "Long platinum blade",
+            handle: "Short wooden hilt",
+        },
+				special_effects: [  
+			{ name: "greed", value: 2 },
+		]
+    });
+
+    item_templates["Banker's Battleaxe"] = new Weapon({
+        components: {
+            head: "Platinum axe head",
+            handle: "Medium wooden handle",
+        },
+				special_effects: [  
+			{ name: "greed", value: 3 },
+		]
+    });
+
+    item_templates["Money Mallet"] = new Weapon({
+        components: {
+            head: "Platinum hammer head",
+            handle: "Medium wooden handle",
+        },
+				special_effects: [  
+			{ name: "greed", value: 3 },
+		]
     });	
 
 	
