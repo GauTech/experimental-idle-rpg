@@ -38,7 +38,7 @@ class Quest {
                 questline, //questline for grouping or something, skippable
                 quest_tasks = [], //an array of tasks that need to be completed one by one
                 quest_condition, //an array of conditions for the quest to be completed; completing any of them completes the quest 
-				//valid types [{enter: "Sanctuary"}], [{clear: "Infested Field"}], [{Requires_Item: "Bread", count: 5}],
+				//valid types [{enter: "Sanctuary"}], [{clear: "Infested Field"}], [{requires_item: "Bread", count: 5}],
                 quest_progress, //both this and quest_condition can be skipped if there's quest_tasks, or can stay to allow completing the quest without fulfilling them all
                 quest_rewards, //may include a new quest to automatically start
 				/*
@@ -138,6 +138,34 @@ quests["Wanderer's Rest"] = new Quest({
 	quest_rewards: {type: "hero_xp", value: 50},
 	quest_condition: [{enter: "Sanctuary"}],
 	//quest_condition: 
+});
+
+
+quests["The Super Pickaxe"] = new Quest({
+    quest_name: "The Super Pickaxe",
+	quest_id: "The Super Pickaxe",
+	quest_description: "The confused madman who gave me the old pickaxe seemed to want ores. With my honed skills perhaps I can satisfy his demands.",
+
+	quest_rewards: {type: "item", item_name: "Super pickaxe"},
+	quest_condition: [{requires_item: "Blacksteel Ore", count: 3000}], 
+});
+
+quests["The Super Axe"] = new Quest({
+    quest_name: "The Super Axe",
+	quest_id: "The Super Axe",
+	quest_description: "The confused madman who gave me the old pickaxe seemed to want ores. With my honed skills perhaps I can satisfy his demands.",
+
+	quest_rewards: {type: "item", item_name: "Super axe",},
+	quest_condition: [{requires_item: "Piece of ash wood", count: 3000}],
+});
+
+quests["The Super Rod"] = new Quest({
+    quest_name: "The Super Rod",
+	quest_id: "The Super Rod",
+	quest_description: "The fisherman who gave me the old rod might have a better rod to offer if I demonstrate my skills.",
+
+	quest_rewards: {type: "item", item_name: "Super rod",},
+	quest_condition: [{requires_item: "Cunning Carp", count: 1000}],
 });
 
 /*

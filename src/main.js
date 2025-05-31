@@ -492,6 +492,7 @@ function startQuest(quest_id) {
 	
 function questUpdate(effect) {
     const quest_id = effect.id;
+	console.log(effect);
 	if (!active_quests.some(quest => quest.quest_id === quest_id)) {
     return;
 
@@ -553,47 +554,38 @@ function questRewardHandler(rewards, quest_id) {
 
 
 function parse_quest_rewards(quest_rewards) {
-	const parsed_items = [];
+const parsed_items = [];
 
-	if (!Array.isArray(quest_rewards)) {
-		quest_rewards = [quest_rewards];
+if (!Array.isArray(quest_rewards)) {
+	quest_rewards = [quest_rewards];
+}
+
+for (const reward of quest_rewards) {
+	if (reward.type !== "item") continue;
+
+	const item_key = typeof reward === "string" ? reward : reward.item_name;
+	const count = reward.count ?? 1;
+	const item_template = item_templates[item_key];
+
+	if (!item_template) {
+		console.warn(`Item template not found for key: ${item_key}`);
+		continue;
 	}
 
-	for (const reward of quest_rewards) {
-		if (reward.type !== "item") continue;
-
-		const item_key = reward.item_name;
-		const item_template = item_templates[item_key];
-
-		if (!item_template) {
-			console.warn(`Item template not found for key: ${item_key}`);
-			continue;
-		}
-
-		// Parse count
-		let count = reward.count ?? 1;
-		if (Array.isArray(count)) {
-			count = get_random_int(count[0], count[1]);
-		}
-
-		// Parse quality
-		let quality = 100;
-		if ("quality" in reward) {
-			quality = Array.isArray(reward.quality)
-				? get_random_int(reward.quality[0], reward.quality[1])
-				: reward.quality;
-		}
-
-		// Clone the item with quality if applicable
-		const item = item_template;
-
-		parsed_items.push({ item, count });
-		
-		
-		
+	let final_count = count;
+	if (Array.isArray(final_count)) {
+		final_count = get_random_int(final_count[0], final_count[1]);
 	}
 
-	add_to_character_inventory(parsed_items);
+	log_message(`${character.name} obtained "${item_template.getName()} x${final_count}"`);
+
+	parsed_items.push({
+		item: item_template,
+		count: final_count
+	});
+}
+
+add_to_character_inventory(parsed_items);
 }
 
 // Utility function
@@ -732,7 +724,6 @@ function end_activity() {
         log_message(`${character.name} earned ${format_money(current_activity.earnings)}`, "activity_money");
         add_money_to_character(current_activity.earnings);
     }
-	console.log("activity ended");
 
     if(current_activity.gathered_materials && options.log_total_gathering_gain) {
 	
@@ -1588,6 +1579,10 @@ if (
 
 		for(let i = 0; i < textline.unlocks.start_quests.length; i++) { //starts quests
         startQuest(textline.unlocks.start_quests[i]);
+    }
+	
+			for(let i = 0; i < textline.unlocks.update_quests.length; i++) { //starts quests
+        questUpdate(textline.unlocks.update_quests[i]);
     }
 	
 	//handle special actions
@@ -3199,6 +3194,7 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
         console.error(`Tried to add negative xp to skill ${skill.skill_id}`);
         return leveled;
     }
+				check_skill_level_vs_flags(skill);
 
     if(use_bonus) {
         xp_to_add = xp_to_add * get_skill_xp_gain(skill.skill_id);
@@ -3297,6 +3293,7 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
                 if(typeof should_info === "undefined" || should_info) {
                     log_message(`Unlocked new skill: ${unlocked_skill.name()}`, "skill_raised");
                 }
+				
             }
 
             if(prev_name !== new_name) {
@@ -3329,6 +3326,24 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
 	update_displayed_droprate();
     return leveled;
 	
+}
+
+function check_skill_level_vs_flags(skill){
+
+if(skill.skill_id === "Mining" && skill.current_level > 19){
+	global_flags.is_mining_level20 = true;
+}
+if(skill.skill_id === "Woodcutting" && skill.current_level > 19){
+	global_flags.is_woodcutting_level20 = true;
+}
+if(skill.skill_id === "Herbalism" && skill.current_level > 19){
+	global_flags.is_herbalism_level20 = true;
+}
+if(skill.skill_id === "Fishing" && skill.current_level > 19){
+	global_flags.is_fishing_level20 = true;
+}
+
+
 }
 
 /**
@@ -4441,7 +4456,7 @@ if (save_data.current_party) {
 		if(save_data.visited_locations) {
 		 visited_locations = save_data["visited_locations"];
     }
-	console.log(active_quests);
+	
 	
 	
     

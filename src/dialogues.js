@@ -44,6 +44,7 @@ class Textline {
 							allies: [],
 							expels: [],
 							start_quests: [],
+							update_quests: [],
 							special: [],
                             },
                 locks_lines = {},
@@ -78,7 +79,8 @@ class Textline {
 					{ name: "Turtle Soup", count: 50 },
 					{ name: "Cheap iron dagger", quality: 40 },
 			*/
-		this.unlocks.start_quests = unlocks.start_quests || [];	
+		this.unlocks.start_quests = unlocks.start_quests || [];
+		this.unlocks.update_quests = unlocks.update_quests || [];			
 		this.unlocks.special = unlocks.special || [];			
 		
 		
@@ -520,8 +522,62 @@ dialogues["Smith"] = new Dialogue({
                 },
                 locks_lines: ["Smith"],
             }),
+			          "Craft": new Textline({ 
+                name: "Can I craft items?",
+                text: "Probably. Good ones? Not, without putting in the work.",
+                unlocks: {
+					textlines: [{dialogue: "Smith", lines: ["Explain"]}]
+                },
+                locks_lines: ["Craft"],
+            }),
+							"Explain": new Textline({ 
+                name: "How does crafting work?",
+                text: "Use stuff to make other stuff.",
+				is_unlocked: false,
+                unlocks: {
+					textlines: [{dialogue: "Smith", lines: ["ExplainMore"]}]
+                },
+                locks_lines: ["Explain"],
+            }),
+			
+									"ExplainMore": new Textline({ 
+                name: "…. I was hoping for something a bit more specific.",
+				is_unlocked: false,
+                text: "*sigh* \n\nTo make any item you need materials. Some items you make directly from materials, some items you need to turn raw materials into processed materials. Then processed materials into components. Then assemble a finished item from those components. Sometimes you can even use standalone equipment as components in other equipment.",
+                unlocks: {
+					textlines: [{dialogue: "Smith", lines: ["ExplainAgain","AboutEquipment","AboutItems","AnythingElse"]}]
+                },
+                locks_lines: ["ExplainMore"],
+            }),
+											"ExplainAgain": new Textline({ 
+                name: "Can you exlain about crafting again.",
+				is_unlocked: false,
+                text: "*sigh* \n\nTo make any item you need materials. Some items you make directly from materials, some items you need to turn raw materials into processed materials. Then processed materials into components. Then assemble a finished item from those components. Sometimes you can even use standalone equipment as components in other equipment.",
+ 
+            }),
+														"AboutEquipment": new Textline({ 
+                name: "What about equipment?",
+				is_unlocked: false,
+                text: "When making components and equipment you will always make SOMETHING, but the quality varies. The higher skill your level the higher the quality of the gear you can make. Each material also has a quality limit, for the best items you can make with it.\n\nHigher tier materials are harder to work with, they demand higher skill levels. But they also have a higher maximum quality and they have better basic performance as well. Make sense? And higher quality items can also gain rarity bonuses too.",
+ 
+            }),
+																	"AboutItems": new Textline({ 
+                name: "What about items?",
+				is_unlocked: false,
+                text: "Items and processing materials you have a chance of success, and if you botch it then you're left with nothing. Except for learning something from your failure maybe.",
+ 
+            }),
+																			"AnythingElse": new Textline({ 
+                name: "Anything else I should know?",
+				is_unlocked: false,
+                text: "You might find areas with specialized facilities for particular crafts, which will improve success rates and make higher quality gear.",
+ 
+            }),
+		
         }
     });
+	
+
 	
 dialogues["Peddler"] = new Dialogue({
         name: "Peddler",
@@ -561,6 +617,30 @@ dialogues["Mad Lumberjack"] = new Dialogue({
                 },
                 locks_lines: ["LumberHuh"],
             }),
+			"QuestStart": new Textline({ 
+                name: "What kind of wood were you looking for exactly?",
+                text: "3000 pieces of ash wood!",
+				required_flags: {yes: ["is_woodcutting_level20"]},
+                unlocks: {
+					textlines: [{dialogue: "Mad Lumberjack", lines: ["QuestFinish"]}],
+					start_quests: ["The Super Axe"],
+                },
+                locks_lines: ["QuestStart"],
+            }),
+						           "QuestFinish": new Textline({ 
+								   
+                name: "Here you go. (Give Wood)",
+				is_unlocked: false,
+					requires_items: {
+                item_template_key: "Piece of ash wood",
+                quantity: 3000
+            },
+                text: "I knew you had it in you lad! Now take this, and devote yourself evermore to the path of woodcutting",
+                unlocks: {
+					update_quests: [{type: "QuestUpdate", id: "The Super Axe", completion: "y", updates: [],}]
+                },
+                locks_lines: ["QuestFinish"],
+            }),
         }
     });
 	
@@ -590,6 +670,30 @@ dialogues["Fisherman"] = new Dialogue({
                 },
                 locks_lines: ["Rod"],
             }),
+					           "QuestStart": new Textline({ 
+                name: "What kind of haul would distinguish someone as a fine fisherman?",
+                text: "It's a great day for fishing (somehow you intuit this means 1000 Cunning Carp)." ,
+				required_flags: {yes: ["is_fishing_level20"]},
+                unlocks: {
+					textlines: [{dialogue: "Fisherman", lines: ["QuestFinish"]}],
+					start_quests: ["The Super Rod"],
+                },
+                locks_lines: ["QuestStart"],
+            }),
+						           "QuestFinish": new Textline({ 
+								   
+                name: "Here you go. (Give Ore)",
+				is_unlocked: false,
+						requires_items: {
+                item_template_key: "Cunning Carp",
+                quantity: 1000
+            },
+                text: "*sob*\n\n It's a great day for fishing...",
+                unlocks: {
+					update_quests: [{type: "QuestUpdate", id: "The Super Rod", completion: "y", updates: [],}]
+                },
+                locks_lines: ["QuestFinish"],
+            }),
         }
     });
 	
@@ -613,6 +717,31 @@ dialogues["Mad Miner"] = new Dialogue({
                 },
                 locks_lines: ["MinerHuh"],
             }),
+			           "QuestStart": new Textline({ 
+                name: "What kind of ores were you looking for exactly?",
+                text: "3000 Blacksteel ore!",
+				required_flags: {yes: ["is_mining_level20"]},
+                unlocks: {
+					textlines: [{dialogue: "Mad Miner", lines: ["QuestFinish"]}],
+					start_quests: ["The Super Pickaxe"],
+                },
+                locks_lines: ["QuestStart"],
+            }),
+						           "QuestFinish": new Textline({ 
+								   
+                name: "Here you go. (Give Ore)",
+				is_unlocked: false,
+						requires_items: {
+                item_template_key: "Blacksteel ore",
+                quantity: 3000
+            },
+                text: "I knew you had it in you lad! Now take this, and devote yourself evermore to the path of mining",
+                unlocks: {
+					update_quests: [{type: "QuestUpdate", id: "The Super Pickaxe", completion: "y", updates: [],}]
+                },
+                locks_lines: ["QuestFinish"],
+            }),
+			
         }
     });
 
@@ -1428,7 +1557,7 @@ dialogues["Kon3"] = new Dialogue({
         }),
         "Kon3_help": new Textline({
             name: "This may help. (Give 5 stale bread)",
-            text: "You really have supplies to spare? Very well, I accept.\n\n Now let's see what I can do to earn my keep. \n\n Aha! Let me acompany you for a time, and I'll instruct you in the ways of knightly combar. After all, we're comrades that have broken bread together.",
+            text: "You really have supplies to spare? Very well, I accept.\n\n Now let's see what I can do to earn my keep. \n\n Aha! Let me acompany you for a time, and I'll instruct you in the ways of knightly combat. After all, we're comrades that have broken bread together.",
 			is_unlocked: false,
             requires_items: {
                 item_template_key: "Stale bread",
