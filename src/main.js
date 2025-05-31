@@ -61,6 +61,8 @@ import { end_activity_animation,
 		 updateCombatDisplays, 
 		 update_ally_attack_bar,
 		 update_party_list,
+		 populateQuestList,
+		 addQuestAlertIfNeeded,
         } from "./display.js";
 import { compare_game_version, get_hit_chance } from "./misc.js";
 import { stances } from "./combat_stances.js";
@@ -69,6 +71,7 @@ import { get_recipe_xp_value, recipes } from "./crafting_recipes.js";
 import { game_version, get_game_version } from "./game_version.js";
 import { ActiveEffect, effect_templates} from "./active_effects.js";
 import { allies} from "./allies.js";
+import { quests} from "./quests.js";
 import { Verify_Game_Objects } from "./verifier.js";
 
 const save_key = "save data";
@@ -134,6 +137,7 @@ let ambient_damage_counter = 0;
 
 let current_activity;
 
+let visited_locations = [];
 
 let location_action_interval;
 let current_location_action;
@@ -173,6 +177,10 @@ const active_effects = {};
 let selected_stance = "normal";
 let current_stance = "normal";
 const faved_stances = {};
+
+
+let active_quests = [];
+let finished_quests = [];
 
 const favourite_consumables = {};
 
@@ -364,7 +372,7 @@ function option_log_gathering_result(option) {
 
 function change_location(location_name) {
     let location = locations[location_name];
-
+	end_actions();
     if(location_name !== current_location?.name && location.is_finished) {
         return;
     }
@@ -389,7 +397,8 @@ function change_location(location_name) {
     }
     
     current_location = location;
-
+	handle_location_visit(location);
+	
     update_character_stats();
 
     if("connected_locations" in current_location) { 
@@ -410,10 +419,187 @@ function change_location(location_name) {
         }
     }
 	
-	//console.log(location)  // enable for debugging purposes
+	//console.log(location);  // enable for debugging purposes
+	//console.log(visited_locations);
+}
+
+function handle_location_visit(location) {
+    if (visited_locations.includes(location.name)) {
+        // Already visited, do nothing special
+        return;
+    }
+    // Mark as visited
+    visited_locations.push(location.name);
+
+    // Check for on_first_entry effects and handle them
+    if (location.on_first_visit && Array.isArray(location.on_first_visit)) {
+        execute_first_visit_effects(current_location.on_first_visit);
+    }
+}
+
+// Location first vist effect executor function
+function execute_first_visit_effects(on_first_visit) {
+    if (!on_first_visit || on_first_visit.length === 0) return;
+
+    for (const effect of on_first_visit) {
+        switch (effect.type) {
+            case "QuestStart":
+                startQuest(effect.id);
+                break;
+
+            case "QuestUpdate":
+                questUpdate(effect);
+                break;
+
+            case "TaskUpdate":
+                // Placeholder for task update logic (to be implemented later)
+                console.log("Task update not yet implemented:", effect);
+                break;
+
+            default:
+                console.warn("Unknown effect type:", effect.type);
+        }
+    }
 }
 
 
+function startQuest(quest_id) {
+    const quest = quests[quest_id];
+	
+	// Don't start quest if already active.
+	if (active_quests.some(quest => quest.quest_id === quest_id)) {
+    return;
+	}
+	
+    // Don't start the quest if it's marked as finished.
+    if (quest.is_finished) {
+        console.log(`Quest "${quest_id}" is already finished. Not starting.`);
+        return;
+    }
+
+    active_quests.push(quest);
+	log_message(`Quest "${quest_id}" started.`,"quest_update");
+	populateQuestList(active_quests);
+	addQuestAlertIfNeeded();
+}
+	
+
+ function    finishQuest(quest_index) {
+        active_quests.splice(quest_index, 1);
+    }
+
+
+	
+function questUpdate(effect) {
+    const quest_id = effect.id;
+	if (!active_quests.some(quest => quest.quest_id === quest_id)) {
+    return;
+
+}
+
+    if (effect.completion === "y") {
+        // Remove from active_quests (modify in place)
+		console.log("Removing quest:" + quest_id);
+        for (let i = active_quests.length - 1; i >= 0; i--) {
+            if (active_quests[i].quest_id === quest_id) {
+                active_quests.splice(i, 1);
+            }
+        }
+
+        // Mark quest as finished
+        finished_quests.push(quest_id);
+        quests[quest_id].is_finished = true;
+
+        // Reward handling with quest_id passed for logging
+        questRewardHandler(quests[quest_id].quest_rewards, quest_id);
+    }
+
+    populateQuestList(active_quests);
+	addQuestAlertIfNeeded();
+}
+
+function questRewardHandler(rewards, quest_id) {
+    if (!Array.isArray(rewards)) {
+        rewards = [rewards]; // Convert single reward to array
+    }
+
+    for (const reward of rewards) {
+        switch (reward.type) {
+            case "hero_xp":
+                log_message(`Gained +${reward.value} Hero XP from completing quest "${quest_id}"`,"quest_completed");
+                add_xp_to_character(reward.value);
+                break;
+
+            case "skill_xp":
+				log_message(`Gained +${reward.value} ${reward.skill} XP from completing quest "${quest_id}"`,"quest_completed");
+                add_xp_to_skill({ skill: skills[reward.skill], xp_to_add: reward.value });
+                break;
+
+			case "item":
+				let itemLogMessage = `Gained ${reward.item_name}`;
+				if (reward.count && reward.count > 0) {
+					itemLogMessage += ` x${reward.count}`;
+				}
+				itemLogMessage += ` from completing quest "${quest_id}"`;
+				log_message(itemLogMessage, "quest_completed");
+				parse_quest_rewards(reward);
+				break;
+
+            default:
+                console.warn(`Unknown reward type "${reward.type}" in quest "${quest_id}"`);
+        }
+    }
+}
+
+
+function parse_quest_rewards(quest_rewards) {
+	const parsed_items = [];
+
+	if (!Array.isArray(quest_rewards)) {
+		quest_rewards = [quest_rewards];
+	}
+
+	for (const reward of quest_rewards) {
+		if (reward.type !== "item") continue;
+
+		const item_key = reward.item_name;
+		const item_template = item_templates[item_key];
+
+		if (!item_template) {
+			console.warn(`Item template not found for key: ${item_key}`);
+			continue;
+		}
+
+		// Parse count
+		let count = reward.count ?? 1;
+		if (Array.isArray(count)) {
+			count = get_random_int(count[0], count[1]);
+		}
+
+		// Parse quality
+		let quality = 100;
+		if ("quality" in reward) {
+			quality = Array.isArray(reward.quality)
+				? get_random_int(reward.quality[0], reward.quality[1])
+				: reward.quality;
+		}
+
+		// Clone the item with quality if applicable
+		const item = item_template;
+
+		parsed_items.push({ item, count });
+		
+		
+		
+	}
+
+	add_to_character_inventory(parsed_items);
+}
+
+// Utility function
+function get_random_int(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 /**
  * 
  * @param {String} location_name 
@@ -1042,19 +1228,20 @@ function end_sleeping() {
 
 function end_actions(){
     if(is_reading) {
-        end_reading();
+        end_reading;
     } 
     if(is_rereading) {
-        end_rereading();
+        end_rereading;
     } 
 
     if(is_sleeping) {
-        end_sleeping();
+        end_sleeping;
     }
     if(current_activity) {
-        end_activity();
+        end_activity(current_activity);
     }
-	close_crafting_window;
+	
+	
 }
 
 function start_reading(book_key) {
@@ -1392,13 +1579,39 @@ if (
         unlock_magic(textline.unlocks.magic[i]);
     }
 	
-	for(let i = 0; i < textline.unlocks.allies.length; i++) { //unlocking magic
+	for(let i = 0; i < textline.unlocks.allies.length; i++) { //unlocking allies
         add_allies_to_party(textline.unlocks.allies[i]);
     }
-		for(let i = 0; i < textline.unlocks.expels.length; i++) { //unlocking magic
+		for(let i = 0; i < textline.unlocks.expels.length; i++) { //expels allies
         remove_allies_from_party(textline.unlocks.expels[i]);
     }
 
+		for(let i = 0; i < textline.unlocks.start_quests.length; i++) { //starts quests
+        startQuest(textline.unlocks.start_quests[i]);
+    }
+	
+	//handle special actions
+	if (textline.unlocks.special) {
+    for (let i = 0; i < textline.unlocks.special.length; i++) {
+        const specialAction = textline.unlocks.special[i];
+        
+        switch (specialAction.type) {
+            case "remove_visit_flag":
+                // Remove the target from visited_locations if it exists
+                const index = visited_locations.indexOf(specialAction.target);
+                if (index !== -1) {
+                    visited_locations.splice(index, 1);
+                }
+                break;
+            // Add more cases for other special action types as needed
+            default:
+                console.warn(`Unknown special action type: ${specialAction.type}`);
+                break;
+        }
+    }
+}
+	
+	
     for(let i = 0; i < textline.locks_lines.length; i++) { //locking textlines
         dialogue.textlines[textline.locks_lines[i]].is_finished = true;
     }
@@ -2480,6 +2693,7 @@ if (critted) {
         } else {
             change_location(current_location.parent_location.name);
         }
+		locations["Time Demon"].is_finished = true;
         return;
     }
 
@@ -2760,6 +2974,7 @@ function execute_death_effects(on_death) {
             } else {
                 change_location(current_location.parent_location.name);
             }
+			locations["Time Demon"].is_finished = true;
             return;
         }
     }
@@ -2810,6 +3025,7 @@ function enemy_entrance_effects(on_entry) {
             } else {
                 change_location(current_location.parent_location.name);
             }
+			locations["Time Demon"].is_finished = true;
             return;
         }
     }
@@ -2861,6 +3077,7 @@ function execute_self_damage(self_damage) {
         } else {
             change_location(current_location.parent_location.name);
         }
+		locations["Time Demon"].is_finished = true;
         return;
 	
 }
@@ -2889,11 +3106,11 @@ function execute_ambient_damage(ambient_damage, ambient_damage_type, ambient_dam
         } else {
             change_location(current_location.parent_location.name);
         }
+		locations["Time Demon"].is_finished = true;
         return;
 	
 		}
 }
-
 /**
  * sets enemy to dead, disabled their attack, checks if that was the last enemy in group
  * @param {Enemy} enemy 
@@ -2930,6 +3147,7 @@ function kill_player({is_combat = true} = {}) {
             change_location(current_location.parent_location.id);
         }
     }
+	locations["Time Demon"].is_finished = true;
 }
 
 
@@ -3535,8 +3753,7 @@ function character_unequip_item(item_slot) {
 
 function use_item(item_key) {
     const { id } = JSON.parse(item_key);
-    const item = item_templates[id];
-
+    const item = item_templates[id];	
     if (item.tags?.loot_chest) {
         open_loot_chest(item_key);
         return;
@@ -3597,6 +3814,7 @@ function use_item(item_key) {
 }
 
 function open_loot_chest(item_key) {
+	add_xp_to_skill({skill: skills["Lockpicking"], xp_to_add: 20});
     const { id } = JSON.parse(item_key);
     const chest = item_templates[id];
     if (!chest || (!Array.isArray(chest.loot) && !chest.loot_pool)) {
@@ -3964,6 +4182,10 @@ function create_save() {
 		save_data["magic_cooldowns"] = magic_cooldowns;
 		
 		save_data["current_party"] = current_party;
+		
+		save_data["active_quests"] = active_quests;
+		save_data["finished_quests"] = finished_quests;
+		save_data["visited_locations"] = visited_locations;
 			
 });
 
@@ -4202,6 +4424,28 @@ if (save_data.current_party) {
         add_allies_to_party(ally_id, true); // true suppresses messages
     });
 }
+	
+	
+		if (save_data.active_quests) {
+		  active_quests = save_data.active_quests.map(q => ({
+			...q, // Keep all saved properties
+			getQuestName: () => q.quest_name // Reattach the missing method
+		  }));
+		}
+		
+		if(save_data.finished_quests) {
+		 finished_quests = save_data["finished_quests"];
+    }
+	
+	
+		if(save_data.visited_locations) {
+		 visited_locations = save_data["visited_locations"];
+    }
+	console.log(active_quests);
+	
+	
+    
+    populateQuestList(active_quests); 
 	
 	
 	
@@ -4752,6 +4996,7 @@ if (save_data.current_party) {
     }
 
     update_displayed_time();
+	
 } //core function for loading
 
 /**
@@ -5090,7 +5335,7 @@ for (let i = 0; i < resources.length; i++) {
             character.stats.full.health += character.stats.full.max_health * character.stats.full.health_loss_percent/100;
         }
 
-        if(character.stats.full.health <= 0) {
+       if(character.stats.full.health <= 0) {
             kill_player({is_combat: "parent_location" in current_location});
         }
 		
@@ -5293,6 +5538,7 @@ function run() {
     } 
     
     update_displayed_health();
+	
         
     start_date = Date.now();
     update();   
@@ -5483,4 +5729,6 @@ export { current_enemies, can_work,
 		current_party,
 		global_battle_state,
 		end_actions,
+		active_quests,
+		finished_quests
  };

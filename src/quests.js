@@ -2,22 +2,29 @@
 
 
 const quests = {};
-const active_quests = [];
+
 
 class QuestTask {
     constructor({
         task_description = "", //optional
         task_condition, //an array of conditions for task to be completed; completing any of them finishes the task
         task_progress,
+		task_name,
         task_rewards = {}, //generally skipped but could sometimes have something?
         is_hidden = false, //keep it false most of the time, but could be used as a fake way of making quests with no visible requirement for progress
         is_finished = false,
     })
     {
-        this.task_description = task_description;
+        this.task_name = task_name;
+		this.task_description = task_description;
         this.task_condition = task_condition;
         this.task_progress = task_progress;
         this.task_rewards = task_rewards;
+						/*
+				task_rewards: {type: "hero_xp", value: 100},
+				task_rewards: {type: "skill_xp", skill: "Lockpicking", value: 100},
+				task_rewards: {type: "item", item_name: "Iron spear", count: 2}, count is optional
+				*/
         this.is_hidden = is_hidden;
         this.is_finished = is_finished;
     }
@@ -30,9 +37,15 @@ class Quest {
                 quest_description, // -||-
                 questline, //questline for grouping or something, skippable
                 quest_tasks = [], //an array of tasks that need to be completed one by one
-                quest_condition, //an array of conditions for the quest to be completed; completing any of them completes the quest
+                quest_condition, //an array of conditions for the quest to be completed; completing any of them completes the quest 
+				//valid types [{enter: "Sanctuary"}], [{clear: "Infested Field"}], [{Requires_Item: "Bread", count: 5}],
                 quest_progress, //both this and quest_condition can be skipped if there's quest_tasks, or can stay to allow completing the quest without fulfilling them all
                 quest_rewards, //may include a new quest to automatically start
+				/*
+				task_rewards: {type: "hero_xp", value: 100},
+				task_rewards: {type: "skill_xp", skill: "Lockpicking", value: 100},
+				task_rewards: {type: "item", item_name: "Iron spear", count: 2}, count is optional
+				*/
                 is_hidden = false, //hidden quests are not visible and are meant to function as additional unlock mechanism; name and description are skipped
                 is_finished = false,
                 getQuestName = ()=>{return this.quest_name;},
@@ -43,7 +56,7 @@ class Quest {
         this.questline = questline;
         this.quest_tasks = quest_tasks;
         this.quest_description = quest_description;
-        this.quest_reward = quest_rewards || {};
+        this.quest_rewards = quest_rewards || {};
         this.is_hidden = is_hidden;
         this.is_finished = is_finished;
         this.quest_condition = quest_condition;
@@ -59,24 +72,13 @@ class Quest {
     }
 }
 
-const QuestManager = {
-    startQuest(quest_id) {
-        active_quests.push(quests[quest_id]);
-    },
 
-    finishQuest(quest_index) {
-        active_quests.splice(quest_index, 1);
-    },
 
-    doQuestEvent(quest_event_type, target) {
-        for(let i = 0; i < active_quests.length; i++) {
 
-        }
-    }
-};
 
 quests["Lost memory"] = new Quest({
     quest_name: "???",
+	quest_id: "Lost memory",
     qetQuestName: ()=>{
         const completed_tasks = this.getCompletedtaskCount();
         if(completed_tasks == 0) {
@@ -97,16 +99,45 @@ quests["Lost memory"] = new Quest({
     },
     questline: "Lost memory",
     quest_tasks: [
-        new QuestTask({task_description: "Find out what happened"}),
+        new QuestTask({task_description: "Find out what happened",
+			task_name: "Lost memory1",
+		      task_condition: {
+                any: {
+                    enter: "Infested field",
+                }
+            },
+			task_rewards: {type: "item", item_name: "Leather vest"},
+			}),
         new QuestTask({
             task_description: "Help with the wolf rat infestation",
+			task_name: "Lost memory2",
             task_condition: {
                 any: {
                     clear: "Infested field",
                 }
             },
+			task_rewards: {type: "hero_xp", value: 100}, 
         }),
     ]
+});
+
+quests["Wanderer's Rest"] = new Quest({
+    quest_name: "Wanderer's Rest",
+	quest_id: "Wanderer's Rest",
+	quest_description: "If there really is a settlement nearby, then it could be a good source of equipment and supplies. I should investigate.",
+    /*quest_tasks: [
+        new QuestTask({
+            task_description: "Locate the Sanctuary",
+            task_condition: {
+                any: {
+                    enter: "Sanctuary",
+                }
+            },
+        }),
+    ],*/
+	quest_rewards: {type: "hero_xp", value: 50},
+	quest_condition: [{enter: "Sanctuary"}],
+	//quest_condition: 
 });
 
 /*
@@ -120,3 +151,5 @@ quests["Infinite rat saga"] = new Quest({
     ]
 });
 */
+
+export {quests};

@@ -43,6 +43,8 @@ class Textline {
                             items: [],
 							allies: [],
 							expels: [],
+							start_quests: [],
+							special: [],
                             },
                 locks_lines = {},
 				requires_items,
@@ -70,13 +72,17 @@ class Textline {
 		this.unlocks.expels = unlocks.expels || [];
         this.unlocks.items = unlocks.items || []; //not so much unlocks as simply items that player will receive
 		
-		
-			/*	Can handles just the item name, or name+ count or name+quality.e.g.
+				/*	Can handles just the item name, or name+ count or name+quality.e.g.
 		
 					"Old pickaxe",
 					{ name: "Turtle Soup", count: 50 },
 					{ name: "Cheap iron dagger", quality: 40 },
 			*/
+		this.unlocks.start_quests = unlocks.start_quests || [];	
+		this.unlocks.special = unlocks.special || [];			
+		
+		
+	
 
         
         this.required_flags = required_flags;
@@ -1380,7 +1386,10 @@ dialogues["Kon1"] = new Dialogue({
 					{ name: "Cheap iron sword", quality: 50 },
 					
 				],
+					start_quests: ["Wanderer's Rest"],
+					special: [{type: "remove_visit_flag", target: "Sanctuary"}],
                 },
+				
             locks_lines: ["Kon1","Kon1What","Kon1Who","Kon1Final","Kon1Advice","Kon1Cause"],
             }),
         }

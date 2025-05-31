@@ -15,7 +15,10 @@ import { current_enemies, options,
 	favourite_consumables,
 	current_party,
     global_flags,
-	end_actions} from "./main.js";
+	end_actions,
+	active_quests,
+	finished_quests
+	} from "./main.js";
 import { dialogues } from "./dialogues.js";
 import { activities } from "./activities.js";
 import { format_time, current_game_time } from "./game_time.js";
@@ -28,6 +31,7 @@ import { magics } from "./magic.js";
 import { recipes, get_recipe_xp_value } from "./crafting_recipes.js";
 import { effect_templates } from "./active_effects.js";
 import { allies } from "./allies.js";
+import { quests} from "./quests.js";
 
 let offensive_action = "Atk Power";
 
@@ -114,7 +118,8 @@ const bestiary_list = document.getElementById("bestiary_list");
 const combat_switch = document.getElementById("switch_to_combat")
 const inventory_switch = document.getElementById("switch_to_inventory")
 
-
+const quest_entry_divs = {};
+const quest_list = document.getElementById("quest_list");
 
 const data_entry_divs = {
                             character: document.getElementById("character_xp_multiplier"),
@@ -625,6 +630,16 @@ function end_activity_animation() {
             message_count.message_unlocks += 1;
             break;
         case "level_up":
+            group_to_add = "message_unlocks";
+            message_count.message_unlocks += 1;
+            break;
+		     case "quest_update":
+            class_to_add = "quest_update";
+            group_to_add = "message_unlocks";
+            message_count.message_unlocks += 1;
+            break;
+		     case "quest_completed":
+            class_to_add = "message_quest_completed";
             group_to_add = "message_unlocks";
             message_count.message_unlocks += 1;
             break;
@@ -4488,6 +4503,267 @@ function clear_bestiary() {
     });
 }
 
+
+function populateQuestList(active_quests) {
+    const quest_list = document.getElementById("quest_list");
+    quest_list.innerHTML = ""; // Clear old entries
+
+    active_quests.forEach(quest => {
+        if (quest.is_hidden) return;
+
+        const questDiv = document.createElement("div");
+        questDiv.className = "quest_entry";
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "quest_entry_name";
+        nameDiv.textContent = quest.getQuestName.call(quest);
+        questDiv.appendChild(nameDiv);
+
+        const detailDiv = document.createElement("div");
+        detailDiv.style.display = "none";
+
+        const descDiv = document.createElement("div");
+				let description;
+				if (typeof quest.getQuestDescription === 'function') {
+					description = quest.getQuestDescription.call(quest);
+				} else if (quest.quest_description !== undefined) {
+					description = quest.quest_description;
+				} else {
+					description = ''; // or some default value if neither exists
+				}
+			descDiv.textContent = description;
+        detailDiv.appendChild(descDiv);
+
+        // Quest rewards
+		if (quest.quest_rewards && Object.keys(quest.quest_rewards).length > 0) {
+			const rewardDiv = document.createElement("div");
+			let rewardText = "Rewards: ";
+			
+			switch(quest.quest_rewards.type) {
+				case "hero_xp":
+					rewardText += `${quest.quest_rewards.value} Hero XP`;
+					break;
+				case "skill_xp":
+					rewardText += `${quest.quest_rewards.value}  ${quest.quest_rewards.skill} Skill XP`;
+					break;
+				case "item":
+					rewardText += `Item (ID: ${quest.quest_rewards.item_name})`;
+					if (quest.quest_rewards.count && quest.quest_rewards.count > 0) {
+						rewardText += ` x${quest.quest_rewards.count}`;
+					}
+					break;
+				case "unlock":
+					rewardText += `Unlock: ${quest.quest_rewards.value}`; // You might want to specify what's being unlocked
+					break;
+				default:
+					// Fallback to JSON if type is unknown
+					rewardText += JSON.stringify(quest.quest_rewards);
+			}
+			
+			rewardDiv.textContent = rewardText;
+			detailDiv.appendChild(rewardDiv);
+		}
+
+        // Quest condition
+		if (quest.quest_condition) {
+			const condDiv = document.createElement("div");
+			condDiv.textContent = "Conditions:";
+			
+			// Create a list for multiple conditions
+			const condList = document.createElement("ul");
+			condDiv.appendChild(condList);
+			
+			// Process each condition in the array
+			quest.quest_condition.forEach(condition => {
+				const condItem = document.createElement("li");
+				let conditionText = "";
+				
+				// Get the condition type and value
+				const conditionType = Object.keys(condition)[0];
+				const conditionValue = condition[conditionType];
+				
+				switch(conditionType) {
+					case "enter":
+						conditionText = `Enter ${conditionValue}`;
+						break;
+					case "clear":
+						conditionText = `Clear ${conditionValue}`;
+						break;
+					case "requires_item":
+						conditionText = `Requires ${conditionValue} x ${condition.count || 1}`;
+						break;
+					default:
+						conditionText = JSON.stringify(condition);
+				}
+				
+				condItem.textContent = conditionText;
+				condList.appendChild(condItem);
+			});
+			
+			detailDiv.appendChild(condDiv);
+		}
+
+        // Quest tasks
+        quest.quest_tasks.forEach((task, taskIndex) => {
+            if (task.is_hidden) return;
+
+            const taskDiv = document.createElement("div");
+            taskDiv.className = "task_entry_name";
+            taskDiv.style.marginLeft = "20px";
+            taskDiv.textContent = "• " + task.task_description;
+
+            const taskDetailDiv = document.createElement("div");
+            taskDetailDiv.style.display = "none";
+
+			const cond = task.task_condition ? formatTaskConditions(task.task_condition) : "";
+
+		
+			const prog = task.task_progress ? "Progress: " + JSON.stringify(task.task_progress) : "";
+			const rew = formatTaskRewards(task.task_rewards);
+
+	
+
+	
+
+            [cond, prog, rew].forEach(txt => {
+                if (txt) {
+                    const el = document.createElement("div");
+                    el.textContent = txt;
+                    taskDetailDiv.appendChild(el);
+                }
+            });
+
+            taskDiv.addEventListener("click", (e) => {
+                e.stopPropagation(); // Don't toggle questDiv
+                taskDetailDiv.style.display = taskDetailDiv.style.display === "none" ? "block" : "none";
+            });
+
+            detailDiv.appendChild(taskDiv);
+            detailDiv.appendChild(taskDetailDiv);
+        });
+
+        questDiv.appendChild(detailDiv);
+
+        nameDiv.addEventListener("click", () => {
+            detailDiv.style.display = detailDiv.style.display === "none" ? "block" : "none";
+        });
+
+        quest_list.appendChild(questDiv);
+		
+    });
+}
+
+// Helper function to format conditions
+function formatCondition(condition) {
+    const conditionType = Object.keys(condition)[0];
+    const conditionValue = condition[conditionType];
+    
+    switch(conditionType) {
+        case "enter":
+            return `Enter ${conditionValue}`;
+        case "clear":
+            return `Clear ${conditionValue}`;
+        case "requires_item":
+            return `Requires ${conditionValue} x ${condition.count || 1}`;
+        default:
+            return JSON.stringify(condition);
+    }
+}
+
+// Helper function to format rewards
+function formatReward(reward) {
+    if (!reward) return "";
+    
+    switch(reward.type) {
+        case "hero_xp": return `${reward.value} Hero XP`;
+        case "skill_xp": return `${reward.value} ${reward.skill} Skill XP`;
+        case "item": return `Item (ID: ${reward.item_name})`;
+        case "unlock": return `Unlock: ${reward.value}`;
+        default: return JSON.stringify(reward);
+    }
+}
+
+// Helper function to format a single condition
+function formatSingleCondition(condition) {
+    const conditionType = Object.keys(condition)[0];
+    const conditionValue = condition[conditionType];
+    
+    switch(conditionType) {
+        case "enter":
+            return `Enter ${conditionValue}`;
+        case "clear":
+            return `Clear ${conditionValue}`;
+        case "requires_item":
+            return `Requires ${conditionValue} x ${condition.count || 1}`;
+        default:
+            return JSON.stringify(condition);
+    }
+}
+
+// Format task conditions - handles both single conditions and "any" conditions
+function formatTaskConditions(conditions) {
+    if (!conditions) return "";
+
+    // Handle "any" conditions (multiple alternatives)
+    if (conditions.any) {
+        const anyConditions = conditions.any;
+        const conditionEntries = Object.entries(anyConditions);
+        
+        if (conditionEntries.length === 0) return "";
+        
+        // For single condition in "any", just display it directly
+        if (conditionEntries.length === 1) {
+            const [key, value] = conditionEntries[0];
+            return "Condition: " + formatSingleCondition({[key]: value});
+        }
+        
+        // For multiple conditions, join with OR
+        const formattedConditions = conditionEntries.map(([key, value]) => {
+            return formatSingleCondition({[key]: value});
+        });
+        return "Conditions: " + formattedConditions.join(" OR ");
+    }
+    
+    // Handle direct single condition
+    const conditionType = Object.keys(conditions)[0];
+    return "Condition: " + formatSingleCondition({[conditionType]: conditions[conditionType]});
+}
+
+// Format task rewards
+function formatTaskRewards(rewards) {
+    if (!rewards || Object.keys(rewards).length === 0) return "";
+    
+    // Handle single reward
+    if (rewards.type) {
+        return "Rewards: " + formatReward(rewards);
+    }
+    
+    // Handle multiple rewards (if structured differently)
+    return "Rewards: " + JSON.stringify(rewards); // fallback
+}
+
+// Function to add alert to quests button if not active
+function addQuestAlertIfNeeded() {
+  const questsButton = document.getElementById("journal_show_quests");
+  
+  // Only add alert if button exists and isn't active
+  if (questsButton && !questsButton.classList.contains("active_selection_button")) {
+    questsButton.classList.add("quests-alert");
+  }
+}
+
+// Call this in your populate quests function when new quests arrive
+// addQuestAlertIfNeeded();
+
+// Listener to remove alert when clicked
+document.getElementById("journal_show_quests").addEventListener("click", function() {
+  this.classList.remove("quests-alert");
+  
+  // Call your existing showQuests function if needed
+  showQuests();
+});
+
+
 function clear_skill_list(){
     while(skill_list.firstChild) {
         skill_list.removeChild(skill_list.lastChild);
@@ -4774,4 +5050,6 @@ export {
     update_location_action_finish_button,
 	update_ally_attack_bar,
 	update_party_list,
+	populateQuestList,
+	addQuestAlertIfNeeded,
 }

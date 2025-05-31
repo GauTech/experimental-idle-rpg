@@ -8,6 +8,7 @@ import { skills } from "./skills.js";
 import { traders } from "./traders.js";
 import { allies } from "./allies.js";
 import { magics } from "./magic.js";
+import { quests } from "./quests.js";
 
 function Verify_Game_Objects() {
     let results = [0,0];

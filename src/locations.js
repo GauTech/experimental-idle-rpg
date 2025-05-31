@@ -27,6 +27,7 @@ class Location {
                 background_noises = [],
                 getBackgroundNoises,
                 crafting = null,
+				on_first_visit = [],
                 tags = {},
 				ambient_damage = 0,
 				ambient_damage_type = null,
@@ -56,6 +57,10 @@ class Location {
         }
         this.light_level = light_level; //not really used for this type
         this.crafting = crafting;
+		this.on_first_visit = on_first_visit;
+		/*
+			on_first_visit = [{type: QuestStart, id: quest_name},{type: QuestUpdate, id: quest_name}, {type: TaskUpdate, quest_id: quest_name, task_id: task_name}],
+		*/
         this.tags = tags;
         this.tags["Safe zone"] = true;
 		this.ambient_damage = ambient_damage;
@@ -1569,6 +1574,7 @@ locations["Sewer Depths"].connected_locations.push({location: locations["Deep Se
         traders: ["peddler","smith trader"],
         name: "Sanctuary",
 		is_unlocked: false, 
+		on_first_visit: [{type: "QuestUpdate", id: "Wanderer's Rest", completion: "y", updates: [],}],
 		background_noises: ["Fresh bread. Get your fresh bread! And less than fresh bread too.", "Another one disappeared in the depths this week. Shame.", "*You hear the hammering of iron.*" ],
         sleeping: {
             text: "Rest in a vacant home",

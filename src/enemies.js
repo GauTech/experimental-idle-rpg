@@ -1401,13 +1401,13 @@ enemy_templates["Rot Warden"] = new Enemy({
     enemy_templates["Time Demon"] = new Enemy({
         name: "Time Demon", 
         description: "A horror from beyond time and space. Its designs are unfathomable.",
-		xp_value: 99999, 
+		xp_value: 1000, 
         rank: 8,
         size: "large",
-        tags: ["spirti"],
+        tags: ["spirt"],
         stats: {health: 8888, attack: 777, agility: 666, dexterity: 555, magic: 444, intuition: 333, attack_speed: 2, defense: 40}, //stat_total = 2560 (discount atk speed, HP/10)
         loot_list: [
-            {item_name: "Dragon Bone", chance: 0.6},
+            {item_name: "Demonic Essence", chance: 0.6},
         ],
     });
 
