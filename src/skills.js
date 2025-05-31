@@ -1497,6 +1497,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                 base_xp_cost: 200,
                                 category: "Activity",
                                 max_level: 30, 
+								max_level_coefficient: 2,
                                 is_unlocked: false,
                                 visibility_treshold: 0,
                                 rewards: {
@@ -1565,7 +1566,18 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                             }
                                         }
                                     }
-                                }
+                                },
+								    get_effect_description: ()=> {
+							  let value = skills["Meditation"].get_coefficient("multiplicative");
+							  if(value >= 100) {
+								  value = Math.round(value);
+							  } else if(value >= 10 && value < 100) {
+								  value = Math.round(value*10)/10; 
+							  } else {
+								  value = Math.round(value*100)/100;
+							  }
+							  return `Multiplies intuition by ${value}`;
+							},
                             });                            
     skills["Running"] = new Skill({skill_id: "Running",
                                   description: "Great way to improve the efficiency of the body",

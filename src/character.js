@@ -225,7 +225,7 @@ class Hero extends InventoryHaver {
 					gains += `<br>Magic increased by ${gained_mgc}`;
 			}
 				 if(gained_mana > 0) {
-					gains += `<br>Maanaincreased by ${gained_mana}`;
+					gains += `<br>Mana increased by ${gained_mana}`;
 			}
 
 			gains += `<br>Skill xp gains increased by ${Math.round((gained_skill_xp_multiplier-1)*100)}%`;
@@ -468,6 +468,7 @@ character.stats.add_all_skill_level_bonus = function() {
 		character.stats.flat.skills.max_mana = skills["Mana Expansion"].get_level_bonus();
 		character.stats.flat.skills.magic = skills["Magic Mastery"].get_level_bonus() + skills["Spellblade Stance Mastery"].get_level_bonus() + skills["Archmage Stance Mastery"].get_level_bonus();
         character.stats.multiplier.skills.stamina_efficiency = skills["Running"].get_coefficient("multiplicative");
+		character.stats.multiplier.skills.intuition = skills["Meditation"].get_coefficient("multiplicative");
 		character.stats.multiplier.skills.mana_efficiency = skills["Mana Control"].get_coefficient("multiplicative");
 		character.stats.multiplier.skills.magic = skills["Magic Potency"].get_coefficient("multiplicative");
         character.stats.multiplier.skills.strength = skills["Weightlifting"].get_coefficient("multiplicative") *(skills["Breathing"].get_coefficient("multiplicative") || 1) * (skills["Swimming"].get_coefficient("multiplicative") || 1) * (skills["Climbing"].get_coefficient("multiplicative") || 1);
