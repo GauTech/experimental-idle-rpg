@@ -1911,6 +1911,31 @@ item_templates["Chitin Shard"] = new Junk({
     });	
 })();
 
+(function(){
+	    item_templates["Diamond"] = new OtherItem({
+        name: "Diamond", 
+        description: "A rare shining jewel found whilst mining.", 
+        value: 1000,
+        saturates_market: false,
+    });
+	    item_templates["Golden Apple"] = new OtherItem({
+        name: "Golden Apple", 
+        description: "A rare prize found whilst woodcutting.", 
+        value: 1000,
+        saturates_market: false,
+    });	
+		    item_templates["Succulent Shark"] = new OtherItem({
+        name: "Succulent Shark", 
+        description: "A rare prize found whilst fishing.", 
+        value: 1000,
+        saturates_market: false,
+    });
+
+})();
+
+
+
+
 //processed materials
 (function(){
     item_templates["Low quality iron ingot"] = new Material({

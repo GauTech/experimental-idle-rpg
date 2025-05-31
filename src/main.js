@@ -5216,6 +5216,38 @@ function update() {
                         const {resources} = current_activity.gained_resources;
 const base_skill_names = activities[current_activity.activity_name].base_skills_names || [];
 
+let rare_loot = [];
+if (Math.random() < 0.0001) {
+    let rareItemName;
+    console.log(base_skill_names);
+    switch(base_skill_names[0]) {
+        case "Woodcutting":
+            rareItemName = "Golden Apple";
+            break;
+        case "Mining":
+            rareItemName = "Diamond";
+            break;
+		case "Fishing":
+            rareItemName = "Succulent Shark";
+            break;
+        default: 
+            
+            break;
+    } 
+    
+    // Only push to rare_loot if we have a valid item name
+    if (rareItemName) {
+        rare_loot.push({ "item": getItem(item_templates[rareItemName]), "count": 1 });
+    }
+}
+
+if (rare_loot.length > 0) {
+    log_rare_loot(rare_loot);
+    add_to_character_inventory(rare_loot);
+}
+
+
+
 for (let i = 0; i < resources.length; i++) {
     const resource = resources[i];
 

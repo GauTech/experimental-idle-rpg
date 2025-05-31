@@ -3649,7 +3649,7 @@ locations["Forest"].activities = {
             activity_name: "woodcutting",
             infinite: true,
             starting_text: "Gather some wood from nearby trees",
-            skill_xp_per_tick: 5,
+            skill_xp_per_tick: 1,
             is_unlocked: false,
             gained_resources: {
                 resources: [
@@ -3686,7 +3686,7 @@ locations["Dark Woods"].activities = {
             activity_name: "woodcutting",
             infinite: true,
             starting_text: "Gather some wood from nearby trees",
-            skill_xp_per_tick: 5,
+            skill_xp_per_tick: 20,
             is_unlocked: true,
        gained_resources: {
                 resources: [
