@@ -2412,7 +2412,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
         max_level: 20,
 		max_level_bonus: 0.8,
 		get_effect_description: ()=> {
-            return `Increases Parrying chance by ${(skills["Parrying"].get_level_bonus())}`;
+            return `Increases Parrying chance by ${(skills["Parrying"].get_level_bonus().toPrecision(3))}`;
         },
     });
     

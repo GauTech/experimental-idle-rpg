@@ -1161,6 +1161,7 @@
 						// Update button state
 						rareButton.classList.remove('sparkle');
 						rareButton.classList.add('active');
+						
 					} else {
 						// Exiting rare mode - restore original states
 						document.documentElement.style.setProperty('--message_combat_display', originalFilterStates.combat || 'inline-block');
@@ -1172,6 +1173,8 @@
 						
 						// Update button state
 						rareButton.classList.remove('active');
+						const messageLogDiv = document.getElementById('message_box_div');
+						messageLogDiv.scrollTop = messageLogDiv.scrollHeight;
 					}
 				}
             
