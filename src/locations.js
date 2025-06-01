@@ -393,6 +393,7 @@ class LocationActivity{
                  skill_xp_per_tick = 1,
                  unlock_text,
                  gained_resources,
+				 activity_cost,
                  require_tool = false,
                  }) 
     {
@@ -413,7 +414,7 @@ class LocationActivity{
         this.availability_time = availability_time; //if not infinite -> hours between which it's available
         
         this.skill_xp_per_tick = skill_xp_per_tick; //skill xp gained per game tick (default -> 1 in-game minute)
-
+		this.activity_cost = activity_cost; //if false, can be started without tool equipped
         this.require_tool = require_tool; //if false, can be started without tool equipped
 
         this.gained_resources = gained_resources; 
@@ -1593,6 +1594,16 @@ locations["Sewer Depths"].connected_locations.push({location: locations["Deep Se
     });
 	
 locations["Backstreets"].connected_locations.push({location: locations["Sanctuary"]});
+
+locations["Training Grounds"] = new Location({ 
+        connected_locations: [{location: locations["Sanctuary"]}],
+        description: "An area used by the Sanctuary inhabitants for sparring and training.",
+        name: "Training Grounds",
+		dialogues: ["Instructor"],
+        is_unlocked: true,
+    });
+	
+locations["Sanctuary"].connected_locations.push({location: locations["Training Grounds"]});
 
 locations["Courtyard"] = new Location({ 
         connected_locations: [{location: locations["Backstreets"]}],
@@ -3334,6 +3345,45 @@ locations["Time Demon"] = new Challenge_zone({
             skill_xp_per_tick: 1,
             is_unlocked: true,
         }),
+	        "climbing2": new LocationActivity({
+            activity_name: "climbing",
+            infinite: true,
+            starting_text: "Try tricky climbing.",
+            skill_xp_per_tick: 20,
+            is_unlocked: false,
+			activity_cost: {
+					type: "stamina",  // "money" | "health" | "stamina" | "mana"
+					amount: 14
+				},
+			unlock_text: "Unlocked Tricky Climbing at The Tower",
+        }),
+		
+    };
+	
+	locations["Training Grounds"].activities = {
+  	        "running": new LocationActivity({
+            activity_name: "running",
+            infinite: true,
+            starting_text: "Athletics training.",
+            skill_xp_per_tick: 100,
+            is_unlocked: false,
+			activity_cost: {
+					type: "money",  // "money" | "health" | "stamina" | "mana"
+					amount: 20
+				},
+        }),
+		  	        "weightlifting": new LocationActivity({
+            activity_name: "weightlifting",
+            infinite: true,
+            starting_text: "Strength training.",
+            skill_xp_per_tick: 100,
+            is_unlocked: false,
+			activity_cost: {
+					type: "money",  // "money" | "health" | "stamina" | "mana"
+					amount: 20
+				},
+        }),
+		
     };
 
 	locations["Ancient Bridge"].activities = {
@@ -3534,6 +3584,18 @@ locations["Docks"].activities = {
             skill_xp_per_tick: 1,
             is_unlocked: true,
         }),
+			        "swimming2": new LocationActivity({
+            activity_name: "swimming",
+            infinite: true,
+            starting_text: "Advanced swimming.",
+            skill_xp_per_tick: 20,
+            is_unlocked: false,
+			unlock_text: "Unlocked Advanced Swimming at Docks",
+								activity_cost: {
+				type: "stamina",  // "money" | "health" | "stamina" | "mana"
+				amount: 14
+			},
+        }),
     };
     locations["Forest road"].activities = {
         "running": new LocationActivity({
@@ -3639,6 +3701,7 @@ locations["Motherlode"].activities = {
                 skill_required: [20, 40],
                 scales_with_skill: true,
             },
+	
             unlock_text: "After clearing out the enemies you can now mine resources",
         }),
     };	
@@ -3670,12 +3733,12 @@ locations["Forest"].activities = {
             is_unlocked: false,
             gained_resources: {
                 resources: [
-                    {name: "Oneberry", ammount: [[1,1], [1,1]], chance: [0.1, 0.5]},
-                    {name: "Golmoon leaf", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]},
+                    {name: "Oneberry", ammount: [[1,1], [1,1]], chance: [0.7, 1.5]},
+                    {name: "Golmoon leaf", ammount: [[1,1], [1,1]], chance: [0.2, 1]},
                     {name: "Belmart leaf", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]}
                 ], 
-                time_period: [120, 45],
-                skill_required: [0, 10],
+                time_period: [20, 10],
+                skill_required: [0, 20],
                 scales_with_skill: true,
             },
             require_tool: false,

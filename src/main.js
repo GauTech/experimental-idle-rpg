@@ -94,6 +94,8 @@ const global_flags = {
 	is_woodcutting_level20: false,
 	is_herbalism_level20: false,
 	is_fishing_level20: false,
+	is_climbing_level10: false,
+	is_swimming_level10: false,
 };
 const flag_unlock_texts = {
     is_gathering_unlocked: "You have gained the ability to gather new materials!",
@@ -1795,6 +1797,15 @@ function cast_magic(magicId, is_auto_cast = false) {
     }
 });
 
+     if(current_enemies != null && current_enemies.filter(enemy => enemy.is_alive).length == 0) { //set next loop if there's still an enemy left;
+                current_location.enemy_groups_killed += 1;
+                if(current_location.enemy_groups_killed > 0 && current_location.enemy_groups_killed % current_location.enemy_count == 0) {
+                    get_location_rewards(current_location);
+                }
+                document.getElementById("enemy_count_div").children[0].children[1].innerHTML = current_location.enemy_count - current_location.enemy_groups_killed % current_location.enemy_count;
+        
+                set_new_combat();
+	 }
     }
 
     // Handle self_effect spells (non-combat)
@@ -2533,7 +2544,7 @@ function do_ally_combat_action(ally_index) {
                 }
                 document.getElementById("enemy_count_div").children[0].children[1].innerHTML = current_location.enemy_count - current_location.enemy_groups_killed % current_location.enemy_count;
         
-                set_new_combat();;
+                set_new_combat();
             } 
 }
 
@@ -3053,6 +3064,17 @@ function perform_counterattack(attacker) {
 	add_xp_to_skill({skill: skills["Counterattack"], xp_to_add: attack_damage})
 	do_character_combat_action({target: attacker, attack_power: attack_damage, magic_power: attack_damage, magic_name: "Counterattack"});
 	log_message(character.name + " performed counterattack", "hero_missed");
+	
+	
+	     if(current_enemies != null && current_enemies.filter(enemy => enemy.is_alive).length == 0) { //set next loop if there's still an enemy left;
+                current_location.enemy_groups_killed += 1;
+                if(current_location.enemy_groups_killed > 0 && current_location.enemy_groups_killed % current_location.enemy_count == 0) {
+                    get_location_rewards(current_location);
+                }
+                document.getElementById("enemy_count_div").children[0].children[1].innerHTML = current_location.enemy_count - current_location.enemy_groups_killed % current_location.enemy_count;
+        
+                set_new_combat();
+		 }
 	}
 }
 
@@ -3377,6 +3399,18 @@ if(skill.skill_id === "Herbalism" && skill.current_level > 19){
 }
 if(skill.skill_id === "Fishing" && skill.current_level > 19){
 	global_flags.is_fishing_level20 = true;
+}
+
+if(skill.skill_id === "Climbing" && skill.current_level > 9 && global_flags.is_climbing_level10 == false){
+	global_flags.is_climbing_level10 = true;
+	unlock_activity({location: locations["Tower"].name, 
+                            activity: locations["Tower"].activities["climbing2"]});
+}
+
+if(skill.skill_id === "Swimming" && skill.current_level > 9 && global_flags.is_swimming_level10 == false){
+	global_flags.is_swimming_level10 = true;
+	unlock_activity({location: locations["Docks"].name, 
+                            activity: locations["Docks"].activities["swimming2"]});
 }
 
 if(skill.category === "Weapon" && skill.current_level > 14){
@@ -5319,7 +5353,64 @@ function update() {
             }
 
             if(current_activity) { //in activity
+			
+				if (current_activity.activity_cost) {
+				const cost = current_activity.activity_cost;
+				const type = cost.type;
+				const amount = cost.amount;
+				let can_afford = true;
+				let effective_cost = amount;
+				let use_efficiency = true;
 
+				switch (type) {
+					case "money":
+						can_afford = character.money >= amount;
+						break;
+					case "health":
+						can_afford = character.stats.full.health >= amount;
+						break;
+					case "stamina":
+						effective_cost = amount / ((use_efficiency * character.stats.full.stamina_efficiency) || 1);
+						can_afford = character.stats.full.stamina >= effective_cost;
+						break;
+					case "mana":
+						effective_cost = amount / ((use_efficiency * character.stats.full.mana_efficiency) || 1);
+						can_afford = character.stats.full.mana >= effective_cost;
+						break;
+					default:
+						console.warn("Unknown activity cost type:", type);
+						can_afford = true; // Failsafe: allow activity if type is unknown
+				}
+
+					if (!can_afford) {
+					end_activity(); // ends current activity
+					// Skip remaining activity handling, but allow regen and rest of tick to continue
+				} else {
+					// Pay the cost
+					switch (type) {
+						case "money":
+							character.money -= amount;
+							update_displayed_money();
+							break;
+						case "health":
+							character.stats.full.health -= amount;
+							update_displayed_health();
+							break;
+						case "stamina":
+							character.stats.full.stamina -= effective_cost;
+							update_displayed_stamina();
+							break;
+						case "mana":
+							character.stats.full.mana -= effective_cost;
+							update_displayed_mana();
+							break;
+					}
+				}
+				}
+			}
+			
+			
+			if(current_activity) {
                 //add xp to all related skills
                 if(activities[current_activity.activity_name].type !== "GATHERING"){
                     for(let i = 0; i < activities[current_activity.activity_name].base_skills_names?.length; i++) {
@@ -5344,7 +5435,7 @@ function update() {
                         const items = [];
 
                         const {resources} = current_activity.gained_resources;
-const base_skill_names = activities[current_activity.activity_name].base_skills_names || [];
+				const base_skill_names = activities[current_activity.activity_name].base_skills_names || [];
 
 let rare_loot = [];
 if (Math.random() < 0.0001) {

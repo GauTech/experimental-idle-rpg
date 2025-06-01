@@ -697,6 +697,21 @@ dialogues["Fisherman"] = new Dialogue({
         }
     });
 	
+dialogues["Instructor"] = new Dialogue({
+        name: "Instructor",
+        textlines: {
+            "Hello": new Textline({ 
+                name: "Hello",
+                text: "Alright you maggots, you know the drill. Pay the fee and I'll forge you into proper warriors. Course, basic traning comes first.",
+                unlocks: {
+					//textlines: [{dialogue: "Instuctor", lines: [""]}],
+					activities: [{location:"Training Grounds", activity:"weightlifting"}, {location:"Training Grounds",activity:"running"}],
+                },
+                //locks_lines: ["Hello"],
+            }),
+		},
+  });
+	
 dialogues["Mad Miner"] = new Dialogue({
         name: "Mad Miner",
         textlines: {
