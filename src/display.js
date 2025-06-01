@@ -3067,10 +3067,16 @@ function updateCombatDisplays(alliesInParty) {
 		return // can also call this function for turning these displays off
 	}
 	
+	
+	
 
-
-    const combat_div = document.getElementById("combat_div");
+    const combat_div = document.getElementById("character_combat_management");
     const combatDisplayStyle = getComputedStyle(combat_div).getPropertyValue('display').trim();
+		if (combatDisplayStyle == 'none' ) {
+        allyCombatManagement.style.display = 'none';
+		return
+	}
+
 	
 
     
@@ -3106,9 +3112,9 @@ function updateCombatDisplays(alliesInParty) {
                         const statElements = statsContainer.querySelectorAll('.ally_stat, .ally_power');
 
                         if (statElements.length >= 3) {
-                            statElements[0].textContent = `Atk Pwr: ${(Math.round(allyData.attack_power*(skills["Leadership"].get_coefficient("multiplicative"))*100)/100)}`;
+                            statElements[0].textContent = `Atk Pwr: ${(Math.round(allyData.attack_power*(skills["Leadership"].get_coefficient("multiplicative"))*10))/10}`;
                             statElements[1].textContent = `Atk Spd: ${allyData.attack_speed}`;
-                            statElements[2].textContent = `AP: ${(Math.round(allyData.AP*(skills["Leadership"].get_coefficient("multiplicative"))*100)/100)}`;
+                            statElements[2].textContent = `AP: ${(Math.round(allyData.AP*(skills["Leadership"].get_coefficient("multiplicative"))*10))/10}`;
                         }
                     }
                 }

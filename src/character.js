@@ -120,11 +120,22 @@ class Hero extends InventoryHaver {
 						rod: null,
                 };
                 this.money = 0;
-                this.xp = {
-                        current_level: 0, total_xp: 0, current_xp: 0, xp_to_next_lvl: base_xp_cost, 
-                        total_xp_to_next_lvl: base_xp_cost, base_xp_cost: base_xp_cost, xp_scaling: 1.4,
-                }
+                       this.xp = {
+				current_level: 0,
+				total_xp: 0,
+				current_xp: 0,
+				xp_to_next_lvl: base_xp_cost, 
+				total_xp_to_next_lvl: base_xp_cost,
+				base_xp_cost: base_xp_cost,
+				
+				get xp_scaling() {
+					const bonus = skills["Limit Breaking"].get_level_bonus?.() ?? 0;
+					const raw_scaling = 1.6 - bonus;
+					return Math.max(1.01, raw_scaling); // Avoid division by zero
+				}
+			};
         }
+		
         add_xp({xp_to_add, use_bonus = true}) {
                 if(use_bonus) {
                         xp_to_add *= (character.xp_bonuses.total_multiplier.hero || 1) * (character.xp_bonuses.total_multiplier.all || 1);
@@ -236,6 +247,22 @@ class Hero extends InventoryHaver {
 
 const character = new Hero();
 
+character.recalculate_xp_thresholds = function () {
+    const scaling = this.xp.xp_scaling; // Use getter
+    const lvl = this.xp.current_level;
+
+    this.xp.total_xp_to_next_lvl = Math.round(
+        this.xp.base_xp_cost * (1 - scaling ** (lvl + 1)) / (1 - scaling)
+    );
+
+    const total_xp_to_current_lvl = Math.round(
+        this.xp.base_xp_cost * (1 - scaling ** lvl) / (1 - scaling)
+    );
+
+    this.xp.xp_to_next_lvl = this.xp.total_xp_to_next_lvl - total_xp_to_current_lvl;
+    this.xp.current_xp = this.xp.total_xp - total_xp_to_current_lvl;
+};
+
 /**
  * gets bonuses to stats based on current level and level passed as param
  * @param {Number} level 
@@ -305,7 +332,7 @@ character.get_level_bonus = function (level) {
                 gains += `<br>Magic increased by ${gained_mgc}`;
         }
 			 if(gained_mana > 0) {
-                gains += `<br>Maanaincreased by ${gained_mana}`;
+                gains += `<br>Mana increased by ${gained_mana}`;
         }
 
         gains += `<br>Skill xp gains increased by ${Math.round((gained_skill_xp_multiplier-1)*100)}%`;

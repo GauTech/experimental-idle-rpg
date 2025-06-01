@@ -2955,11 +2955,12 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                 names: {0: "Limit Breaking"}, 
                                 category: "Ascension",
                                 description: "Defy your own limits", 
-                                max_level_coefficient: 10,
+                                max_level_bonus: 0.3,
+								max_level: 20,
                                 base_xp_cost: 60,
 								xp_scaling: 1.4,
                                 get_effect_description: ()=> {
-                                    return ;
+                                    return `Reduces scaling factor of Hero XP requirements by ${skills["Limit Breaking"].get_level_bonus()}`;
                                 }});
 })();
 

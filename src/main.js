@@ -3244,7 +3244,9 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
         if(typeof message !== "undefined"){ 
         //not undefined => levelup happened and levelup message was returned
             leveled = true;
-
+				if(skill.skill_id === "Limit Breaking"){
+		character.recalculate_xp_thresholds();
+	}
             update_displayed_skill_bar(skill, true);
 
             if(typeof should_info === "undefined" || should_info)
@@ -3323,9 +3325,11 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
         //
     }
 	
-	update_displayed_droprate();
-    return leveled;
 	
+	update_displayed_droprate();
+	
+    return leveled;
+
 }
 
 function check_skill_level_vs_flags(skill){
@@ -3773,6 +3777,7 @@ function use_item(item_key) {
         open_loot_chest(item_key);
         return;
     }
+	
 
     const item_effects = item.effects;
     const gluttony_value = item.gluttony_value;
@@ -4350,7 +4355,7 @@ global_battle_state = save_data.global_battle_state || {};
     character.money = (save_data.character.money || 0) * ((is_from_before_eco_rework == 1)*10 || 1);
     update_displayed_money();
 
-    add_xp_to_character(save_data.character.xp.total_xp, false);
+    
 	
 	    Object.keys(save_data.favourite_consumables || {}).forEach(key => {
         favourite_consumables[key] = true;
@@ -4370,7 +4375,10 @@ global_battle_state = save_data.global_battle_state || {};
                 console.warn(`Skill "${key}" couldn't be found!`);
         }
     }); //add xp to skills
-
+	
+	character.recalculate_xp_thresholds();
+	add_xp_to_character(save_data.character.xp.total_xp, false);
+	
     if(save_data.books) {
         let total_book_xp = 0;
         const literacy_xp = save_data.skills["Literacy"].total_xp;
@@ -5011,6 +5019,7 @@ if (save_data.current_party) {
     }
 
     update_displayed_time();
+	
 	
 } //core function for loading
 
