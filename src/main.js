@@ -182,6 +182,8 @@ const faved_stances = {};
 let active_quests = [];
 let finished_quests = [];
 
+let hidden_skills =[];
+
 const favourite_consumables = {};
 
 let magic_cooldowns = {}; // { [magicId]: remainingTicks }
@@ -3185,7 +3187,7 @@ function use_mana(num = 1, use_efficiency = true) {
  * @param {Number} xp_to_add 
  * @param {Boolean} should_info 
  */
-function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = true, add_to_parent = true})
+function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = true, add_to_parent = true, use_pairing = true})
 {
     let leveled = false;
     if(xp_to_add == 0) {
@@ -3203,6 +3205,9 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
             xp_to_add *= skill.get_parent_xp_multiplier();
         }
     }
+	
+	
+
     
     const prev_name = skill.name();
     const was_hidden = skill.visibility_treshold > skill.total_xp;
@@ -3219,8 +3224,34 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
             add_xp_to_skill({skill: skills[skill.parent_skill], xp_to_add: xp_for_parent, should_info, use_bonus: false, add_to_parent});
         }
     }
-
+	
+	if(use_pairing === true){
+					// Add XP to other paired skills
+			const paired_set = get_paired_set(skill.skill_id);
+		if (paired_set && paired_set.size > 1) {
+			for (let other_id of paired_set) {
+				if (other_id !== skill.skill_id) {
+					let other_skill = skills[other_id];
+					// Add XP only if not already added in this call
+					if (other_skill.total_xp < skill.total_xp) {
+						add_xp_to_skill({
+							skill: other_skill,
+							xp_to_add: xp_to_add,
+							should_info: false,
+							use_bonus: false,
+							add_to_parent: false
+						});
+					}
+				}
+			}
+			// Sync all paired skills to the highest XP value
+			sync_paired_skills_to_highest(Array.from(paired_set));
+			
+		}
+	}
     const is_visible = skill.visibility_treshold <= skill.total_xp;
+	
+
 
     if(was_hidden && is_visible) 
     {
@@ -3325,6 +3356,7 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
         //
     }
 	
+
 	
 	update_displayed_droprate();
 	
@@ -3347,8 +3379,71 @@ if(skill.skill_id === "Fishing" && skill.current_level > 19){
 	global_flags.is_fishing_level20 = true;
 }
 
+if(skill.category === "Weapon" && skill.current_level > 14){
 
+			if(skills["Axes"].current_level >14 && skills["Swords"].current_level >14 && skills["Spears"].current_level >14 && skills["Hammers"].current_level >14 && skills["Daggers"].current_level >14 && skills["Unarmed"].current_level >14 && skills["Integrated Weapons Mastery"].current_level === 0 ){
+			log_message("Skill EVOLUTION. Axe Combat, Hammer Combat, Dagger Combat, Spearmanship, Swordsmanship, Unarmed and Weapons Mastery combined into Integrated Weapons Mastery","skill_evolution");
+		paired_skill_sets.push(new Set(["Axes","Swords","Spears","Hammers","Daggers","Unarmed","Integrated Weapons Mastery"]))
+					
+		const weaponSkills = ["Axes", "Swords", "Spears", "Hammers", "Daggers", "Unarmed", "Weapon mastery"];
+			weaponSkills.forEach(skill => {
+				skills[skill].is_hidden = true;
+				update_displayed_skill_bar(skills[skill], true);
+				hidden_skills.push(skill);
+			});
+		
+		const weapon_mastery_xp = skills["Weapon mastery"].total_xp;
+		add_xp_to_skill({skill: skills["Integrated Weapons Mastery"], xp_to_add: weapon_mastery_xp, should_info: true, add_to_parent: false, use_bonus: false, use_pairing: false});
+		
+						}
+	}
+	
+if(skill.skill_id === "Cold resistance" || "Heat resistance" && skill.current_level > 10){
+
+			if(skills["Cold resistance"].current_level >10 && skills["Heat resistance"].current_level >10 && skills["Thermal resistance"].current_level === 0 ){
+			log_message("Skill EVOLUTION. Cold resistance and Heat resistance combined into Thermal resistance","skill_evolution");
+		paired_skill_sets.push(new Set(["Cold resistance", "Heat resistance","Thermal resistance"]))
+					
+		const tempSkills = ["Cold resistance", "Heat resistance"];
+			tempSkills.forEach(skill => {
+				skills[skill].is_hidden = true;
+				update_displayed_skill_bar(skills[skill], true);
+				hidden_skills.push(skill);
+			});
+		
+		const temp_mastery_xp = skills["Cold resistance"].total_xp;
+		add_xp_to_skill({skill: skills["Thermal resistance"], xp_to_add: temp_mastery_xp, should_info: true, add_to_parent: false, use_bonus: false, use_pairing: false});
+		
+						}
+	}
+	
 }
+
+const paired_skill_sets = [
+
+];
+
+function get_paired_set(skill_id) {
+    return paired_skill_sets.find(set => set.has(skill_id));
+}
+
+function get_other_paired_skills(skill_id) {
+    const set = get_paired_set(skill_id);
+    if (!set) return [];
+    return Array.from(set).filter(id => id !== skill_id);
+}
+
+function sync_paired_skills_to_highest(skill_ids) {
+    let highest_xp = Math.max(...skill_ids.map(id => skills[id].total_xp));
+    for (let id of skill_ids) {
+        if (skills[id].total_xp < highest_xp) {
+            skills[id].total_xp = highest_xp;
+            check_skill_level_vs_flags(skills[id]); // Recheck level/unlocks
+			update_displayed_skill_bar(skills[id], true);
+        }
+    }
+}
+
 
 /**
  * adds xp to character, handles levelups
@@ -4206,6 +4301,8 @@ function create_save() {
 		save_data["active_quests"] = active_quests;
 		save_data["finished_quests"] = finished_quests;
 		save_data["visited_locations"] = visited_locations;
+		
+		save_data["hidden_skills"] = hidden_skills;
 			
 });
 
@@ -4361,20 +4458,44 @@ global_battle_state = save_data.global_battle_state || {};
         favourite_consumables[key] = true;
     });
 
+	hidden_skills = save_data.hidden_skills || [];
+	
+
     Object.keys(save_data.skills).forEach(function(key){ 
         if(key === "Literacy") {
             return; //done separately, for compatibility with older saves (can be eventually remove)
         }
-        if(skills[key] && !skills[key].is_parent){
-            if(save_data.skills[key].total_xp > 0) {
-                add_xp_to_skill({skill: skills[key], xp_to_add: save_data.skills[key].total_xp, 
-                                    should_info: false, add_to_parent: true, use_bonus: false
-                                });
-            }
-        } else if(save_data.skills[key].total_xp > 0) {
-                console.warn(`Skill "${key}" couldn't be found!`);
+			  if (skills[key] && !skills[key].is_parent) {
+				// Restore hidden state
+				if (hidden_skills.includes(key)) {
+					skills[key].is_hidden = true;
+					skills[key].parent_skill = null;
+				} else {
+					skills[key].is_hidden = false;
+				}
+
+				// Restore XP
+				if (save_data.skills[key].total_xp > 0) {
+					add_xp_to_skill({
+						skill: skills[key],
+						xp_to_add: save_data.skills[key].total_xp,
+						should_info: false,
+						add_to_parent: true,
+						use_bonus: false,
+						use_pairing: false
+					});
+				}
+
+				// Reflect in UI
+				
+			} else if (save_data.skills[key].total_xp > 0) {
+				console.warn(`Skill "${key}" couldn't be found!`);
+
         }
     }); //add xp to skills
+	
+	update_displayed_skill_description(skills["Integrated Weapons Mastery"])
+	update_displayed_skill_description(skills["Thermal resistance"])
 	
 	character.recalculate_xp_thresholds();
 	add_xp_to_character(save_data.character.xp.total_xp, false);

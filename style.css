@@ -146,7 +146,7 @@ body {
     100% { text-shadow: 0 0 2px #fff; }
 }
 
- .message_victory, .message_quest_completed {
+ .message_victory, .message_quest_completed, .skill_evolution {
 	 color: green;
 	 font-weight: bold;
  }

@@ -629,6 +629,11 @@ function end_activity_animation() {
             group_to_add = "message_unlocks";
             message_count.message_unlocks += 1;
             break;
+			  case "skill_evolution":
+            class_to_add = "skill_evolution";
+            group_to_add = "message_unlocks";
+            message_count.message_unlocks += 1;
+            break;
         case "level_up":
             group_to_add = "message_unlocks";
             message_count.message_unlocks += 1;
@@ -1496,7 +1501,7 @@ function update_displayed_enemies() {
             let hit_chance = get_hit_chance(current_enemies[i].stats.dexterity * Math.sqrt(current_enemies[i].stats.intuition ?? 1), character.stats.full.evasion_points) / hero_evasion_chance_modifier;
 
             if(character.equipment["off-hand"]?.offhand_type === "shield") { //has shield
-				hit_chance = (get_hit_chance(current_enemies[i].stats.dexterity * Math.sqrt(current_enemies[i].stats.intuition ?? 1), (character.stats.full.evasion_points*(0.15+skills["Parrying"].get_level_bonus())))) / hero_evasion_chance_modifier;
+				hit_chance = (get_hit_chance(current_enemies[i].stats.dexterity * Math.sqrt(current_enemies[i].stats.intuition ?? 1), (character.stats.full.evasion_points*character.stats.full.block_chance*(0.15+skills["Parrying"].get_level_bonus())))) / hero_evasion_chance_modifier;
             }
 
             //enemies_div.children[i].children[0].children[1].innerHTML = `AP : ${Math.round(ap)} | EP : ${Math.round(ep)}`;
@@ -3134,9 +3139,6 @@ combat_switch.addEventListener('click', function() {
     updateCombatDisplays(current_party.length);
 });
 
-/*for (let i = 1; i <= 4; i++) {
-    document.getElementById(`ally${i}_combat_management`).innerHTML = createAllyCombatBlock(i);
-}*/
 
 function update_stat_description(stat) {
     let target;
@@ -3634,6 +3636,9 @@ function start_rereading_display(title) {
  * @param {Skill} skill 
  */
 function create_new_skill_bar(skill) {
+	if(skill.is_hidden === true){
+		return
+	}
     if(!skill_bar_divs[skill.category]) {
         skill_bar_divs[skill.category] = {};
 
@@ -3719,6 +3724,15 @@ function create_new_skill_bar(skill) {
 }
 
 function update_displayed_skill_bar(skill, leveled_up=true) {
+	
+		if (skill.is_hidden === true) {
+			const skill_div = skill_bar_divs?.[skill.category]?.[skill.skill_id];
+			if (skill_div) {
+				skill_div.remove(); // Remove it from the DOM
+				delete skill_bar_divs[skill.category][skill.skill_id]; // Clean up the reference
+			}
+			return;
+		}
     /*
     skill_bar divs: 
         skill -> children (1): 

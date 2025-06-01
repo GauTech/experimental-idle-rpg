@@ -40,6 +40,7 @@ class Skill {
                   rewards, 
                   xp_scaling = 1.8,
                   is_unlocked = true,
+				  is_hidden = false,
                   category,
                 }) 
     {
@@ -58,9 +59,9 @@ class Skill {
         this.current_xp = 0; // how much of xp_to_next_lvl there is currently
         this.total_xp = 0; // total collected xp, on loading calculate lvl based on this (so to not break skills if scaling ever changes)
         this.base_xp_cost = base_xp_cost; //xp to go from lvl 1 to lvl 2
-        this.visibility_treshold = visibility_treshold < base_xp_cost ? visibility_treshold : base_xp_cost; 
+        this.visibility_treshold = visibility_treshold < base_xp_cost ? visibility_treshold : base_xp_cost;  //xp needed for skill to become visible and to get "unlock" message; try to keep it less than xp needed for lvl
         this.is_unlocked = is_unlocked;
-        //xp needed for skill to become visible and to get "unlock" message; try to keep it less than xp needed for lvl
+		this.is_hidden = is_hidden; // hides the skill if true. Skill still has effects but isn't displayed.
         this.xp_to_next_lvl = base_xp_cost; //for display only
         this.total_xp_to_next_lvl = base_xp_cost; //total xp needed to lvl up
         this.get_effect_description = get_effect_description;
@@ -669,7 +670,7 @@ function format_skill_rewards(milestone){
                                             get_effect_description: ()=> {
                                                 return `Reduces environmental penalty in open areas by ${Math.round((1-((1-(skills["Spatial awareness"].current_level/skills["Spatial awareness"].max_level))))*1000)/10}%`;
                                             },
-                                            category: "Environmental",
+                                            category: "Resistance",
                                             rewards: {
                                                 milestones: {
                                                     3: {
@@ -695,7 +696,7 @@ function format_skill_rewards(milestone){
                                         skill_id: "Tight maneuvers", 
                                         names: {0: "Tight maneuvers"}, 
                                         description: "Learn how to fight in narrow environment, where there's not much space for dodging attacks", 
-                                        category: "Environmental",
+                                        category: "Resistance",
                                         get_effect_description: ()=> {
                                             return `Reduces environmental penalty in narrow areas by ${Math.round((1-((1-(skills["Tight maneuvers"].current_level/skills["Tight maneuvers"].max_level))))*1000)/10}%`;
                                         },
@@ -722,7 +723,7 @@ function format_skill_rewards(milestone){
                                     base_xp_cost: 600,
                                     xp_scaling: 1.9,
                                     max_level: 10,
-                                    category: "Environmental",
+                                    category: "Resistance",
                                     get_effect_description: () => {
                                         return `Reduces darkness penalty (except for 'pure darkness') by ${Math.round((1-((1-(skills["Night vision"].current_level/skills["Night vision"].max_level))))*1000)/10}%`;
                                     },
@@ -772,7 +773,7 @@ function format_skill_rewards(milestone){
                 base_xp_cost: 60,
                 xp_scaling: 2,
                 max_level: 20,
-                category: "Environmental",
+                category: "Resistance",
                 get_effect_description: () => {
                     return `Reduces extreme darkness penalty by ${Math.round((1-((1-(skills["Presence sensing"].current_level/skills["Presence sensing"].max_level))))*1000)/10}%`;
                 },
@@ -825,7 +826,7 @@ function format_skill_rewards(milestone){
         description: "Ability to survive and function in high temperatures",
         base_xp_cost: 100,
         max_level: 40,
-        category: "Environmental",
+        category: "Resistance",
         get_effect_description: ()=> {
             return `Reduces damage taken and status debuffs from heat. <br> <br>Reduces:<br>
 			Burn active effect damage by ${(Math.round((skills["Heat resistance"].current_level/skills["Heat resistance"].max_level)*100)*1000)/1000}%, <br> 
@@ -863,13 +864,32 @@ function format_skill_rewards(milestone){
             }
         }
     });
+	    skills["Thermal resistance"] = new Skill({
+        skill_id: "Thermal resistance",
+        names: {0: "Thermal resistance"},
+        description: "Ability to survive and function in extreme temperatures",
+        base_xp_cost: 100,
+        max_level: 40,
+        category: "Resistance",
+           get_effect_description: ()=> {
+            return `Reduces damage taken and status debuffs from cold and heat. <br> <br>Reduces:<br>
+			Freeze active effect effects by ${(Math.round((skills["Cold resistance"].current_level/skills["Cold resistance"].max_level)*100)*1000)/1000}%, <br> 
+			Burn active effect damage by ${(Math.round((skills["Heat resistance"].current_level/skills["Heat resistance"].max_level)*100)*1000)/1000}%, <br> 
+			Cold  & Heat (non-combat) damage by ${(Math.round((skills["Cold resistance"].current_level/skills["Cold resistance"].max_level)*100)*1000)/1000}%,<br>
+			Cold & Heat field (combat) damage by ${Math.round((1-((1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))**0.66667))*1000)/10}%,<br>
+			Cold & Heat (combat) penalties by ${Math.round((1-((1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))))*1000)/10}%,<br>
+			Retains milestone bonuses from constituent skills.`;
+        },
+	});
+	
+	
     skills["Cold resistance"] = new Skill({
         skill_id: "Cold resistance",
         names: {0: "Cold resistance"},
         description: "Ability to survive and function in low temperatures",
         base_xp_cost: 100,
         max_level: 40,
-        category: "Environmental",
+        category: "Resistance",
            get_effect_description: ()=> {
             return `Reduces damage taken and status debuffs from cold. <br> <br>Reduces:<br>
 			Freeze active effect effects by ${(Math.round((skills["Cold resistance"].current_level/skills["Cold resistance"].max_level)*100)*1000)/1000}%, <br> 
@@ -916,7 +936,7 @@ function format_skill_rewards(milestone){
         description: "Don't look at the sun, it's bad for your eyes",
         base_xp_cost: 60,
         max_level: 30,
-        category: "Environmental",
+        category: "Resistance",
         get_effect_description: ()=> {
             return `Reduces hit and evasion penalty in super bright areas`;
         },
@@ -929,7 +949,7 @@ skills["Poison resistance"] = new Skill({
         description: "Poison resistance",
         base_xp_cost: 60,
         max_level: 30,
-        category: "Environmental",
+        category: "Resistance",
         get_effect_description: ()=> {
             return `Reduces damage taken from poison:<br> <br>
 			Poison active effect damage by ${(Math.round((skills["Poison resistance"].current_level/skills["Poison resistance"].max_level)*100)*1000)/1000}%, <br> 
@@ -947,7 +967,7 @@ skills["Curse resistance"] = new Skill({
         description: "Curse resistance",
         base_xp_cost: 60,
         max_level: 30,
-        category: "Environmental",
+        category: "Resistance",
         get_effect_description: ()=> {
             return `Reduces effect of curses`;
         },
@@ -960,7 +980,7 @@ skills["Shock resistance"] = new Skill({
         description: "Shock resistance",
         base_xp_cost: 60,
         max_level: 30,
-        category: "Environmental",
+        category: "Resistance",
         get_effect_description: ()=> {
             return `Reduces impact of storms`;
         },
@@ -978,6 +998,19 @@ skills["Shock resistance"] = new Skill({
                                         return `Increases xp gains of all weapon skills of level lower than this, x1.1 per level of difference`;
                                     },
                                 });
+	 skills["Integrated Weapons Mastery"] = new Skill({skill_id: "Integrated Weapons Mastery", 
+                                    names: {0: "Integrated Weapons Mastery"}, 
+                                    description: "Mastery of all weapons.",
+                                    category: "Weapon",
+                                    get_effect_description: ()=> {
+                                        return `Multiplies damage dealt with axes, hammers,swords, spears & daggers by ${Math.round(skills["Swords"].get_coefficient("multiplicative")*1000)/1000}.<br>
+												Multiplies AP with axes, hammers,swords, spears & daggers by ${Math.round((skills["Swords"].get_coefficient("multiplicative")**0.3333)*1000)/1000}.<br>
+												Multiplies damage dealt in unarmed combat by ${Math.round(skills["Unarmed"].get_coefficient("multiplicative")*1000)/1000}.<br>
+												Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarmed"].get_coefficient("multiplicative")**0.3333)*1000)/1000}.<br>
+												Retains milestone bonuses from constituent skills`;
+                                    },
+                                });
+								
     skills["Swords"] = new Skill({skill_id: "Swords", 
                                   parent_skill: "Weapon mastery",
                                   names: {0: "Swordsmanship"}, 
@@ -1303,7 +1336,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                 names: {0: "Farming"}, 
                                 description: "Even a simple action of plowing some fields, can be performed better with skills and experience",
                                 base_xp_cost: 40,
-                                category: "Activity",
+                                category: "Profession",
                                 max_level: 10,
                                 xp_scaling: 1.6,
                                 max_level_coefficient: 2,
@@ -1386,7 +1419,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                 names: {0: "Salvaging"}, 
                                 description: "Salvaging",
                                 base_xp_cost: 100,
-                                category: "Activity",
+                                category: "Profession",
                                 max_level: 10,
                                 xp_scaling: 1.8,
                                 max_level_coefficient: 2,
@@ -2042,7 +2075,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
     skills["Woodcutting"] = new Skill({skill_id: "Woodcutting", 
         names: {0: "Woodcutting"}, 
         description: "Get better with chopping the wood",
-        category: "Gathering",
+        category: "Profession",
         base_xp_cost: 10,
         visibility_treshold: 4,
         xp_scaling: 1.4,
@@ -2051,7 +2084,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
     skills["Mining"] = new Skill({skill_id: "Mining",
         names: {0: "Mining"}, 
         description: "Get better with mining the ores",
-        category: "Gathering",
+        category: "Profession",
         base_xp_cost: 10,
         visibility_treshold: 4,
         xp_scaling: 1.4,
@@ -2060,7 +2093,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
     skills["Fishing"] = new Skill({skill_id: "Fishing",
         names: {0: "Fishing"}, 
         description: "Get better at fishing",
-        category: "Gathering",
+        category: "Profession",
         base_xp_cost: 10,
         visibility_treshold: 4,
         xp_scaling: 1.4,
@@ -2069,7 +2102,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
     skills["Herbalism"] = new Skill({skill_id: "Herbalism",
         names: {0: "Herbalism"}, 
         description: "Knowledge of useful plants and mushrooms",
-        category: "Gathering",
+        category: "Profession",
         base_xp_cost: 10,
         visibility_treshold: 4,
         xp_scaling: 1.4,
@@ -2079,7 +2112,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
         skill_id: "Animal handling",
         names: {0: "Animal handling"}, 
         description: "Knowledge and skills required to deal with a wide variety of animals",
-        category: "Gathering",
+        category: "Profession",
         base_xp_cost: 10,
         visibility_treshold: 4,
         xp_scaling: 1.4,
@@ -2092,7 +2125,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
         skill_id: "Crafting", 
         names: {0: "Crafting"}, 
         description: "The art of preparing different elements and assembling them together",
-        category: "Crafting",
+        category: "Profession",
         base_xp_cost: 40,
         xp_scaling: 1.5,
         max_level: 60,
@@ -2101,7 +2134,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
         skill_id: "Smelting", 
         names: {0: "Smelting"}, 
         description: "Turning raw ore into raw metal",
-        category: "Crafting",
+        category: "Profession",
         base_xp_cost: 40,
         xp_scaling: 1.5,
         max_level: 60,
@@ -2110,7 +2143,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
         skill_id: "Forging", 
         names: {0: "Forging"}, 
         description: "Turning raw metal into something useful",
-        category: "Crafting",
+        category: "Profession",
         base_xp_cost: 40,
         xp_scaling: 1.5,
         max_level: 60,
@@ -2119,7 +2152,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
         skill_id: "Cooking", 
         names: {0: "Cooking"}, 
         description: "Making the unedible edible",
-        category: "Crafting",
+        category: "Profession",
         base_xp_cost: 40,
         xp_scaling: 1.5,
         max_level: 60,
@@ -2128,7 +2161,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
         skill_id: "Alchemy", 
         names: {0: "Alchemy"}, 
         description: "Extracting and enhancing useful properties of the ingredies",
-        category: "Crafting",
+        category: "Profession",
         base_xp_cost: 40,
         xp_scaling: 1.5,
         max_level: 60,
@@ -2953,7 +2986,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 (function(){
     skills["Limit Breaking"] = new Skill({skill_id: "Limit Breaking", 
                                 names: {0: "Limit Breaking"}, 
-                                category: "Ascension",
+                                category: "Destiny",
                                 description: "Defy your own limits", 
                                 max_level_bonus: 0.3,
 								max_level: 20,

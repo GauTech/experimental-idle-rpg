@@ -846,7 +846,7 @@ function get_equipped_tool_bonus(tool) {
                 effects: {
                     attack_points: {multiplier: 0.5},
                     evasion_points: {multiplier: 0.5},
-                    stamina: {multiplier: 0.8},
+                    stamina_efficiency: {multiplier: 0.8},
                 }
             },
             2: {
@@ -855,7 +855,7 @@ function get_equipped_tool_bonus(tool) {
                 effects: {
                     attack_points: {multiplier: 0.3},
                     evasion_points: {multiplier: 0.3},
-                    stamina: {multiplier: 0.5},
+                    stamina_efficiency: {multiplier: 0.5},
                 }
             },
             3: {
@@ -864,7 +864,7 @@ function get_equipped_tool_bonus(tool) {
                 effects: {
                     attack_points: {multiplier: 0.1},
                     evasion_points: {multiplier: 0.1},
-                    stamina: {multiplier: 0.3},
+                    stamina_efficiency: {multiplier: 0.3},
                 }
             }
         }
@@ -876,7 +876,7 @@ function get_equipped_tool_bonus(tool) {
                 description: "Cold makes your energy seep out...",
                 related_skill: "Cold resistance",
                 effects: {
-                    stamina: {multiplier: 0.5},
+                    stamina_efficiency: {multiplier: 0.5},
                 }
             },
             2: {
@@ -885,7 +885,7 @@ function get_equipped_tool_bonus(tool) {
                 effects: {
                     attack_points: {multiplier: 0.7},
                     evasion_points: {multiplier: 0.7},
-                    stamina: {multiplier: 0.2},
+                    stamina_efficiency: {multiplier: 0.2},
                 }
             },
             3: {
@@ -894,7 +894,7 @@ function get_equipped_tool_bonus(tool) {
                 effects: {
                     attack_points: {multiplier: 0.5},
                     evasion_points: {multiplier: 0.5},
-                    stamina: {multiplier: 0.1},
+                    stamina_efficiency: {multiplier: 0.1},
                 }
             }
         }
@@ -976,7 +976,7 @@ function get_equipped_tool_bonus(tool) {
                 description: "cursed",
                 related_skill: "Curse resistance",
                 effects: {
-                    stamina: {multiplier: 0.5},
+                    stamina_efficiency: {multiplier: 0.5},
                 }
             },
             2: {
