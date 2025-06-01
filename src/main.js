@@ -2880,11 +2880,11 @@ if (rare_loot.length > 0) {
 			add_xp_to_skill({skill: skills[bestSkill], xp_to_add: target.xp_value});
 			}
 		
-		//if(character.equipment.weapon != null)
+		if(character.equipment.weapon != null){
 	if (item_templates[character.equipment?.weapon.id].special_effects.length > 0) {
     execute_weapon_special_effects(item_templates[character.equipment.weapon.id].special_effects);
 }			
-		
+}		
 
 		if (target.on_death && Object.keys(target.on_death).length > 0) {
 			execute_death_effects(target.on_death)
@@ -3268,6 +3268,8 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
 			}
 			// Sync all paired skills to the highest XP value
 			sync_paired_skills_to_highest(Array.from(paired_set));
+			const leader_name = getGroupLeaderName(skill.skill_id);
+			
 			
 		}
 	}
@@ -3378,7 +3380,7 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
         //
     }
 	
-
+	
 	
 	update_displayed_droprate();
 	
@@ -3453,7 +3455,7 @@ if(skill.skill_id === "Cold resistance" || "Heat resistance" && skill.current_le
 	
 }
 
-const paired_skill_sets = [
+let paired_skill_sets = [
 
 ];
 
@@ -3476,6 +3478,37 @@ function sync_paired_skills_to_highest(skill_ids) {
 			update_displayed_skill_bar(skills[id], true);
         }
     }
+}
+
+function getGroupLeaderName(skillName) {
+  if (typeof paired_skill_sets === 'undefined' || !Array.isArray(paired_skill_sets)) {
+    return skillName;
+  }
+
+  for (const set of paired_skill_sets) {
+    if (set.has(skillName)) {
+      // Get the last item added to the Set (which we assume is the group leader)
+      let leader = null;
+      for (const item of set) {
+        leader = item;
+      }
+      return leader || skillName;
+    }
+  }
+
+  return skillName;
+}
+
+function containsSet(arrayOfSets, targetSet) {
+    // Convert target set to array and sort for consistent comparison
+    const targetArray = Array.from(targetSet).sort();
+    
+    // Check each set in the array
+    return arrayOfSets.some(existingSet => {
+        const existingArray = Array.from(existingSet).sort();
+        return existingArray.length === targetArray.length && 
+               existingArray.every((val, index) => val === targetArray[index]);
+    });
 }
 
 
@@ -4337,6 +4370,8 @@ function create_save() {
 		save_data["visited_locations"] = visited_locations;
 		
 		save_data["hidden_skills"] = hidden_skills;
+		save_data["paired_skill_sets"] = paired_skill_sets.map(set => Array.from(set));
+		
 			
 });
 
@@ -4559,7 +4594,24 @@ global_battle_state = save_data.global_battle_state || {};
             add_xp_to_skill({skill: skills["Literacy"], should_info: false, xp_to_add: literacy_xp, use_bonus: false});
         }
     }
+	
+	paired_skill_sets = (save_data.paired_skill_sets || []).map(arr => new Set(arr));
+	
 
+// Correction for weapon set.
+const weaponsSet = new Set(["Axes","Swords","Spears","Hammers","Daggers","Unarmed","Integrated Weapons Mastery"]);
+if (skills["Integrated Weapons Mastery"].current_level > 0 && !containsSet(paired_skill_sets, weaponsSet)) {
+    paired_skill_sets.push(weaponsSet);
+}
+
+// Correction for resistance set
+const resistanceSet = new Set(["Cold resistance", "Heat resistance","Thermal resistance"]);
+if (skills["Thermal resistance"].current_level > 0 && !containsSet(paired_skill_sets, resistanceSet)) {
+    paired_skill_sets.push(resistanceSet);
+}
+	
+	
+		
     if(save_data["stances"]) {
         Object.keys(save_data["stances"]).forEach(stance => {
             if(save_data["stances"]) {
@@ -5998,5 +6050,7 @@ export { current_enemies, can_work,
 		global_battle_state,
 		end_actions,
 		active_quests,
-		finished_quests
+		finished_quests,
+		paired_skill_sets,
+		getGroupLeaderName
  };

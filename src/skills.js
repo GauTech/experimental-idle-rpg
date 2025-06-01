@@ -5,6 +5,9 @@ const skill_categories = {};
 
 import {character} from "./character.js";
 import {stat_names} from "./misc.js";
+import {paired_skill_sets, getGroupLeaderName} from "./main.js";
+
+		
 
 /*    
 TODO:
@@ -166,7 +169,8 @@ class Skill {
                     this.xp_to_next_lvl = "Max";
                 }
 
-                let message = `${this.name()} has reached level ${this.current_level}`;
+                let skillName = getGroupLeaderName(this.skill_id);
+				let message = `${skillName} has reached level ${this.current_level}`;
 
                 if (Object.keys(gains.stats).length > 0 || Object.keys(gains.xp_multipliers).length > 0) { 
                     message += `<br><br> Thanks to ${this.name()} reaching new milestone, ${character.name} gained: `;
