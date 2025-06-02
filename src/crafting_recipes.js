@@ -288,7 +288,7 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         throw new Error(`Tried to use a recipe that doesn't exist: ${category} -> ${subcategory} -> ${recipe_id}`);
     }
     if(subcategory === "items") {
-        exp_value = Math.round(Math.max(exp_value,1.5*selected_recipe.recipe_level[1],1.2**selected_recipe.recipe_level[1]));
+        exp_value = Math.round((skills["Scrap Mechanic"].get_coefficient("multiplicative"))* Math.max(exp_value,1.5*selected_recipe.recipe_level[1],1.2**selected_recipe.recipe_level[1]));
         //maybe scale with materials needed?
         
         if(selected_recipe.recipe_level[1] < skill_level) {
@@ -298,11 +298,11 @@ function get_recipe_xp_value({category, subcategory, recipe_id, material_count, 
         const result_level = 8*result_tier
 
         exp_value = Math.max(exp_value,result_tier * 4 * material_count, 1.3**(result_tier * Math.min(material_count,5)));
-        exp_value = Math.round(Math.max(1,exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier));
+        exp_value = Math.round(Math.max(1,(skills["Scrap Mechanic"].get_coefficient("multiplicative"))* exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier));
     } else {
         const result_level =  8*Math.max(selected_components[0].component_tier,selected_components[1].component_tier);
         exp_value = Math.max(exp_value,(selected_components[0].component_tier+selected_components[1].component_tier) * 4,1.2**(selected_components[0].component_tier+selected_components[1].component_tier) * 4);
-        exp_value = Math.round(Math.max(1,exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier));
+        exp_value = Math.round(Math.max(1,(skills["Scrap Mechanic"].get_coefficient("multiplicative"))*exp_value*(rarity_multiplier**0.5 - (skill_level/result_level))*rarity_multiplier));
     }
 
     return Math.round(exp_value);

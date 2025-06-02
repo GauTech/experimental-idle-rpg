@@ -3216,7 +3216,7 @@ function use_mana(num = 1, use_efficiency = true) {
  * @param {Number} xp_to_add 
  * @param {Boolean} should_info 
  */
-function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = true, add_to_parent = true, use_pairing = true})
+function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = true, add_to_parent = true, use_pairing = true, from_pairing = false})
 {
     let leveled = false;
     if(xp_to_add == 0) {
@@ -3254,7 +3254,8 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
         }
     }
 	
-	if(use_pairing === true){
+	if (use_pairing === true && from_pairing === false){
+	check_pairings(skill);
 					// Add XP to other paired skills
 			const paired_set = get_paired_set(skill.skill_id);
 		if (paired_set && paired_set.size > 1) {
@@ -3264,12 +3265,13 @@ function add_xp_to_skill({skill, xp_to_add = 1, should_info = true, use_bonus = 
 					// Add XP only if not already added in this call
 					if (other_skill.total_xp < skill.total_xp) {
 						add_xp_to_skill({
-							skill: other_skill,
-							xp_to_add: xp_to_add,
-							should_info: false,
-							use_bonus: false,
-							add_to_parent: false
-						});
+						skill: other_skill,
+						xp_to_add: xp_to_add,
+						should_info: false,
+						use_bonus: false,
+						add_to_parent: false,
+						from_pairing: true
+					});
 					}
 				}
 			}
@@ -3434,44 +3436,112 @@ if(skill.skill_id === "Swimming" && skill.current_level > 19 && global_flags.is_
                             activity: locations["Docks"].activities["swimming3"]});
 }
 
-if(skill.category === "Weapon" && skill.current_level > 14){
+//unpaired evolutions
+if(skill.skill_id === "Crafting" && skill.current_level > 14 && skills["Salvaging"].current_level == 10 && skills["Scrap Mechanic"].current_level == 0){ //&& skills["Scrap Mechanic"].is_unlocked == false
+	    //skills["Scrap Mechanic"].is_unlocked = true; //unlocking locked skills this way seems to cause errors.
+		skills["Salvaging"].is_hidden = true;
+                update_displayed_skill_bar(skills["Salvaging"], true);
+                hidden_skills.push("Salvaging");
+		     add_xp_to_skill({
+                skill: skills["Scrap Mechanic"],
+                xp_to_add: 100,
+                should_info: true,
+                add_to_parent: false,
+                use_bonus: false,
+                use_pairing: false
+            })
+				log_message("Skill EVOLUTION. Salvaging evolved into Scrap Mechanic", "skill_evolution");
+}
 
-			if(skills["Axes"].current_level >14 && skills["Swords"].current_level >14 && skills["Spears"].current_level >14 && skills["Hammers"].current_level >14 && skills["Daggers"].current_level >14 && skills["Unarmed"].current_level >14 && skills["Integrated Weapons Mastery"].current_level === 0 ){
-			log_message("Skill EVOLUTION. Axe Combat, Hammer Combat, Dagger Combat, Spearmanship, Swordsmanship, Unarmed and Weapons Mastery combined into Integrated Weapons Mastery","skill_evolution");
-		paired_skill_sets.push(new Set(["Axes","Swords","Spears","Hammers","Daggers","Unarmed","Integrated Weapons Mastery"]))
-					
-		const weaponSkills = ["Axes", "Swords", "Spears", "Hammers", "Daggers", "Unarmed", "Weapon mastery"];
-			weaponSkills.forEach(skill => {
-				skills[skill].is_hidden = true;
-				update_displayed_skill_bar(skills[skill], true);
-				hidden_skills.push(skill);
-			});
-		
-		const weapon_mastery_xp = skills["Weapon mastery"].total_xp;
-		add_xp_to_skill({skill: skills["Integrated Weapons Mastery"], xp_to_add: weapon_mastery_xp, should_info: true, add_to_parent: false, use_bonus: false, use_pairing: false});
-		
-						}
-	}
-	
-if(skill.skill_id === "Cold resistance" || "Heat resistance" && skill.current_level > 10){
+}
 
-			if(skills["Cold resistance"].current_level >10 && skills["Heat resistance"].current_level >10 && skills["Thermal resistance"].current_level === 0 ){
-			log_message("Skill EVOLUTION. Cold resistance and Heat resistance combined into Thermal resistance","skill_evolution");
-		paired_skill_sets.push(new Set(["Cold resistance", "Heat resistance","Thermal resistance"]))
-					
-		const tempSkills = ["Cold resistance", "Heat resistance"];
-			tempSkills.forEach(skill => {
-				skills[skill].is_hidden = true;
-				update_displayed_skill_bar(skills[skill], true);
-				hidden_skills.push(skill);
-			});
-		
-		const temp_mastery_xp = skills["Cold resistance"].total_xp;
-		add_xp_to_skill({skill: skills["Thermal resistance"], xp_to_add: temp_mastery_xp, should_info: true, add_to_parent: false, use_bonus: false, use_pairing: false});
-		
-						}
-	}
-	
+function check_pairings(skill) {
+    // Helper to prevent repeated evolution
+    function evolve_if_needed({conditions, evolved_skill_id, involved_skills, xp_source_skill, log_text}) {
+        const evolved_skill = skills[evolved_skill_id];
+        if (evolved_skill.was_evolved) return;
+
+        if (conditions() && evolved_skill.current_level === 0) {
+            evolved_skill.was_evolved = true;
+
+            log_message(log_text, "skill_evolution");
+            paired_skill_sets.push(new Set([...involved_skills, evolved_skill_id]));
+
+            involved_skills.forEach(id => {
+                skills[id].is_hidden = true;
+                update_displayed_skill_bar(skills[id], true);
+                hidden_skills.push(id);
+            });
+
+            const xp_to_grant = Array.isArray(xp_source_skill)
+                ? Math.max(...xp_source_skill.map(id => skills[id].total_xp))
+                : skills[xp_source_skill].total_xp;
+
+            add_xp_to_skill({
+                skill: evolved_skill,
+                xp_to_add: xp_to_grant,
+                should_info: true,
+                add_to_parent: false,
+                use_bonus: false,
+                use_pairing: false
+            });
+        }
+    }
+
+    // Integrated Weapons Mastery
+    if (skill.category === "Weapon" && skill.current_level > 14) {
+        evolve_if_needed({
+            conditions: () => ["Axes", "Swords", "Spears", "Hammers", "Daggers", "Unarmed"].every(id => skills[id].current_level > 14),
+            evolved_skill_id: "Integrated Weapons Mastery",
+            involved_skills: ["Axes", "Swords", "Spears", "Hammers", "Daggers", "Unarmed", "Weapon mastery"],
+            xp_source_skill: "Weapon mastery",
+            log_text: "Skill EVOLUTION. Axe Combat, Hammer Combat, Dagger Combat, Spearmanship, Swordsmanship, Unarmed and Weapons Mastery combined into Integrated Weapons Mastery"
+        });
+    }
+
+    // Thermal resistance
+    if ((skill.skill_id === "Cold resistance" || skill.skill_id === "Heat resistance") && skill.current_level > 10) {
+        evolve_if_needed({
+            conditions: () => skills["Cold resistance"].current_level > 10 && skills["Heat resistance"].current_level > 10,
+            evolved_skill_id: "Thermal resistance",
+            involved_skills: ["Cold resistance", "Heat resistance"],
+            xp_source_skill: ["Cold resistance", "Heat resistance"],
+            log_text: "Skill EVOLUTION. Cold resistance and Heat resistance combined into Thermal resistance"
+        });
+    }
+
+    // Deadliness
+    if ((skill.skill_id === "Obliteration" || skill.skill_id === "Criticality") && skill.current_level > 10) {
+        evolve_if_needed({
+            conditions: () => skills["Obliteration"].current_level > 10 && skills["Criticality"].current_level > 10,
+            evolved_skill_id: "Deadliness",
+            involved_skills: ["Criticality", "Obliteration"],
+            xp_source_skill: ["Criticality", "Obliteration"],
+            log_text: "Skill EVOLUTION. Criticality and Obliteration combined into Deadliness"
+        });
+    }
+
+    // Adaptive combat
+    if ((skill.skill_id === "Battling" || skill.skill_id === "Pest killer") && skill.current_level > 14) {
+        evolve_if_needed({
+            conditions: () => skills["Battling"].current_level > 14 && skills["Pest killer"].current_level > 14 && skills["Giant slayer"].current_level > 14,
+            evolved_skill_id: "Adaptive combat",
+            involved_skills: ["Battling", "Pest killer", "Giant slayer"],
+            xp_source_skill: ["Battling", "Pest killer", "Giant slayer"],
+            log_text: "Skill EVOLUTION. Battling, Pest killer and Giant Slayer combined into Adaptive combat"
+        });
+    }
+
+    // Reactive combat
+    if ((skill.skill_id === "Parrying" || skill.skill_id === "Shield blocking") && skill.current_level > 9) {
+        evolve_if_needed({
+            conditions: () => skills["Parrying"].current_level > 9 && skills["Counterattack"].current_level > 9 && skills["Shield blocking"].current_level > 9,
+            evolved_skill_id: "Reactive combat",
+            involved_skills: ["Parrying", "Counterattack", "Shield blocking"],
+            xp_source_skill: ["Parrying", "Counterattack", "Shield blocking"],
+            log_text: "Skill EVOLUTION. Parrying, Counterattack and Shield blocking combined into Reactive combat"
+        });
+    }
 }
 
 let paired_skill_sets = [
@@ -3799,6 +3869,10 @@ if (subcategory === "items") {
         }
 
         attempts++;
+		if(skills["Scrap Mechanic"].current_level > 0){
+		
+		 add_xp_to_skill({ skill: skills["Scrap Mechanic"], xp_to_add: exp_value / 5 });
+		}
     }
 
 if (craft_amount > 1 && attempts > 0) {
@@ -3981,7 +4055,7 @@ function use_item(item_key) {
     }
 
     let used = false;
-    
+    console.log(paired_skill_sets);
     // First, cure any specified effects
     if (cures.length > 0) {
         cures.forEach(effectName => {
@@ -4589,8 +4663,9 @@ global_battle_state = save_data.global_battle_state || {};
         }
     }); //add xp to skills
 	
-	update_displayed_skill_description(skills["Integrated Weapons Mastery"])
-	update_displayed_skill_description(skills["Thermal resistance"])
+	update_displayed_skill_description(skills["Integrated Weapons Mastery"]);
+	update_displayed_skill_description(skills["Thermal resistance"]);
+	
 	
 	character.recalculate_xp_thresholds();
 	add_xp_to_character(save_data.character.xp.total_xp, false);

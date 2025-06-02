@@ -414,6 +414,7 @@ function format_skill_rewards(milestone){
 }
 
 //basic combat skills
+
 (function(){
     skills["Combat"] = new Skill({skill_id: "Combat", 
                                 names: {0: "Combat"}, 
@@ -424,6 +425,18 @@ function format_skill_rewards(milestone){
                                 get_effect_description: ()=> {
                                     return `Multiplies hit chance by ${Math.round(skills["Combat"].get_coefficient("multiplicative")*1000)/1000}`;
                                 }});
+	   skills["Battling"] = new Skill({skill_id: "Battling", 
+                                names: {0: "Battling", 15: "Battle Master"}, 
+                                description: "Your proficiency for fighting even opponents.", 
+                                category: "Combat",
+								base_xp_cost: 100,
+								max_level_coefficient: 1.4,
+								get_effect_description: ()=> {
+										return `Multiplies damage against medium sized enemies by ${Math.round(skills["Battling"].get_coefficient("multiplicative")*1000)/1000}`;
+								},
+								
+	});	
+
     
     skills["Pest killer"] = new Skill({skill_id: "Pest killer", 
                                 names: {0: "Pest killer", 15: "Pest slayer"}, 
@@ -468,8 +481,21 @@ function format_skill_rewards(milestone){
                                 description: "Large opponents might seem scary, but just don't get hit and you should be fine!", 
                                 max_level_coefficient: 2,
                                 category: "Combat",
+								base_xp_cost: 100,
                                 get_effect_description: ()=> {
                                     return `Multiplies evasion against large-type enemies by ${Math.round(skills["Giant slayer"].get_coefficient("multiplicative")*1000)/1000}`;
+                                }});
+		    skills["Adaptive combat"] = new Skill({skill_id: "Adaptive combat", 
+                                names: {0: "Adaptive combat"}, 
+                                category: "Combat",
+                                description: "Perfectly adapt your strategies to handle foes of any size or stature.", 
+                                category: "Combat",
+                                base_xp_cost: 100,
+                                get_effect_description: ()=> {
+                                    return `Multiplies hit chance against small-type enemies by ${Math.round(skills["Pest killer"].get_coefficient("multiplicative")*1000)/1000} 
+									<br>Multiplies damage against medium sized enemies by ${Math.round(skills["Battling"].get_coefficient("multiplicative")*1000)/1000}
+									<br>Multiplies evasion against large-type enemies by ${Math.round(skills["Giant slayer"].get_coefficient("multiplicative")*1000)/1000}`;
+									
                                 }});
 
     skills["Evasion"] = new Skill({skill_id: "Evasion", 
@@ -528,6 +554,7 @@ function format_skill_rewards(milestone){
                                     description: "Ability to block attacks with shield", 
                                     max_level: 30, 
                                     max_level_bonus: 0.2,
+									base_xp_cost: 30,
                                     category: "Combat",
                                     get_effect_description: ()=> {
                                         return `Increases block chance by flat ${Math.round(skills["Shield blocking"].get_level_bonus()*1000)/10}%. Increases blocked damage by ${Math.round(skills["Shield blocking"].get_level_bonus()*5000)/10}%`;
@@ -537,17 +564,43 @@ function format_skill_rewards(milestone){
                                     names: {0: "Counterattack"}, 
                                     description: "Counterattack proficiency", 
                                     max_level: 30, 
-                                    max_level_coefficient: 3,
+                                    base_xp_cost: 30,
+									max_level_coefficient: 3,
                                     category: "Combat",
                                     get_effect_description: ()=> {
                                         return `Multiplies counterattack chance and damage by ${Math.round(skills["Counterattack"].get_coefficient("multiplicative")*1000)/1000} `;
                                     }});								
+	skills["Parrying"] = new Skill({
+        skill_id: "Parrying",
+        names: {0: "Parrying"},
+        description: "Parrying",
+        category: "Combat",
+        base_xp_cost: 30,
+        max_level: 30,
+		max_level_bonus: 0.8,
+		get_effect_description: ()=> {
+            return `Increases Parrying chance by ${(skills["Parrying"].get_level_bonus().toPrecision(3))}`;
+        },
+    });
+    	skills["Reactive combat"] = new Skill({
+        skill_id: "Reactive combat",
+        names: {0: "Reactive combat"},
+        description: "Mastery of blocking, parrying and counterattacks",
+        category: "Combat",
+        base_xp_cost: 30,
+        max_level: 30,
+		get_effect_description: ()=> {
+            return `Increases Parrying chance by ${(skills["Parrying"].get_level_bonus().toPrecision(3))}
+			<br>Multiplies counterattack chance and damage by ${Math.round(skills["Counterattack"].get_coefficient("multiplicative")*1000)/1000}
+			<br>Increases block chance by flat ${Math.round(skills["Shield blocking"].get_level_bonus()*1000)/10}%. Increases blocked damage by ${Math.round(skills["Shield blocking"].get_level_bonus()*5000)/10}%`;
+        },
+    });
 	
-    
      
 
 							
 })();
+
 
 //combat stances
 (function(){
@@ -1431,13 +1484,29 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                     return `Multiplies droprate by ${Math.round(skills["Salvaging"].get_coefficient("multiplicative")*1000)/1000}`;
                                 },
 	});		
+	    skills["Scrap Mechanic"] = new Skill({skill_id: "Scrap Mechanic", 
+                                names: {0: "Scrap Mechanic"}, 
+                                description: "Scrap Mechanic",
+                                base_xp_cost: 100,
+                                category: "Profession",
+								is_unlocked: true,
+                                max_level: 30,
+                                xp_scaling: 2,
+								base_xp_cost: 100,
+                                max_level_coefficient: 10,
+								visibility_treshold: 1,
+								get_effect_description: ()=> {
+                                    return `Multiplies droprate by ${Math.round(skills["Salvaging"].get_coefficient("multiplicative")*1000)/1000}
+									<br> Multiplies crafting XP gain by ${Math.round(skills["Scrap Mechanic"].get_coefficient("multiplicative")*1000)/1000}`;
+                                },
+	});	
 
 
     skills["Lockpicking"] = new Skill({skill_id: "Lockpicking", 
                                 names: {0: "Lockpicking"}, 
                                 description: "Improves your ability to pick locks",
                                 base_xp_cost: 50,
-                                category: "Activity",
+                                category: "Character",
                                 max_level: 30,
                                 xp_scaling: 1.6,
                                 max_level_coefficient: 2,
@@ -1457,8 +1526,8 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                     visibility_treshold: 300,
                                     xp_scaling: 2,
                                     category: "Activity",
-                                    max_level: 10,
-                                    max_level_coefficient: 2.5,    
+                                    max_level: 20,
+                                    max_level_coefficient: 5,    
                                     rewards: {
                                         milestones: {
                                             2: {
@@ -2439,21 +2508,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
     
 })();
 
-(function(){
-    skills["Parrying"] = new Skill({
-        skill_id: "Parrying",
-        names: {0: "Parrying"},
-        description: "Parrying",
-        category: "Combat",
-        base_xp_cost: 30,
-        max_level: 20,
-		max_level_bonus: 0.8,
-		get_effect_description: ()=> {
-            return `Increases Parrying chance by ${(skills["Parrying"].get_level_bonus().toPrecision(3))}`;
-        },
-    });
-    
-})();
+
 
 (function(){
    skills["Leadership"] = new Skill({skill_id: "Leadership", 
@@ -2516,20 +2571,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 })();
 
 
-(function(){
-   skills["Battling"] = new Skill({skill_id: "Battling", 
-                                names: {0: "Battling", 15: "Battle Master"}, 
-                                description: "Your proficiency for fighting even opponents.", 
-                                category: "Combat",
-								base_xp_cost: 100,
-								max_level_coefficient: 1.4,
-								get_effect_description: ()=> {
-										return `Multiplies damage against medium sized enemies by ${Math.round(skills["Battling"].get_coefficient("multiplicative")*1000)/1000}`;
-								},
-								
-	});		
-    
-})();
+
 
 (function(){
    skills["Criticality"] = new Skill({skill_id: "Criticality", 
@@ -2557,7 +2599,22 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 								},
 								
 	});	
+
+
+   skills["Deadliness"] = new Skill({skill_id: "Deadliness", 
+                                names: {0: "Deadliness"}, 
+                                description: "The ability to deliver lethal strikes and inflict maximum damage.", 
+                                category: "Combat",
+								base_xp_cost: 100,
+								max_level_bonus: 1,
+								get_effect_description: ()=> {
+										return `Increases crit rate by ${skills["Criticality"].get_level_bonus().toPrecision(3)}
+										<br>Increases crit multiplier by ${skills["Obliteration"].get_level_bonus().toPrecision(3)}`;
+								},
+								
+	});	
 })();
+
 
 (function(){
    skills["Mana Expansion"] = new Skill({skill_id: "Mana Expansion", 
@@ -2654,13 +2711,13 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                 names: {0: "Chronomancy"}, 
                                 description: "Chronomancy", 
                                 category: "Magic",
-								max_level: 10,
+								max_level: 30,
 								max_level_bonus: 50,
 								max_level_coefficient: 2, 
-								xp_scaling: 10,
+								xp_scaling: 2,
 								is_unlocked: true,
 								get_effect_description: ()=> {
-										return `Reduces gathering times by ${skills["Chronomancy"].get_level_bonus()}%\n\nMultiplies Chronomancy magic effects by ${Math.round(skills["Chronomancy"].get_coefficient("multiplicative")*1000)/1000}`;
+										return `Reduces gathering times by ${skills["Chronomancy"].get_level_bonus().toPrecision(3)}%\n\nMultiplies Chronomancy magic effects by ${Math.round(skills["Chronomancy"].get_coefficient("multiplicative")*1000)/1000}`;
 								},
 	});	
 	
@@ -2870,7 +2927,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
     description: "Precision",
     names: {0: "Precision"},
     max_level: 50,
-    category: "Combat",
+    category: "Activity",
     max_level_coefficient: 10,
     base_xp_cost: 50,
     rewards: {
