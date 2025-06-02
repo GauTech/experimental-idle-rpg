@@ -125,9 +125,9 @@ class Gathering extends Training {
         base_skills_names: ["Meditation"],
         is_unlocked: true,
     });
- activities["manaexpansion"] = new Training({
-        name: "manaexpansion",
-        action_text: "Mana Expansion",
+ activities["mana expansion"] = new Training({
+        name: "mana expansion",
+        action_text: "Gathering mana",
         description: "manaexpansion",
         base_skills_names: ["Mana Expansion"],
         is_unlocked: true,

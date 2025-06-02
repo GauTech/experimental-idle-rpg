@@ -3357,6 +3357,18 @@ locations["Time Demon"] = new Challenge_zone({
 				},
 			unlock_text: "Unlocked Tricky Climbing at The Tower",
         }),
+			        "climbing3": new LocationActivity({
+            activity_name: "climbing",
+            infinite: true,
+            starting_text: "Try expert climbing.",
+            skill_xp_per_tick: 100,
+            is_unlocked: false,
+			activity_cost: {
+					type: "stamina",  // "money" | "health" | "stamina" | "mana"
+					amount: 60
+				},
+			unlock_text: "Unlocked Tricky Climbing at The Tower",
+        }),
 		
     };
 	
@@ -3376,6 +3388,28 @@ locations["Time Demon"] = new Challenge_zone({
             activity_name: "weightlifting",
             infinite: true,
             starting_text: "Strength training.",
+            skill_xp_per_tick: 100,
+            is_unlocked: false,
+			activity_cost: {
+					type: "money",  // "money" | "health" | "stamina" | "mana"
+					amount: 20
+				},
+        }),
+		        "balancing": new LocationActivity({
+            activity_name: "balancing",
+            infinite: true,
+            starting_text: "Practice balancing",
+            skill_xp_per_tick: 100,
+            is_unlocked: false,
+			activity_cost: {
+					type: "money",  // "money" | "health" | "stamina" | "mana"
+					amount: 20
+				},
+        }),
+			"practice": new LocationActivity({
+            activity_name: "practice",
+            infinite: true,
+            starting_text: "Practice your attacks",
             skill_xp_per_tick: 100,
             is_unlocked: false,
 			activity_cost: {
@@ -3596,6 +3630,18 @@ locations["Docks"].activities = {
 				amount: 14
 			},
         }),
+					        "swimming3": new LocationActivity({
+            activity_name: "swimming",
+            infinite: true,
+            starting_text: "Expert swimming.",
+            skill_xp_per_tick: 100,
+            is_unlocked: false,
+			unlock_text: "Unlocked Expert Swimming at Docks",
+								activity_cost: {
+				type: "stamina",  // "money" | "health" | "stamina" | "mana"
+				amount: 60
+			},
+        }),
     };
     locations["Forest road"].activities = {
         "running": new LocationActivity({
@@ -3799,8 +3845,8 @@ locations["Well of Souls"].activities = {
             skill_xp_per_tick: 20,
             is_unlocked: true,
         }),
-		 "manaexpansion": new LocationActivity({
-            activity_name: "manaexpansion",
+		 "mana expansion": new LocationActivity({
+            activity_name: "mana expansion",
             infinite: true,
             starting_text: "Circulate energies",
             skill_xp_per_tick: 20,

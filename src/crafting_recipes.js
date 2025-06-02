@@ -845,6 +845,15 @@ crafting_recipes.components["Long shaft"] = new ComponentRecipe({
 
 //consumables
 (function(){
+	    cooking_recipes.items["Grilled goo"] = new ItemRecipe({
+        name: "Grilled goo",
+        recipe_type: "usable",
+        materials: [{material_id: "Goo", count: 2}], 
+        result: {result_id: "Grilled goo", count: 1},
+        success_chance: [0.7,1],
+        recipe_level: [1,1],
+        recipe_skill: "Cooking",
+    });
     cooking_recipes.items["Roasted rat meat"] = new ItemRecipe({
         name: "Roasted rat meat",
         recipe_type: "usable",

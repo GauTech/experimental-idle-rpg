@@ -705,7 +705,7 @@ dialogues["Instructor"] = new Dialogue({
                 text: "Alright you maggots, you know the drill. Pay the fee and I'll forge you into proper warriors. Course, basic traning comes first.",
                 unlocks: {
 					//textlines: [{dialogue: "Instuctor", lines: [""]}],
-					activities: [{location:"Training Grounds", activity:"weightlifting"}, {location:"Training Grounds",activity:"running"}],
+					activities: [{location:"Training Grounds", activity:"weightlifting"}, {location:"Training Grounds",activity:"running"},{location:"Training Grounds",activity:"balancing"},{location:"Training Grounds",activity:"practice"}],
                 },
                 //locks_lines: ["Hello"],
             }),
@@ -752,7 +752,7 @@ dialogues["Mad Miner"] = new Dialogue({
             },
                 text: "I knew you had it in you lad! Now take this, and devote yourself evermore to the path of mining",
                 unlocks: {
-					update_quests: [{type: "QuestUpdate", id: "The Super Pickaxe", completion: "y", updates: [],}]
+					update_quests: [{type: "QuestUpdate", id: "The Super Pickaxe", completion: "y", updates: [],}],
                 },
                 locks_lines: ["QuestFinish"],
             }),
@@ -1362,7 +1362,9 @@ dialogues["Necromancer"] = new Dialogue({
                 text: "Hmmm. I'm loath to part with my secrets… but said secrets are worth little if I can't put them into practice….\n\nFine. I accept your bargain.\n\n 5 elite skulls, and I shall impart the miracle of raising the dead.",
 				unlocks: {
 					textlines: [{dialogue: "Necromancer", lines: ["ClaimReward"]}],
+					start_quests: ["Crazy for Craniums"],					
                 },
+				
 				locks_lines: ["Necromancy"],
 			}),
 			
@@ -1376,6 +1378,7 @@ dialogues["Necromancer"] = new Dialogue({
                 text: "Excellent! \n\nNow, watch closely, apprentice. \n\n And rembember, with great power comes great opportunity to abuse that power bwahaha.",
 				unlocks: {
 					magic: ["Raise Dead"],
+					update_quests: [{type: "QuestUpdate", id: "Crazy for Craniums", completion: "y", updates: [],}]
                 },
 				locks_lines: ["ClaimReward"],
 			}),
@@ -1629,7 +1632,6 @@ dialogues["Kon5"] = new Dialogue({
 
 dialogues["Chain-Saw Demon"] = new Dialogue({
         name: "Chain-Saw Demon",
-		is_finished: true,
         textlines: {
             "Chain-Saw Demon": new Textline({
                 name: "uhh hello?",

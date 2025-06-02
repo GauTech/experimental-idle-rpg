@@ -24,7 +24,8 @@ class QuestTask {
 				task_rewards: {type: "hero_xp", value: 100},
 				task_rewards: {type: "skill_xp", skill: "Lockpicking", value: 100},
 				task_rewards: {type: "item", item_name: "Iron spear", count: 2}, count is optional
-				*/
+				task_rewards: {type: "dummy_x"}, displays as normal but skipped by rewards handler. used if reward is actioned by something else e.g. dialogue.
+ 				*/
         this.is_hidden = is_hidden;
         this.is_finished = is_finished;
     }
@@ -42,9 +43,10 @@ class Quest {
                 quest_progress, //both this and quest_condition can be skipped if there's quest_tasks, or can stay to allow completing the quest without fulfilling them all
                 quest_rewards, //may include a new quest to automatically start
 				/*
-				task_rewards: {type: "hero_xp", value: 100},
-				task_rewards: {type: "skill_xp", skill: "Lockpicking", value: 100},
-				task_rewards: {type: "item", item_name: "Iron spear", count: 2}, count is optional
+				quest_rewards: {type: "hero_xp", value: 100},
+				quest_rewards: {type: "skill_xp", skill: "Lockpicking", value: 100},
+				quest_rewards: {type: "item", item_name: "Iron spear", count: 2}, count is optional
+				quest_rewards: {type: "dummy_x"}, displays as normal but skipped by rewards handler. used if reward is actioned by something else e.g. dialogue.
 				*/
                 is_hidden = false, //hidden quests are not visible and are meant to function as additional unlock mechanism; name and description are skipped
                 is_finished = false,
@@ -166,6 +168,15 @@ quests["The Super Rod"] = new Quest({
 
 	quest_rewards: {type: "item", item_name: "Super rod",},
 	quest_condition: [{requires_item: "Cunning Carp", count: 1000}],
+});
+
+quests["Crazy for Craniums"] = new Quest({
+    quest_name: "Crazy for Craniums",
+	quest_id: "Crazy for Craniums",
+	quest_description: "The necromancer in the Grave of Heroes has a pressing need for Elite Skulls. Whatever unsavory designs he has for them, he's promised to reward me if I help him out.",
+
+	quest_rewards: {type: "dummy_magic", value: "Raise Dead",},
+	quest_condition: [{requires_item: "Elite Skull", count: 5}],
 });
 
 /*

@@ -2760,7 +2760,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 								xp_scaling: 2,
 								is_unlocked: true,
 								get_effect_description: ()=> {
-										return `Multiplies magic effect durations by ${Math.round(skills["Illusion Magic"].get_coefficient("multiplicative")*1000)/1000}`;
+										return `Multiplies illusion magic effects by ${Math.round(skills["Illusion Magic"].get_coefficient("multiplicative")*1000)/1000}`;
 								},
 	});
    skills["Summoning"] = new Skill({skill_id: "Summoning", 
@@ -2772,7 +2772,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 								xp_scaling: 2,
 								is_unlocked: true,
 								get_effect_description: ()=> {
-										return `Multiplies magic effect durations by ${Math.round(skills["Summoning"].get_coefficient("multiplicative")*1000)/1000}`;
+										return `Multiplies summoning magic effects by ${Math.round(skills["Summoning"].get_coefficient("multiplicative")*1000)/1000}`;
 								},
 	});	
    skills["Necromancy"] = new Skill({skill_id: "Necromancy", 
@@ -2796,7 +2796,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 								xp_scaling: 2,
 								is_unlocked: true,
 								get_effect_description: ()=> {
-										return `Multiplies magic effect durations by ${Math.round(skills["Enchantment"].get_coefficient("multiplicative")*1000)/1000}`;
+										return `Multiplies enchantment magic effects by ${Math.round(skills["Enchantment"].get_coefficient("multiplicative")*1000)/1000}`;
 								},
 	});	
    skills["Recovery Magic"] = new Skill({skill_id: "Recovery Magic", 
@@ -2808,7 +2808,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 								xp_scaling: 2,
 								is_unlocked: true,
 								get_effect_description: ()=> {
-										return `Multiplies magic effect durations by ${Math.round(skills["Recovery Magic"].get_coefficient("multiplicative")*1000)/1000}`;
+										return `Multiplies recovery magic effects by ${Math.round(skills["Recovery Magic"].get_coefficient("multiplicative")*1000)/1000}`;
 								},
 	});	
 })();

@@ -3870,6 +3870,14 @@ item_templates["Panacea"] = new UsableItem({
     });
 
 
+item_templates["Grilled goo"] = new UsableItem({
+        name: "Grilled goo", 
+        description: "If you're really, really desperate...", 
+        value: 2,
+		gluttony_value: 1,
+        effects: [{effect: "Basic meal", duration: 10}],
+    });
+
 item_templates["Discount bread"] = new UsableItem({
         name: "Discount bread", 
         description: "Big piece of an old bread, still edible. Budget priced.", 
@@ -3996,9 +4004,9 @@ item_templates["Stale bread"] = new UsableItem({
 (function(){
     item_templates["1000 Years Pill"] = new UsableItem({
         name: "1000 Years Pill", 
-        description: "1000 Years Pill",
+        description: "Brims with magical energy. Make sure you know how to gather mana before consuming it. Don't waste it.",
         value: 10000,
-		mana_value: 1000000,
+		mana_value: 10000,
         effects: [{effect: "Minor magic boost", duration: 300}],
     });
 })();

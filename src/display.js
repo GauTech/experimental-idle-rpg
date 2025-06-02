@@ -697,7 +697,7 @@ function end_activity_animation() {
     }
 
     if(group_to_add === "message_combat" && message_count.message_combat > 80
-    || group_to_add === "message_loot" && message_count.message_loot > 20
+    || group_to_add === "message_loot" && message_count.message_loot > 40
 	|| group_to_add === "message_rare_loot" && message_count.message_rare_loot > 10
     || group_to_add === "message_unlocks" && message_count.message_unlocks > 40
     || group_to_add === "message_events" && message_count.message_events > 20
@@ -4560,14 +4560,16 @@ function populateQuestList(active_quests) {
         // Quest rewards
 		if (quest.quest_rewards && Object.keys(quest.quest_rewards).length > 0) {
 			const rewardDiv = document.createElement("div");
-			let rewardText = "Rewards: ";
+			let rewardText = "\nRewards: ";
 			
-			switch(quest.quest_rewards.type) {
+			const rewardType = normalizeRewardType(quest.quest_rewards.type);
+
+			switch (rewardType) {
 				case "hero_xp":
 					rewardText += `${quest.quest_rewards.value} Hero XP`;
 					break;
 				case "skill_xp":
-					rewardText += `${quest.quest_rewards.value}  ${quest.quest_rewards.skill} Skill XP`;
+					rewardText += `${quest.quest_rewards.value} ${quest.quest_rewards.skill} Skill XP`;
 					break;
 				case "item":
 					rewardText += `Item (ID: ${quest.quest_rewards.item_name})`;
@@ -4576,10 +4578,12 @@ function populateQuestList(active_quests) {
 					}
 					break;
 				case "unlock":
-					rewardText += `Unlock: ${quest.quest_rewards.value}`; // You might want to specify what's being unlocked
+					rewardText += `Unlock: ${quest.quest_rewards.value}`;
 					break;
+				case "magic":
+					rewardText += `Magic: ${quest.quest_rewards.value}`;
+					break
 				default:
-					// Fallback to JSON if type is unknown
 					rewardText += JSON.stringify(quest.quest_rewards);
 			}
 			
@@ -4693,14 +4697,26 @@ function formatCondition(condition) {
     }
 }
 
-// Helper function to format rewards
+//Helper function to format dummy types
+function normalizeRewardType(type) {
+    return type.startsWith("dummy_") ? type.replace("dummy_", "") : type;
+}
+
+// Helper function to format task rewards
 function formatReward(reward) {
     if (!reward) return "";
     
-    switch(reward.type) {
+    const type = normalizeRewardType(reward.type);
+    
+    switch(type) {
         case "hero_xp": return `${reward.value} Hero XP`;
         case "skill_xp": return `${reward.value} ${reward.skill} Skill XP`;
-        case "item": return `Item (ID: ${reward.item_name})`;
+        case "item":
+            let itemText = `Item (ID: ${reward.item_name})`;
+            if (reward.count && reward.count > 0) {
+                itemText += ` x${reward.count}`;
+            }
+            return itemText;
         case "unlock": return `Unlock: ${reward.value}`;
         default: return JSON.stringify(reward);
     }

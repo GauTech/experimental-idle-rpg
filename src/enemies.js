@@ -7,7 +7,7 @@ import { global_battle_state } from "./main.js";
 
 let enemy_templates = {};
 let enemy_killcount = {};
-const rare_items_pool = ["TRUE ULTIMATE POWER","The Spellblade Chronicles vol. 1","Expert pickaxe","Expert axe","Expert sickle","Expert rod","Sparkling Treasure Chest"]; 
+const rare_items_pool = ["TRUE ULTIMATE POWER","The Spellblade Chronicles vol. 1","Expert pickaxe","Expert axe","Expert sickle","Expert rod","Sparkling Treasure Chest","1000 Years Pill"]; 
 //enemy templates; locations create new enemies based on them
 
 

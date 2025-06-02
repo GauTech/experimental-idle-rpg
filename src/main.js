@@ -96,6 +96,8 @@ const global_flags = {
 	is_fishing_level20: false,
 	is_climbing_level10: false,
 	is_swimming_level10: false,
+	is_climbing_level20: false,
+	is_swimming_level20: false,
 };
 const flag_unlock_texts = {
     is_gathering_unlocked: "You have gained the ability to gather new materials!",
@@ -114,6 +116,7 @@ let total_kills = 0;
 let tags_bonus = 1;
 let type_bonus = 1;
 let counter_chance = 0.05;
+let grilled_goo_eaten = 0;
 
 let gathered_materials = {};
 
@@ -496,7 +499,7 @@ function startQuest(quest_id) {
 	
 function questUpdate(effect) {
     const quest_id = effect.id;
-	console.log(effect);
+	
 	if (!active_quests.some(quest => quest.quest_id === quest_id)) {
     return;
 
@@ -504,7 +507,6 @@ function questUpdate(effect) {
 
     if (effect.completion === "y") {
         // Remove from active_quests (modify in place)
-		console.log("Removing quest:" + quest_id);
         for (let i = active_quests.length - 1; i >= 0; i--) {
             if (active_quests[i].quest_id === quest_id) {
                 active_quests.splice(i, 1);
@@ -550,8 +552,13 @@ function questRewardHandler(rewards, quest_id) {
 				parse_quest_rewards(reward);
 				break;
 
-            default:
-                console.warn(`Unknown reward type "${reward.type}" in quest "${quest_id}"`);
+			 default:
+				if (reward.type.startsWith("dummy_")) {
+					console.log(`Skipping dummy reward type "${reward.type}" in quest "${quest_id}"`);
+					break;
+				}
+				console.warn(`Unknown reward type "${reward.type}" in quest "${quest_id}"`);
+
         }
     }
 }
@@ -2514,7 +2521,7 @@ function do_ally_combat_action(ally_index) {
                 total_kills++;
                 log_message(`${target.name} was defeated`, "enemy_defeated");
 
-                const xp_reward = target.xp_value * (current_enemies.length ** 0.3334);
+                const xp_reward = target.xp_value * (current_enemies.length ** 0.3334) * 0.5; //half xp when ally kills enemy
                 add_xp_to_character(xp_reward, true); // XP goes to character, not ally
 
                 var loot = target.get_loot();
@@ -3415,6 +3422,18 @@ if(skill.skill_id === "Swimming" && skill.current_level > 9 && global_flags.is_s
                             activity: locations["Docks"].activities["swimming2"]});
 }
 
+if(skill.skill_id === "Climbing" && skill.current_level > 19 && global_flags.is_climbing_level20 == false){
+	global_flags.is_climbing_level20 = true;
+	unlock_activity({location: locations["Tower"].name, 
+                            activity: locations["Tower"].activities["climbing3"]});
+}
+
+if(skill.skill_id === "Swimming" && skill.current_level > 19 && global_flags.is_swimming_level20 == false){
+	global_flags.is_swimming_level20 = true;
+	unlock_activity({location: locations["Docks"].name, 
+                            activity: locations["Docks"].activities["swimming3"]});
+}
+
 if(skill.category === "Weapon" && skill.current_level > 14){
 
 			if(skills["Axes"].current_level >14 && skills["Swords"].current_level >14 && skills["Spears"].current_level >14 && skills["Hammers"].current_level >14 && skills["Daggers"].current_level >14 && skills["Unarmed"].current_level >14 && skills["Integrated Weapons Mastery"].current_level === 0 ){
@@ -3537,7 +3556,8 @@ function add_xp_to_character(xp_to_add, should_info = true, use_bonus) {
 		 global_flags.is_hero_level20 = true;
 	}
 			if(character.xp.current_level >= 50 ){
-		 global_flags.is_hero_level20 = true;
+		 global_flags.is_hero_level50 = true;
+		 
 	}
 	
 }
@@ -3940,6 +3960,7 @@ function use_item(item_key) {
         return;
     }
 	
+	
 
     const item_effects = item.effects;
     const gluttony_value = item.gluttony_value;
@@ -3954,6 +3975,9 @@ function use_item(item_key) {
     }
     if (id === "Symbiote") {
         add_xp_to_skill({ skill: skills["Symbiote"], xp_to_add: 1.6, use_bonus: false });
+    }
+	if (id === "Grilled goo") {
+        grilled_goo_eaten ++;
     }
 
     let used = false;
@@ -4188,6 +4212,7 @@ function create_save() {
         save_data.total_crafting_attempts = total_crafting_attempts;
         save_data.total_crafting_successes = total_crafting_successes;
         save_data.total_kills = total_kills;
+		save_data.grilled_goo_eaten = grilled_goo_eaten;
 		save_data.gathered_materials = gathered_materials;
         save_data.global_flags = global_flags;
 		save_data.global_battle_state = global_battle_state;
@@ -4486,8 +4511,9 @@ global_battle_state = save_data.global_battle_state || {};
 	enviromental_deaths = save_data.enviromental_deaths || 0;
     total_crafting_attempts = save_data.total_crafting_attempts || 0;
     total_crafting_successes = save_data.total_crafting_successes || 0;
-    total_deaths = save_data.total_deaths || 0;
+    total_kills = save_data.total_kills || 0;
 	gathered_materials = save_data.gathered_materials || {};
+	grilled_goo_eaten = save_data.grilled_goo_eaten || 0;
 
     name_field.value = save_data.character.name;
     character.name = save_data.character.name;
