@@ -98,6 +98,8 @@ const global_flags = {
 	is_swimming_level10: false,
 	is_climbing_level20: false,
 	is_swimming_level20: false,
+	is_farming_level2: false,
+	is_ahandling_level2: false,
 };
 const flag_unlock_texts = {
     is_gathering_unlocked: "You have gained the ability to gather new materials!",
@@ -3436,6 +3438,13 @@ if(skill.skill_id === "Swimming" && skill.current_level > 19 && global_flags.is_
                             activity: locations["Docks"].activities["swimming3"]});
 }
 
+if(skill.skill_id === "Farming" && skill.current_level > 1 && global_flags.is_farming_level2 == false){
+	global_flags.is_farming_level2 = true;
+}
+if(skill.skill_id === "Animal handling" && skill.current_level > 1 && global_flags.is_ahandling_level2 == false){
+	global_flags.is_ahandling_level2 = true;
+}
+
 //unpaired evolutions
 if(skill.skill_id === "Crafting" && skill.current_level > 14 && skills["Salvaging"].current_level == 10 && skills["Scrap Mechanic"].current_level == 0){ //&& skills["Scrap Mechanic"].is_unlocked == false
 	    //skills["Scrap Mechanic"].is_unlocked = true; //unlocking locked skills this way seems to cause errors.
@@ -4663,8 +4672,8 @@ global_battle_state = save_data.global_battle_state || {};
         }
     }); //add xp to skills
 	
-	update_displayed_skill_description(skills["Integrated Weapons Mastery"]);
-	update_displayed_skill_description(skills["Thermal resistance"]);
+	//update_displayed_skill_description(skills["Integrated Weapons Mastery"]);
+	//update_displayed_skill_description(skills["Thermal resistance"]);
 	
 	
 	character.recalculate_xp_thresholds();

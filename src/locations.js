@@ -1571,7 +1571,7 @@ locations["Sewer Depths"].connected_locations.push({location: locations["Deep Se
 	locations["Sanctuary"] = new Location({ 
         connected_locations: [{location: locations["Backstreets"]}],
         description: "A modest settlement occupying the city ruins. It's even growing its own crops.",
-       	dialogues: ["Mad Lumberjack","Smith","Peddler","Fallen","Scholar1","Fireseeker1","Occultist"],
+       	dialogues: ["Mad Lumberjack","Smith","Peddler","Fallen","Scholar1","Fireseeker1","Occultist","Gossip"],
         traders: ["peddler","smith trader"],
         name: "Sanctuary",
 		is_unlocked: false, 
@@ -1600,7 +1600,7 @@ locations["Training Grounds"] = new Location({
         description: "An area used by the Sanctuary inhabitants for sparring and training.",
         name: "Training Grounds",
 		dialogues: ["Instructor"],
-        is_unlocked: true,
+        is_unlocked: false,
     });
 	
 locations["Sanctuary"].connected_locations.push({location: locations["Training Grounds"]});
@@ -3454,7 +3454,7 @@ locations["Time Demon"] = new Challenge_zone({
                 resources: [
                     {name: "Wool", ammount: [[1,1], [1,3]], chance: [0.1, 1]},
                 ], 
-                time_period: [120, 60],
+                time_period: [60, 30],
                 skill_required: [0, 10],
                 scales_with_skill: true,
             },
@@ -3589,7 +3589,7 @@ locations["Docks"].activities = {
             activity_name: "fishing",
             infinite: true,
             starting_text: "Go fishing",
-            skill_xp_per_tick: 2,
+            skill_xp_per_tick: 5,
             is_unlocked: true,
             gained_resources: {
 				  resources: [
@@ -3605,7 +3605,7 @@ locations["Docks"].activities = {
 					{name: "Timid Tuna", ammount: [[1,1], [1,1]], chance: [0.1, 0.7], skill_required: 25},
                     {name: "Curious Catfish", ammount: [[1,1], [1,1]], chance: [0.1, 0.7], skill_required: 30}
                 ],  
-                time_period: [120, 45],
+                time_period: [60, 30],
                 skill_required: [0, 10],
                 scales_with_skill: true,
             },

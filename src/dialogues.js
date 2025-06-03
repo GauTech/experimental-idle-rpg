@@ -785,6 +785,7 @@ dialogues["Mad Herbalist"] = new Dialogue({
 	
 dialogues["Fallen"] = new Dialogue({
         name: "Fallen",
+		is_unlocked: false,
         textlines: {
             "Fallen": new Textline({ 
                 name: "Hello",
@@ -871,6 +872,7 @@ dialogues["Anthropologist"] = new Dialogue({
 	
 dialogues["Occultist"] = new Dialogue({
         name: "Occultist",
+		is_unlocked: false,
         textlines: {
             "Hello": new Textline({ 
                 name: "Hello.",
@@ -984,9 +986,131 @@ dialogues["Gourmet"] = new Dialogue({
 			
     });
 
+dialogues["Gossip"] = new Dialogue({
+        name: "Gossip",
+        textlines: {
+            "Hello": new Textline({ 
+                name: "Hello.",
+                text: "Oh, an injection of fresh blood? Well, it's about time.",
+                unlocks: {
+					textlines: [{dialogue: "Gossip", lines: ["What"]}],
+                },
+                locks_lines: ["Hello"],
+            }),
+			 "What": new Textline({ 
+                name: "What makes you say that?",
+				is_unlocked: false,
+                text: "Because I know everyone, and I don't you. But don't worry, we needn't be strangers for long. \n\n So, my new compatriot. Any burning questions I can help you with?",
+                unlocks: {
+					textlines: [{dialogue: "Gossip", lines: ["Town","Strength","Jobs","Connections"]}],
+                },
+                locks_lines: ["What"],
+            }),
+				 "Town": new Textline({ 
+                name: "What's the word about town?",
+				is_unlocked: false,
+                text: "Not much. This place is frightfully anti-social. A community of recluses selects for that. People never have much to say unless they want something from you.",
+                unlocks: {
+                },
+                locks_lines: ["Town"],
+            }),
+			 "Strength": new Textline({ 
+                name: "How can I get stronger?",
+				is_unlocked: false,
+                text: "Blood, sweat and tears darling. Your sweat, someone else's blood. Ideally. \n\nEquipment helps too.",
+                unlocks: {
+					textlines: [{dialogue: "Gossip", lines: ["Skills","Tears"]}],
+                },
+                locks_lines: ["Strength"],
+            }),
+					 "Tears": new Textline({ 
+                name: "What about the tears?",
+				is_unlocked: false,
+                text: "Oh, I imagine they'll be distributed equitably.",
+                unlocks: {
+					textlines: [{dialogue: "Gossip", lines: ["Skills","Tears"]}],
+                },
+                locks_lines: ["Tears"],
+            }),
+			"Skills": new Textline({ 
+                name: "What can you tell me about skills?",
+				is_unlocked: false,
+                text: "The more time you spend training and the more experience you have doing something, then the better you'll be at it. Actual fighting experience is one way to get that experience, but don't underestimate the power of training activities. Some higher level activities will costs stamina, but the more draining the activity then the faster you'll develop. Or the money grubbers at the training can give you tuition if you grease their palms with silver.",
+                unlocks: {
+					textlines: [{dialogue: "Gossip", lines: ["Else"]}],
+					locations: ["Training Grounds"],
+                },
+                locks_lines: ["Tears"],
+            }),
+				"Else": new Textline({ 
+                name: "Anything else I should know about skills?",
+				is_unlocked: false,
+                text: "Sometimes you'll reach an ephinany and find new ways to develop you talents. This can be finding a way to translate your knowledge from a specific skill into other similar skills. So, if you get good enough with enough different weapons then you can fluidly swap between them without skipping a beat. Or sometimes you might find a method to further develop a skill that you thought had no room left to grow. Usually that happens an ability reaches a plateau,then you experiemnt with other tangentially related skills. Who knows what synergies, combinations and evolutions are out there, just waiting to be discovered.",
+                unlocks: {
+					
+                },
+                locks_lines: ["Else"],
+            }),
+					 "Jobs": new Textline({ 
+                name: "Any jobs for me?",
+				is_unlocked: false,
+                text: "Feeling ambitious are we? Well, if you help out around town then there's some hand-me-downs that I could hand down again.",
+                unlocks: {
+					textlines: [{dialogue: "Gossip", lines: ["VestQuest","BootsQuest"]}],
+					start_quests: ["Starting Out - Part1","Starting Out - Part2"],	
+					flags: ["is_gathering_unlocked", "is_crafting_unlocked"],
+					activities: [{location: "Sanctuary", activity: "fieldwork"},{location: "Sanctuary", activity: "animal care"}]
+                },
+                locks_lines: ["Jobs"],
+            }),
+							 "VestQuest": new Textline({ 
+                name: "I helpted out with farming",
+				is_unlocked: false,
+				required_flags: {yes: ["is_farming_level2"]},
+                text: "So I heard. Here, I hope it fits.",
+                unlocks: {
+					items: [
+					{ name: "Cheap leather vest", quality: 50 },
+					
+				],
+				update_quests: [{type: "QuestUpdate", id: "Starting Out - Part1", completion: "y", updates: [],}]
+				
+                },
+                locks_lines: ["VestQuest"],
+            }),
+									 "BootsQuest": new Textline({ 
+                name: "I helpted out with animal tending",
+				is_unlocked: false,
+				required_flags: {yes: ["is_ahandling_level2"]},
+                text: "So I heard. Here, I they're the right size.",
+                unlocks: {
+					items: [
+					{ name: "Cheap leather shoes", quality: 50 },
+					
+				],
+				update_quests: [{type: "QuestUpdate", id: "Starting Out - Part2", completion: "y", updates: [],}]
+                },
+                locks_lines: ["BootsQuest"],
+            }),
+						 "Connections": new Textline({ 
+                name: "Anyone else who might need my help?",
+				is_unlocked: false,
+                text: "Mmmhmm. A few people spring to mind. Don't let them drag you along too much if you're not up for it though.",
+                unlocks: {
+					dialogues: ["Scholar1","Fireseeker1"],
+                },
+                locks_lines: ["Connections"],
+            }),
+			
+        }
+    });
+
+
+
 
 dialogues["Scholar1"] = new Dialogue({
         name: "Scholar",
+		is_unlocked: false,
         textlines: {
             "Scholar1": new Textline({ 
                 name: "Hello.",
@@ -1394,6 +1518,7 @@ dialogues["Necromancer"] = new Dialogue({
 	
 dialogues["Fireseeker1"] = new Dialogue({
         name: "Fire Seeker",
+		is_unlocked: false,
         textlines: {
            "Fireseeker1": new Textline({ 
                 name: "Hello",

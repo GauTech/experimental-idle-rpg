@@ -4619,6 +4619,9 @@ function populateQuestList(active_quests) {
 					case "requires_item":
 						conditionText = `Requires ${conditionValue} x ${condition.count || 1}`;
 						break;
+						case "skill":
+						conditionText = `Requires ${conditionValue} skill level ${condition.count || 1}`;
+						break;
 					default:
 						conditionText = JSON.stringify(condition);
 				}

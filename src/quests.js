@@ -179,6 +179,24 @@ quests["Crazy for Craniums"] = new Quest({
 	quest_condition: [{requires_item: "Elite Skull", count: 5}],
 });
 
+quests["Starting Out - Part1"] = new Quest({
+    quest_name: "Starting Out - Part1",
+	quest_id: "Starting Out - Part1",
+	quest_description: "The chatty lady has promised me some starter gear if I help out around town.",
+
+	quest_rewards: {type: "dummy_item", item_name: "Cheap leather vest",},
+	quest_condition: [{skill: "Farming", count: 2}],
+});
+
+quests["Starting Out - Part2"] = new Quest({
+    quest_name: "Starting Out - Part2",
+	quest_id: "Starting Out - Part2",
+	quest_description: "The chatty lady has promised me some starter gear if I help out around town.",
+
+	quest_rewards: {type: "dummy_item", item_name: "Cheap leather shoes",},
+	quest_condition: [{skill: "Animal handling", count: 2}],
+});
+
 /*
 quests["Infinite rat saga"] = new Quest({
     quest_name: "???",
