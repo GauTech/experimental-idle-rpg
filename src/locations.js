@@ -520,6 +520,7 @@ class LocationAction{
         description,
         action_text,
         success_text,
+		start_quests = [],
         failure_texts = {},
         required = {},
         conditions = [],
@@ -594,6 +595,8 @@ class LocationAction{
         this.is_unlocked = is_unlocked;
         this.is_finished = false; //really same as is_locked but with a more fitting name
         this.repeatable = repeatable;
+		this.start_quests = start_quests;
+		
     }
 
     /**
@@ -1678,6 +1681,7 @@ locations["Upper Tower"] = new Location({
         description: "The heights of the tower, looming above the rest of the city. The area houses various alchemy tools you could use to your advantage.",
         name: "Upper Tower",
 		dialogues: ["Scholar2","Scholar3"],
+		on_first_visit: [{type: "QuestUpdate", id: "Sky's the Limit", completion: "y", updates: [],}],
         is_unlocked: false,
 		   crafting: {
             is_unlocked: true, 
@@ -1888,6 +1892,7 @@ locations["Cavern"] = new Location({
         connected_locations: [{location: locations["Catacombs"]}],
         description: "Cavern",
 		is_unlocked: false,
+		on_first_visit: [{type: "QuestUpdate", id: "Stone Door to Somewhere", completion: "y", updates: [],}],
 		dialogues: ["Fireseeker2"],
         name: "Cavern",
     });
@@ -3916,6 +3921,7 @@ function get_all_main_locations() {
         "stone_door": new LocationAction({
             action_id: "stone_door",
             starting_text: "Try to push the imposing door open",
+			start_quests: ["Stone Door to Somewhere"],	
             description: "It's an ancient massive stone door, but maybe with enough strength and training you could actually manage to push it at least a tiny bit to create enough space to walk through.",
             action_text: "Huffing and puffing",
             success_text: "Just when you feel like giving up you hear an awful creak and a the door cracks open slightly. Finally, you can continue deeper!",
@@ -3933,6 +3939,7 @@ function get_all_main_locations() {
             success_chances: [1],
           rewards: {
 				locations: [{location: "Cavern"}],
+				move_to: {location: "Cavern"},
 			 },
         }),
 	}
@@ -4123,6 +4130,7 @@ function get_all_main_locations() {
     locations["Tower"].actions = {
         "climbtower": new LocationAction({
             action_id: "climbtower",
+			start_quests: ["Sky's the Limit"],
             starting_text: "Try to climb the tower",
             description: "An old rusty gate. Locked tight.",
             action_text: "Climbing",

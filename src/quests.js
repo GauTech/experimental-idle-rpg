@@ -179,6 +179,24 @@ quests["Crazy for Craniums"] = new Quest({
 	quest_condition: [{requires_item: "Elite Skull", count: 5}],
 });
 
+quests["Sky's the Limit"] = new Quest({
+    quest_name: "Sky's the Limit",
+	quest_id: "Sky's the Limit",
+	quest_description: "The only way up the tower is climbing the exterior. My adventurer’s intuition tells me I need a Climbing skill of at least 9 to make it.",
+
+	quest_rewards: {type: "dummy_location", value: "Upper Tower",},
+	quest_condition: [{clear: "Tower climbing"}],
+});
+
+quests["Stone Door to Somewhere"] = new Quest({
+    quest_name: "Stone Door to Somewhere",
+	quest_id: "Stone Door to Somewhere",
+	quest_description: "The Catacombs house a great stone door leading who knows where. My adventurer’s intuition tells me I need a Strength of at least 25 to open it.",
+
+	quest_rewards: {type: "dummy_location", value: "Cavern",},
+	quest_condition: [{clear: "Open the stone door"}],
+});
+
 quests["Starting Out - Part1"] = new Quest({
     quest_name: "Starting Out - Part1",
 	quest_id: "Starting Out - Part1",

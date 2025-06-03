@@ -48,7 +48,7 @@ effect_templates["Weak healing potion"] = new ActiveEffect({
     effects: {
         stats: {
             health_regeneration_flat: {flat: 6},
-            health_regeneration_percent: {flat: 1},
+            health_regeneration_percent: {percent: 1},
         }
     }
 });

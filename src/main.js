@@ -781,6 +781,12 @@ function start_location_action(selected_action) {
     let conditions_status; //[0,...,1]
 
     start_location_action_display(selected_action);
+	
+	if(location_action.start_quests){
+		for(let i = 0; i < location_action.start_quests.length; i++) { //starts quests
+        startQuest(location_action.start_quests[i]);
+    }
+	}
 
     if(!location_action.can_be_started(character)) {
         finish_location_action(selected_action, -1);
@@ -4639,42 +4645,48 @@ global_battle_state = save_data.global_battle_state || {};
 	hidden_skills = save_data.hidden_skills || [];
 	
 
-    Object.keys(save_data.skills).forEach(function(key){ 
-        if(key === "Literacy") {
-            return; //done separately, for compatibility with older saves (can be eventually remove)
-        }
-			  if (skills[key] && !skills[key].is_parent) {
-				// Restore hidden state
-				if (hidden_skills.includes(key)) {
-					skills[key].is_hidden = true;
-					skills[key].parent_skill = null;
-				} else {
-					skills[key].is_hidden = false;
+			Object.keys(save_data.skills).forEach(function(key){ 
+				if(key === "Literacy") {
+					return; //done separately, for compatibility with older saves (can be eventually remove)
 				}
+				if (skills[key] && !skills[key].is_parent) {
+					// Restore hidden state
+					if (hidden_skills.includes(key)) {
+						skills[key].is_hidden = true;
+						skills[key].parent_skill = null;
+					} else {
+						skills[key].is_hidden = false;
+					}
 
-				// Restore XP
-				if (save_data.skills[key].total_xp > 0) {
-					add_xp_to_skill({
-						skill: skills[key],
-						xp_to_add: save_data.skills[key].total_xp,
-						should_info: false,
-						add_to_parent: true,
-						use_bonus: false,
-						use_pairing: false
-					});
+					// Restore XP
+					if (save_data.skills[key].total_xp > 0) {
+						add_xp_to_skill({
+							skill: skills[key],
+							xp_to_add: save_data.skills[key].total_xp,
+							should_info: false,
+							add_to_parent: true,
+							use_bonus: false,
+							use_pairing: false
+						});
+						
+						// Check for specific skills with >50 XP
+		
+					}
+
+					// Reflect in UI
+					
+				} else if (save_data.skills[key].total_xp > 0) {
+					console.warn(`Skill "${key}" couldn't be found!`);
 				}
-
-				// Reflect in UI
-				
-			} else if (save_data.skills[key].total_xp > 0) {
-				console.warn(`Skill "${key}" couldn't be found!`);
-
-        }
-    }); //add xp to skills
+			}); //add	
 	
-	//update_displayed_skill_description(skills["Integrated Weapons Mastery"]);
-	//update_displayed_skill_description(skills["Thermal resistance"]);
 	
+					if (save_data.skills["Integrated Weapons Mastery"] && save_data.skills["Integrated Weapons Mastery"]?.total_xp > 50) {
+							update_displayed_skill_description(skills["Integrated Weapons Mastery"]);
+						}
+						if (save_data.skills["Thermal resistance"] && save_data.skills["Thermal resistance"]?.total_xp > 50) {
+							update_displayed_skill_description(skills["Thermal resistance"]);
+						}
 	
 	character.recalculate_xp_thresholds();
 	add_xp_to_character(save_data.character.xp.total_xp, false);

@@ -4583,6 +4583,9 @@ function populateQuestList(active_quests) {
 				case "magic":
 					rewardText += `Magic: ${quest.quest_rewards.value}`;
 					break
+				case "location":
+					rewardText += `Location: ${quest.quest_rewards.value}`;
+					break
 				default:
 					rewardText += JSON.stringify(quest.quest_rewards);
 			}
