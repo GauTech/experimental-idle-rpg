@@ -3776,23 +3776,23 @@ locations["Forest"].activities = {
             },
 			unlock_text: "After clearing out the enemies you can now cut trees.",
         }),
-        "herbalism": new LocationActivity({
-            activity_name: "herbalism",
-            infinite: true,
-            starting_text: "Gather useful herbs throughout the forest",
-            skill_xp_per_tick: 2,
-            is_unlocked: false,
-            gained_resources: {
-                resources: [
-                    {name: "Oneberry", ammount: [[1,1], [1,1]], chance: [0.7, 1.5]},
-                    {name: "Golmoon leaf", ammount: [[1,1], [1,1]], chance: [0.2, 1]},
-                    {name: "Belmart leaf", ammount: [[1,1], [1,1]], chance: [0.1, 0.7]}
-                ], 
-                time_period: [20, 10],
-                skill_required: [0, 20],
-                scales_with_skill: true,
-            },
-            require_tool: false,
+			"herbalism": new LocationActivity({
+				activity_name: "herbalism",
+				infinite: true,
+				starting_text: "Gather useful herbs throughout the forest",
+				skill_xp_per_tick: 2,
+				gained_resources: {
+					resources: [
+						{name: "Oneberry", ammount: [[1,1], [1,1]], chance: [0.7, 1.5]},
+						{name: "Golmoon leaf", ammount: [[1,1], [1,1]], chance: [0.2, 1]},
+						{name: "Belmart leaf", ammount: [[1,1], [1,1]], chance: [0.1, 0.7], skill_required: 5},
+						{name: "Sunberry", ammount: [[1,1], [1,1]], chance: [0.08, 0.5], skill_required: 10}
+					],
+					time_period: [20, 10],
+					skill_required: [0, 20],
+					scales_with_skill: true,
+				},
+				require_tool: false,
 			}),
     };
 locations["Dark Woods"].activities = {
@@ -3813,7 +3813,68 @@ locations["Dark Woods"].activities = {
             },
 			unlock_text: "After clearing out the enemies you can now cut trees.",
 			}),	
-}
+    "herbalism": new LocationActivity({
+        activity_name: "herbalism",
+        infinite: true,
+        starting_text: "Search the eerie woods for potent and unusual herbs",
+        skill_xp_per_tick: 20,
+        gained_resources: {
+            resources: [
+                {name: "Bloodnettle", ammount: [[1,1], [1,1]], chance: [0.5, 1]},
+                {name: "Starshade", ammount: [[1,1], [1,1]], chance: [0.25, 0.9], skill_required: 10},
+				{name: "Glowcap", ammount: [[1,1], [1,1]], chance: [0.1, 0.5], skill_required: 16},
+                {name: "Veindust", ammount: [[1,1], [1,1]], chance: [0.2, 0.7], skill_required: 22},
+                {name: "Duskrill", ammount: [[1,1], [1,1]], chance: [0.15, 0.6], skill_required: 28},
+                
+            ],
+            time_period: [30, 60],
+            skill_required: [20, 40],
+            scales_with_skill: true,
+        },
+        require_tool: true,
+    }),
+};
+
+
+locations["Lava Lake"].activities = {
+    "herbalism": new LocationActivity({
+        activity_name: "herbalism",
+        infinite: true,
+        starting_text: "Brave the scorched terrain to harvest heat-loving plants",
+        skill_xp_per_tick: 10,
+        gained_resources: {
+            resources: [
+                {name: "Cinderpetal", ammount: [[1,1], [1,2]], chance: [0.5, 1]},
+                {name: "Ashroot", ammount: [[1,1], [1,1]], chance: [0.25, 0.8], skill_required: 20},
+                {name: "Flamevine", ammount: [[1,1], [1,1]], chance: [0.12, 0.5], skill_required: 25}
+            ],
+            time_period: [20, 45],
+            skill_required: [15, 30],
+            scales_with_skill: true,
+        },
+        require_tool: true,
+    }),
+};
+
+locations["Glacier Wing"].activities = {
+    "herbalism": new LocationActivity({
+        activity_name: "herbalism",
+        infinite: true,
+        starting_text: "Scour the frigid terrain for resilient frost herbs",
+        skill_xp_per_tick: 15,
+        gained_resources: {
+            resources: [
+                {name: "Frostleaf", ammount: [[1,1], [1,2]], chance: [0.6, 1.2]},
+                {name: "Winterbloom", ammount: [[1,1], [1,1]], chance: [0.3, 0.8], skill_required: 20},
+                {name: "Cryoroot", ammount: [[1,1], [1,1]], chance: [0.15, 0.5], skill_required: 25}
+            ],
+               time_period: [20, 45],
+            skill_required: [15, 30],
+            scales_with_skill: true,
+        },
+        require_tool: true,
+    }),
+};
 	
 locations["Royal Gardens"].activities = {
 		"woodcutting2": new LocationActivity({

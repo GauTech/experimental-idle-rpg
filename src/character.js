@@ -67,6 +67,7 @@ class Hero extends InventoryHaver {
                                 books: {},
                                 light_level: {},
                                 environment: {},
+								elixirs: {},
                         },
                         multiplier: {
                                 skills: {},
@@ -372,6 +373,24 @@ character.stats.add_skill_milestone_bonus = function ({stats = {}, xp_multiplier
         });
 }
 
+character.stats.add_elixir_bonus = function ({stats = {}}) {
+    Object.keys(stats).forEach(stat => {
+        if (stats[stat].flat) {
+            const current = character.stats.flat.elixirs[stat] || 0;
+
+            // Use log base 3 with change-of-base formula
+            const logBase3 = (x) => Math.log(x) / Math.log(3);
+
+            const threshold = 9;
+            const effectiveCurrent = Math.max(0, current - threshold);
+            const scalingFactor = current < threshold ? 1 : 1 / (1 + logBase3(effectiveCurrent + 1));
+
+            const scaledValue = stats[stat].flat * scalingFactor;
+            character.stats.flat.elixirs[stat] = current + scaledValue;
+        }
+    });
+};
+
 /**
  * adds skill milestone bonuses to character stats
  * called when a new milestone is reached
@@ -417,21 +436,39 @@ character.stats.add_book_bonus = function ({multipliers = {}, xp_multipliers = {
     }
 };
 
-character.stats.add_active_effect_bonus = function() {
-        character.stats.flat.active_effect = {};
-        character.stats.multiplier.active_effect = {};
-        Object.values(active_effects).forEach(effect => {
-                for(const [key, value] of Object.entries(effect.effects.stats)) {
-                        if(value.flat) {
-                                character.stats.flat.active_effect[key] = (character.stats.flat.active_effect[key] || 0) + value.flat;
-                        }
 
-                        if(value.multiplier) {
-                                character.stats.multiplier.active_effect[key] = (character.stats.multiplier.active_effect[key] || 1) * value.multiplier;
-                        }
+
+character.stats.add_active_effect_bonus = function () {
+	character.stats.immunities = {};
+    character.stats.flat.active_effect = {};
+    character.stats.multiplier.active_effect = {};
+
+    Object.values(active_effects).forEach(effect => {
+        const statEffects = effect.effects?.stats;
+
+        if (statEffects) {
+            for (const [key, value] of Object.entries(statEffects)) {
+                if (value.flat) {
+                    character.stats.flat.active_effect[key] = (character.stats.flat.active_effect[key] || 0) + value.flat;
                 }
-        });
-}
+
+                if (value.multiplier) {
+                    character.stats.multiplier.active_effect[key] = (character.stats.multiplier.active_effect[key] || 1) * value.multiplier;
+                }
+            }
+        }
+		    const immunityEffects = effect.effects?.immunities;
+    if (immunityEffects) {
+        for (const [type, isImmune] of Object.entries(immunityEffects)) {
+            if (isImmune) {
+                character.stats.immunities[type] = true;
+            }
+        }
+    }
+
+        
+    });
+};
 
 /**
  * add all stat bonuses from equipment, including def/atk

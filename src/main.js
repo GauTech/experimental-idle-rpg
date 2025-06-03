@@ -2103,58 +2103,97 @@ function apply_on_strike_effects(attacker) {
 const status_effects = ["poison", "freeze", "burn", "stun", "toxic"];
 
 for (const effect_name of status_effects) {
+    // Skip this effect if the player is immune
+    if (character.stats.immunities?.[effect_name]) continue;
+
     const effect_data = attacker.on_strike[effect_name];
-    
+
     if (effect_data) {
         // Support legacy format (direct duration), or new format ({duration, chance})
         let duration, chance;
         if (typeof effect_data === "object" && effect_data !== null) {
             duration = effect_data.duration;
-            chance = effect_data.chance ?? 1; // default to 100% chance if not specified
+            chance = effect_data.chance ?? 1;
         } else {
             duration = effect_data;
             chance = 1;
         }
 
-        // Roll to apply effect
         if (Math.random() <= chance) {
             let stats = {};
+
             switch (effect_name) {
-					case "poison":
-						stats = {
-							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
-						};
-						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 3});
-						break;
-						  case "toxic":
-						stats = {
-							health_loss_flat: { flat: (Math.round(-5 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
-						};
-						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 20});
-						break;
-					case "freeze":
-						stats = {
-							attack_speed: { multiplier: (Math.round(0.5 * (1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))*10))/10 },
-						};
-						add_xp_to_skill({skill: skills["Cold resistance"], xp_to_add: 3});
-						break;
-					case "burn":
-						stats = {
-							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))*10))/10 },
-						};
-						add_xp_to_skill({skill: skills["Heat resistance"], xp_to_add: 3});
-						break;
-					case "stun":
-						stats = {
-							attack_speed: { multiplier: 0.1 }, // placeholder
-						};
-						break;
-				}
+                case "poison":
+                    stats = {
+                        health_loss_flat: {
+                            flat: Math.round(
+                                -2 *
+                                    (1 -
+                                        skills["Poison resistance"].current_level /
+                                            skills["Poison resistance"].max_level) *
+                                    10
+                            ) / 10,
+                        },
+                    };
+                    add_xp_to_skill({ skill: skills["Poison resistance"], xp_to_add: 3 });
+                    break;
+
+                case "toxic":
+                    stats = {
+                        health_loss_flat: {
+                            flat: Math.round(
+                                -5 *
+                                    (1 -
+                                        skills["Poison resistance"].current_level /
+                                            skills["Poison resistance"].max_level) *
+                                    10
+                            ) / 10,
+                        },
+                    };
+                    add_xp_to_skill({ skill: skills["Poison resistance"], xp_to_add: 20 });
+                    break;
+
+                case "freeze":
+                    stats = {
+                        attack_speed: {
+                            multiplier: Math.round(
+                                0.5 *
+                                    (1 -
+                                        skills["Cold resistance"].current_level /
+                                            skills["Cold resistance"].max_level) *
+                                    10
+                            ) / 10,
+                        },
+                    };
+                    add_xp_to_skill({ skill: skills["Cold resistance"], xp_to_add: 3 });
+                    break;
+
+                case "burn":
+                    stats = {
+                        health_loss_flat: {
+                            flat: Math.round(
+                                -2 *
+                                    (1 -
+                                        skills["Heat resistance"].current_level /
+                                            skills["Heat resistance"].max_level) *
+                                    10
+                            ) / 10,
+                        },
+                    };
+                    add_xp_to_skill({ skill: skills["Heat resistance"], xp_to_add: 3 });
+                    break;
+
+                case "stun":
+                    stats = {
+                        attack_speed: { multiplier: 0.1 },
+                    };
+                    break;
+            }
 
             const effect = new ActiveEffect({
                 name: effect_name.charAt(0).toUpperCase() + effect_name.slice(1),
                 duration,
-                effects: { stats }
+                effects: { stats },
             });
 
             active_effects[effect.id] = effect;
@@ -2162,9 +2201,8 @@ for (const effect_name of status_effects) {
 
             update_displayed_effects();
             character.stats.add_active_effect_bonus();
-			update_character_stats();
+            update_character_stats();
             update_displayed_stats();
-			
 
             log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
         }
@@ -2175,6 +2213,7 @@ for (const effect_name of status_effects) {
 }
 
 function apply_on_connectedstrike_effects(attacker) {
+	console.log("con strike effects called, attacker:", attacker);
     if (!attacker.on_connectedstrike) return;
 
     const data = attacker.on_connectedstrike;
@@ -2206,73 +2245,114 @@ function apply_on_connectedstrike_effects(attacker) {
     }
 
     // Handle status effects
-    const status_effects = ["poison", "freeze", "burn", "stun", "toxic"];
+   const status_effects = ["poison", "freeze", "burn", "stun", "toxic"];
 
-    for (const effect_name of status_effects) {
-        const effect_data = data[effect_name];
-        
-        if (effect_data) {
-            let duration, chance;
-            if (typeof effect_data === "object" && effect_data !== null) {
-                duration = effect_data.duration;
-                chance = effect_data.chance ?? 1;
-            } else {
-                duration = effect_data;
-                chance = 1;
+for (const effect_name of status_effects) {
+    // Skip this effect if the player is immune
+    if (character.stats.immunities?.[effect_name]) continue;
+
+    const effect_data = attacker.on_connectedstrike[effect_name];
+
+    if (effect_data) {
+        // Support legacy format (direct duration), or new format ({duration, chance})
+        let duration, chance;
+        if (typeof effect_data === "object" && effect_data !== null) {
+            duration = effect_data.duration;
+            chance = effect_data.chance ?? 1;
+        } else {
+            duration = effect_data;
+            chance = 1;
+        }
+
+        if (Math.random() <= chance) {
+            let stats = {};
+
+            switch (effect_name) {
+                case "poison":
+                    stats = {
+                        health_loss_flat: {
+                            flat: Math.round(
+                                -2 *
+                                    (1 -
+                                        skills["Poison resistance"].current_level /
+                                            skills["Poison resistance"].max_level) *
+                                    10
+                            ) / 10,
+                        },
+                    };
+                    add_xp_to_skill({ skill: skills["Poison resistance"], xp_to_add: 3 });
+                    break;
+
+                case "toxic":
+                    stats = {
+                        health_loss_flat: {
+                            flat: Math.round(
+                                -5 *
+                                    (1 -
+                                        skills["Poison resistance"].current_level /
+                                            skills["Poison resistance"].max_level) *
+                                    10
+                            ) / 10,
+                        },
+                    };
+                    add_xp_to_skill({ skill: skills["Poison resistance"], xp_to_add: 20 });
+                    break;
+
+                case "freeze":
+                    stats = {
+                        attack_speed: {
+                            multiplier: Math.round(
+                                0.5 *
+                                    (1 -
+                                        skills["Cold resistance"].current_level /
+                                            skills["Cold resistance"].max_level) *
+                                    10
+                            ) / 10,
+                        },
+                    };
+                    add_xp_to_skill({ skill: skills["Cold resistance"], xp_to_add: 3 });
+                    break;
+
+                case "burn":
+                    stats = {
+                        health_loss_flat: {
+                            flat: Math.round(
+                                -2 *
+                                    (1 -
+                                        skills["Heat resistance"].current_level /
+                                            skills["Heat resistance"].max_level) *
+                                    10
+                            ) / 10,
+                        },
+                    };
+                    add_xp_to_skill({ skill: skills["Heat resistance"], xp_to_add: 3 });
+                    break;
+
+                case "stun":
+                    stats = {
+                        attack_speed: { multiplier: 0.1 },
+                    };
+                    break;
             }
 
-            if (Math.random() <= chance) {
-                let stats = {};
-					switch (effect_name) {
-					case "poison":
-						stats = {
-							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
-						};
-						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 3});
-						break;
-						  case "toxic":
-						stats = {
-							health_loss_flat: { flat: (Math.round(-5 * (1-(skills["Poison resistance"].current_level/skills["Poison resistance"].max_level))*10))/10 },
-						};
-						add_xp_to_skill({skill: skills["Poison resistance"], xp_to_add: 20});
-						break;
-					case "freeze":
-						stats = {
-							attack_speed: { multiplier: (Math.round(0.5 * (1-(skills["Cold resistance"].current_level/skills["Cold resistance"].max_level))*10))/10 },
-						};
-						add_xp_to_skill({skill: skills["Cold resistance"], xp_to_add: 3});
-						break;
-					case "burn":
-						stats = {
-							health_loss_flat: { flat: (Math.round(-2 * (1-(skills["Heat resistance"].current_level/skills["Heat resistance"].max_level))*10))/10 },
-						};
-						add_xp_to_skill({skill: skills["Heat resistance"], xp_to_add: 3});
-						break;
-					case "stun":
-						stats = {
-							attack_speed: { multiplier: 0.1 }, // placeholder
-						};
-						break;
-				}
+            const effect = new ActiveEffect({
+                name: effect_name.charAt(0).toUpperCase() + effect_name.slice(1),
+                duration,
+                effects: { stats },
+            });
 
-                const effect = new ActiveEffect({
-                    name: effect_name.charAt(0).toUpperCase() + effect_name.slice(1),
-                    duration,
-                    effects: { stats }
-                });
+            active_effects[effect.id] = effect;
+            effect_templates[effect.id] = effect;
 
-                active_effects[effect.id] = effect;
-                effect_templates[effect.id] = effect;
+            update_displayed_effects();
+            character.stats.add_active_effect_bonus();
+            update_character_stats();
+            update_displayed_stats();
 
-                update_displayed_effects();
-                character.stats.add_active_effect_bonus();
-				update_character_stats();
-                update_displayed_stats();
-
-                log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
-            }
+            log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
         }
     }
+}
 }
 
 function maybe_log_bark(bark) {
@@ -4048,13 +4128,13 @@ function use_item(item_key) {
         open_loot_chest(item_key);
         return;
     }
-	
-	
 
     const item_effects = item.effects;
     const gluttony_value = item.gluttony_value;
     const mana_value = item.mana_value;
-    const cures = item.cures || []; // Get list of effects to cure or empty array if none
+    const cures = item.cures || [];
+    const instant_heal = item.instant_health_recovery || 0;
+    const elixir_bonus = item.elixir_bonus || {};
 
     add_xp_to_skill({ skill: skills["Gluttony"], xp_to_add: gluttony_value });
     add_xp_to_skill({ skill: skills["Mana Expansion"], xp_to_add: mana_value });
@@ -4066,28 +4146,26 @@ function use_item(item_key) {
         add_xp_to_skill({ skill: skills["Symbiote"], xp_to_add: 1.6, use_bonus: false });
     }
 	if (id === "Grilled goo") {
-        grilled_goo_eaten ++;
+        grilled_goo_eaten++;
     }
 
     let used = false;
-    console.log(paired_skill_sets);
-    // First, cure any specified effects
+
+    // Cures
     if (cures.length > 0) {
         cures.forEach(effectName => {
             if (active_effects[effectName]) {
                 delete active_effects[effectName];
                 used = true;
             }
-			update_displayed_effects();
-            character.stats.add_active_effect_bonus();
-			update_character_stats();
-            update_displayed_stats();
         });
+        update_displayed_effects();
+        character.stats.add_active_effect_bonus();
+        update_character_stats();
+        update_displayed_stats();
     }
-	
-	
-    
-    // Then apply new effects
+
+    // Effects
     for (let i = 0; i < item_effects.length; i++) {
         const duration = item_effects[i].duration;
         if (!active_effects[item_effects[i].effect] || active_effects[item_effects[i].effect].duration < duration) {
@@ -4099,13 +4177,31 @@ function use_item(item_key) {
         }
     }
 
+    // Instant health recovery (only apply if not at full health)
+    const current_hp = character.stats.full.health;
+    const max_hp = character.stats.full.max_health;
+
+    if (instant_heal > 0 && current_hp < max_hp) {
+        character.stats.full.health = Math.min(max_hp, current_hp + instant_heal);
+        used = true;
+    }
+
+    // Elixir stat bonus
+    if (elixir_bonus.stats && Object.keys(elixir_bonus.stats).length > 0) {
+        character.stats.add_elixir_bonus({ stats: elixir_bonus.stats });
+        update_character_stats();
+        update_displayed_stats();
+        used = true;
+    }
+
+    // Apply effect visuals if any applied
     if (used) {
         update_displayed_effects();
         character.stats.add_active_effect_bonus();
         update_character_stats();
+        update_displayed_stats();
+        remove_from_character_inventory([{ item_key }]);
     }
-
-    remove_from_character_inventory([{ item_key }]);
 }
 
 function open_loot_chest(item_key) {
@@ -4485,6 +4581,14 @@ function create_save() {
 		
 		save_data["hidden_skills"] = hidden_skills;
 		save_data["paired_skill_sets"] = paired_skill_sets.map(set => Array.from(set));
+		
+		save_data["used_elixirs"] = {};
+
+		for (const stat in character.stats.flat.elixirs) {
+			if (character.stats.flat.elixirs[stat] > 0) {
+				save_data["used_elixirs"][stat] = character.stats.flat.elixirs[stat];
+			}
+		}
 		
 			
 });
@@ -5306,6 +5410,19 @@ if (save_data.current_party) {
             create_new_bestiary_entry(enemy_name);
         });
     }
+	
+	if (save_data["used_elixirs"]) {
+    character.stats.flat.elixirs = {};
+
+    for (const stat in save_data["used_elixirs"]) {
+        character.stats.flat.elixirs[stat] = save_data["used_elixirs"][stat];
+    }
+
+    // Reapply bonus and refresh displays
+    character.stats.add_active_effect_bonus();
+    update_character_stats();
+    update_displayed_stats();
+}
 
     update_character_stats();
     update_displayed_character_inventory();

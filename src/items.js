@@ -412,6 +412,8 @@ class UsableItem extends Item {
         this.stackable = true;
         this.effects = item_data.effects || {};
 		this.cures = item_data.cures || [];
+		this.elixir_bonus = item_data.elixir_bonus;
+		this.instant_health_recovery = item_data.instant_health_recovery;
 
         this.tags["usable"] = true;
     }
@@ -1804,6 +1806,115 @@ item_templates["Chitin Shard"] = new Junk({
         material_type: "healing herb",
     });
 
+item_templates["Cinderpetal"] = new Material({
+    name: "Cinderpetal",
+    description: "Bright red-orange petals that radiate faint warmth and can be used in burn salves and stimulants.",
+    value: 10,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "fire herb",
+});
+
+item_templates["Ashroot"] = new Material({
+    name: "Ashroot",
+    description: "A blackened root found near volcanic soil, known to boost resistance against extreme heat.",
+    value: 22,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "fire herb",
+});
+
+item_templates["Flamevine"] = new Material({
+    name: "Flamevine",
+    description: "A creeping vine with ember-colored leaves that ignite slightly when crushed. Used in alchemical accelerants.",
+    value: 45,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "fire herb",
+});
+
+item_templates["Frostleaf"] = new Material({
+    name: "Frostleaf",
+    description: "Pale blue leaves that feel icy to the touch, often used to reduce swelling and cool fevers.",
+    value: 10,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "ice herb",
+});
+
+item_templates["Winterbloom"] = new Material({
+    name: "Winterbloom",
+    description: "A rare flower that blooms during snowfall, said to contain concentrated cold energy used in potions.",
+    value: 22,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "ice herb",
+});
+
+item_templates["Cryoroot"] = new Material({
+    name: "Cryoroot",
+    description: "A thick root with a frosty sheen, used to make poultices for numbing pain and frost protection.",
+    value: 44,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "ice herb",
+});
+
+item_templates["Bloodnettle"] = new Material({
+    name: "Bloodnettle",
+    description: "A stinging herb that improves blood flow and can rapidly close minor wounds when properly prepared.",
+    value: 10,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "healing herb",
+});
+
+item_templates["Starshade"] = new Material({
+    name: "Starshade",
+    description: "A night-blooming plant used to reduce fevers and calm frantic patients. Rare in most regions.",
+    value: 10,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "cooling herb",
+});
+
+item_templates["Veindust"] = new Material({
+    name: "Veindust",
+    description: "A silvery moss that grows on old ruins, useful for promoting blood clotting and magical focus.",
+    value: 25,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "mystic herb",
+});
+
+item_templates["Duskrill"] = new Material({
+    name: "Duskrill",
+    description: "Soft, dark purple tendrils used in both sedatives and mild poisons depending on preparation.",
+    value: 26,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "versatile herb",
+});
+
+item_templates["Sunberry"] = new Material({
+    name: "Sunberry",
+    description: "Golden berries with energizing properties, often added to stimulants and warming tonics.",
+    value: 42,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "energizing herb",
+});
+
+item_templates["Glowcap"] = new Material({
+    name: "Glowcap",
+    description: "A bioluminescent fungus used to sterilize wounds and light alchemical mixtures.",
+    value: 47,
+    saturates_market: true,
+    price_recovers: true,
+    material_type: "disinfectant herb",
+});
+
+
     item_templates["Wool"] = new Material({
         name: "Wool", 
         description: "A handful of wool, raw and unprocessed",
@@ -1927,6 +2038,12 @@ item_templates["Chitin Shard"] = new Junk({
 		    item_templates["Succulent Shark"] = new OtherItem({
         name: "Succulent Shark", 
         description: "A rare prize found whilst fishing.", 
+        value: 1000,
+        saturates_market: false,
+    });
+		    item_templates["Miracle Weed"] = new OtherItem({
+        name: "Miracle Weed", 
+        description: "A rare prize found whilst gathering herbs.", 
         value: 1000,
         saturates_market: false,
     });
@@ -3829,7 +3946,28 @@ item_templates["Chitin Shard"] = new Junk({
 
 //usables:
 (function(){
+	
+	item_templates["Minor Healing Salve"] = new UsableItem({
+    name: "Minor Healing Salve",
+    description: "Heals a small amount of health instantly.",
+    value: 30,
+    instant_health_recovery: 15,
+});
 
+item_templates["Standard Healing Potion"] = new UsableItem({
+    name: "Standard Healing Potion",
+    description: "Restores a moderate amount of health right away.",
+    value: 120,
+    instant_health_recovery: 50,
+});
+
+item_templates["Major Healing Elixir"] = new UsableItem({
+    name: "Major Healing Elixir",
+    description: "Rapidly recovers a large portion of health.",
+    value: 1000,
+    instant_health_recovery: 300,
+});
+// healing active effects
 	
 item_templates["Discount healing powder"] = new UsableItem({
         name: "Discount healing powder", 
@@ -3868,6 +4006,119 @@ item_templates["Panacea"] = new UsableItem({
 		gluttony_value: 30,
         effects: [{effect: "Weak healing potion", duration: 10}],
     });
+
+item_templates["Burn Ointment"] = new UsableItem({
+    name: "Burn Ointment",
+    description: "Soothes scorched skin and neutralizes burn effects.",
+    value: 50,
+    cures: ["Burn"],
+});
+
+item_templates["Cryogel"] = new UsableItem({
+    name: "Cryogel",
+    description: "Rapidly warms the body, countering frostbite and freezing effects.",
+    value: 50,
+    cures: ["Freeze"],
+});
+
+item_templates["Focus Salts"] = new UsableItem({
+    name: "Focus Salts",
+    description: "Sharpen the senses and awaken the stunned mind.",
+    value: 50,
+    cures: ["Stun"],
+});
+//Immunity items
+
+item_templates["Fireproof Draught"] = new UsableItem({
+    name: "Fireproof Draught",
+    description: "Grants temporary immunity to burns.",
+    value: 300,
+    effects: [{effect: "Burn immunity", duration: 60}],
+	cures: ["Burn"],
+});
+
+item_templates["Cryo Coating"] = new UsableItem({
+    name: "Cryo Coating",
+    description: "Prevents the body from freezing for a short time.",
+    value: 300,
+    effects: [{effect: "Freeze immunity", duration: 60}],
+	cures: ["Freeze"],
+});
+
+item_templates["Shockguard Brew"] = new UsableItem({
+    name: "Shockguard Brew",
+    description: "Protects the nervous system from stunning effects.",
+    value: 300,
+    effects: [{effect: "Stun immunity", duration: 60}],
+	cures: ["Stun"],
+});
+
+item_templates["Venom Ward"] = new UsableItem({
+    name: "Venom Ward",
+    description: "Immunizes the body against most poisons temporarily.",
+    value: 300,
+    effects: [{effect: "Poison immunity", duration: 60}],
+	cures: ["Poison"],
+});
+
+/// elixirs
+
+item_templates["Elixir of Strength"] = new UsableItem({
+    name: "Elixir of Strength",
+    description: "A small but permanent boost to raw physical power.",
+    value: 10000,
+    elixir_bonus: {
+        stats: {
+            "strength": {flat: 1},
+        },
+    },
+});
+
+item_templates["Elixir of Dexterity"] = new UsableItem({
+    name: "Elixir of Dexterity",
+    description: "A small but permanent boost to coordination and precision.",
+    value: 10000,
+    elixir_bonus: {
+        stats: {
+            "dexterity": {flat: 1},
+        },
+    },
+});
+
+item_templates["Elixir of Agility"] = new UsableItem({
+    name: "Elixir of Agility",
+    description: "A small but permanent boost to quickness and mobility.",
+    value: 10000,
+    elixir_bonus: {
+        stats: {
+            "agility": {flat: 1},
+        },
+    },
+});
+
+item_templates["Elixir of Intuition"] = new UsableItem({
+    name: "Elixir of Intuition",
+    description: "A small but permanent boost to perception and gut feeling.",
+    value: 10000,
+    elixir_bonus: {
+        stats: {
+            "intuition": {flat: 1},
+        },
+    },
+});
+
+item_templates["Elixir of Magic"] = new UsableItem({
+    name: "Elixir of Magic",
+    description: "A small but permanent boost to magical ability.",
+    value: 10000,
+    elixir_bonus: {
+        stats: {
+            "magic": {flat: 1},
+        },
+    },
+});
+
+// foods
 
 
 item_templates["Grilled goo"] = new UsableItem({

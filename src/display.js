@@ -404,19 +404,37 @@ function create_item_tooltip_content({item, options={}}) {
 		}	
 		
     } 
-    else if (item.item_type === "USABLE") {
-        item_tooltip += `<br>`;
+		else if (item.item_type === "USABLE") {
+			item_tooltip += `<br>`;
 
-        if(item.effects.length > 0) {
-            item_tooltip += "<br>Effects: "
-        }
-        for(let i = 0; i < item.effects.length; i++) {
-            item_tooltip += create_effect_tooltip(item.effects[i].effect, item.effects[i].duration).outerHTML;
-        }
-		  if(item.gluttony_value) {
-            item_tooltip += `<br><br>Gluttony Value: ${item.gluttony_value}  `;
-        }
-    } else if(item.item_type === "BOOK") {
+			// Add elixir bonus if it exists
+			if (item.elixir_bonus) {
+				item_tooltip += "<br>Elixir Effect: ";
+				if (item.elixir_bonus.stats) {
+					for (const [stat, bonus] of Object.entries(item.elixir_bonus.stats)) {
+						if (bonus.flat) {
+							item_tooltip += `+${bonus.flat} ${stat} (log3 scaling after 10 bonus accumulated)`;
+						}
+						// Add other bonus types here if needed
+					}
+				}
+			}
+
+			if (item.effects.length > 0) {
+				item_tooltip += "<br>Effects: ";
+			}
+			for (let i = 0; i < item.effects.length; i++) {
+				item_tooltip += create_effect_tooltip(item.effects[i].effect, item.effects[i].duration).outerHTML;
+			}
+			
+			if (item.gluttony_value) {
+				item_tooltip += `<br><br>Gluttony Value: ${item.gluttony_value}  `;
+			}
+			
+			if (item.instant_health_recovery) {
+				item_tooltip += `<br><br>Instant Health Recovery: ${item.instant_health_recovery}  `;
+			}
+		} else if(item.item_type === "BOOK") {
         if(!book_stats[item.name].is_finished) {
             item_tooltip += `<br><br>Time to read: ${item.getRemainingTime()} minutes`;
         }
@@ -497,36 +515,42 @@ function create_effect_tooltip(effect_name, duration) {
     top_div.appendChild(duration_span);
     tooltip.appendChild(top_div);
 
-    const effects_div = document.createElement("div");
-for(const [key, stat_value] of Object.entries(effect.effects.stats)) {
-    const displayName = capitalize_first_letter(key.replaceAll("_", " ").replace("flat","").replace("percent","").trim());
-    
-    // Handle regeneration bonuses (flat only)
-    if(key === "health_regeneration_flat" || key === "stamina_regeneration_flat" || key === "mana_regeneration_flat") {   
-        const sign = stat_value.flat > 0 ? "+" : "";
-        tooltip.innerHTML += `<br>${displayName}: ${sign}${stat_value.flat}`;
-    } 
-    // Handle regeneration percent
-    else if(key === "health_regeneration_percent" || key === "stamina_regeneration_percent" || key === "mana_regeneration_percent") {
-        const sign = stat_value.percent > 0 ? "+" : "";
-        tooltip.innerHTML += `<br>${displayName}: ${sign}${stat_value.percent}%`;
-    } 
-    // Handle all other stats
-    else {
-        // Display flat modifier if it exists
-        if (stat_value.flat !== undefined) {
-            const sign = stat_value.flat > 0 ? "+" : "";
-            tooltip.innerHTML += `<br>${displayName}: ${sign}${stat_value.flat}`;
-        }
-        
-        // Display multiplier if it exists (on new line)
-        if (stat_value.multiplier !== undefined) {
-            tooltip.innerHTML += `<br>${displayName}: x${stat_value.multiplier}`;
+    // Handle stats effects (existing functionality)
+    if (effect.effects.stats) {
+        for(const [key, stat_value] of Object.entries(effect.effects.stats)) {
+            const displayName = capitalize_first_letter(key.replaceAll("_", " ").replace("flat","").replace("percent","").trim());
+            
+            if(key === "health_regeneration_flat" || key === "stamina_regeneration_flat" || key === "mana_regeneration_flat") {   
+                const sign = stat_value.flat > 0 ? "+" : "";
+                tooltip.innerHTML += `<br>${displayName}: ${sign}${stat_value.flat}`;
+            } 
+            else if(key === "health_regeneration_percent" || key === "stamina_regeneration_percent" || key === "mana_regeneration_percent") {
+                const sign = stat_value.percent > 0 ? "+" : "";
+                tooltip.innerHTML += `<br>${displayName}: ${sign}${stat_value.percent}%`;
+            } 
+            else {
+                if (stat_value.flat !== undefined) {
+                    const sign = stat_value.flat > 0 ? "+" : "";
+                    tooltip.innerHTML += `<br>${displayName}: ${sign}${stat_value.flat}`;
+                }
+                if (stat_value.multiplier !== undefined) {
+                    tooltip.innerHTML += `<br>${displayName}: x${stat_value.multiplier}`;
+                }
+            }
         }
     }
-}
 
-    tooltip.appendChild(effects_div);
+    // Handle immunity effects (new functionality)
+    if (effect.effects.immunities) {
+        tooltip.innerHTML += "<br><br>Immunities:";
+        for (const [immunityType, isImmune] of Object.entries(effect.effects.immunities)) {
+            if (isImmune) {
+                const displayName = capitalize_first_letter(immunityType);
+                tooltip.innerHTML += `<br>- ${displayName}`;
+            }
+        }
+    }
+
     return tooltip;
 }
 
@@ -4572,7 +4596,7 @@ function populateQuestList(active_quests) {
 					rewardText += `${quest.quest_rewards.value} ${quest.quest_rewards.skill} Skill XP`;
 					break;
 				case "item":
-					rewardText += `Item (ID: ${quest.quest_rewards.item_name})`;
+					rewardText += `Item: ${quest.quest_rewards.item_name}`;
 					if (quest.quest_rewards.count && quest.quest_rewards.count > 0) {
 						rewardText += ` x${quest.quest_rewards.count}`;
 					}
@@ -4718,7 +4742,7 @@ function formatReward(reward) {
         case "hero_xp": return `${reward.value} Hero XP`;
         case "skill_xp": return `${reward.value} ${reward.skill} Skill XP`;
         case "item":
-            let itemText = `Item (ID: ${reward.item_name})`;
+            let itemText = `Item: ${reward.item_name}`;
             if (reward.count && reward.count > 0) {
                 itemText += ` x${reward.count}`;
             }

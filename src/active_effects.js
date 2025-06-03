@@ -192,4 +192,40 @@ effect_templates["Major defense boost"] = new ActiveEffect({
     }
 });
 
+effect_templates["Burn immunity"] = new ActiveEffect({
+    name: "Burn immunity",
+    effects: {
+        immunities: {
+            burn: true
+        }
+    }
+});
+
+effect_templates["Freeze immunity"] = new ActiveEffect({
+    name: "Freeze immunity",
+    effects: {
+        immunities: {
+            freeze: true
+        }
+    }
+});
+
+effect_templates["Stun immunity"] = new ActiveEffect({
+    name: "Stun immunity",
+    effects: {
+        immunities: {
+            stun: true
+        }
+    }
+});
+
+effect_templates["Poison immunity"] = new ActiveEffect({
+    name: "Poison immunity",
+    effects: {
+        immunities: {
+            poison: true
+        }
+    }
+});
+
 export {effect_templates, ActiveEffect};

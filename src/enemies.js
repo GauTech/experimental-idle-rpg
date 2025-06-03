@@ -59,7 +59,7 @@ class Enemy {
 		on_strike: {flee: true}, causes the enemy to eject player from the combat encounter and generates a log message about escaping.
 		on_strike: {bark: ["string1","string2","string3"]}, each on_strike invocation will play the next message in the barks list as a background message.
 		*/
-		this.on_connectedstrike = on_connectedstrike; 
+		this.on_connectedstrike = on_connectedstrike;
 		/*
 		Valid handling of on_connectedstrike
 		on_connectedstrike: {poison: x}, where is used for poison effect duration OR { poison: { duration: x, chance: y } } where x is duration and y is % chance of occuring (1=100%)
@@ -773,7 +773,7 @@ enemy_templates["Ant Queen"] = new Enemy({
         rank: 2,
         size: "small",
         tags: ["beast"],
-		on_connectedstrike: { poison: { duration: 10, chance: 0.2 } }, 
+		on_connectedstrike: { poison: { duration: 10, chance: 0.2} }, 
         stats: {health: 30, attack: 3, agility: 11, dexterity: 11, magic: 0, intuition: 4, attack_speed: 0.9, defense: 1}, //stat_total = 40
         loot_list: [
             {item_name: "Rat meat chunks", chance: 0.10},

@@ -276,6 +276,21 @@ class TradeItem {
 			new TradeItem({item_name: "Super rod",quality: [250,250], count: [1]}),
 			new TradeItem({item_name: "Super axe",quality: [250,250], count: [1]}),
 			new TradeItem({item_name: "Symbiote", count: [12]}),
+			new TradeItem({item_name: "Minor Healing Salve", count: [100]}),
+			new TradeItem({item_name: "Standard Healing Potion", count: [100]}),
+			new TradeItem({item_name: "Major Healing Elixir", count: [100]}),
+			new TradeItem({item_name: "Burn Ointment", count: [100]}),
+			new TradeItem({item_name: "Cryogel", count: [100]}),
+			new TradeItem({item_name: "Focus Salts", count: [100]}),
+			new TradeItem({item_name: "Fireproof Draught", count: [100]}),
+			new TradeItem({item_name: "Cryo Coating", count: [100]}),
+			new TradeItem({item_name: "Shockguard Brew", count: [100]}),
+			new TradeItem({item_name: "Venom Ward", count: [100]}),
+			new TradeItem({item_name: "Elixir of Strength", count: [100]}),
+			new TradeItem({item_name: "Elixir of Dexterity", count: [100]}),
+			new TradeItem({item_name: "Elixir of Agility", count: [100]}),
+			new TradeItem({item_name: "Elixir of Intuition", count: [100]}),
+			new TradeItem({item_name: "Elixir of Magic", count: [100]}),
 			
     ];
 	

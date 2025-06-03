@@ -870,7 +870,7 @@ crafting_recipes.components["Long shaft"] = new ComponentRecipe({
                     {material_id: "Belmart leaf", count: 1},
         ],
         result: {result_id: "Roasted purified rat meat", count: 1},
-        success_chance: [0.1,1],
+        success_chance: [0.4,1],
         recipe_level: [1,10],
         recipe_skill: "Cooking",
     });
@@ -879,7 +879,7 @@ crafting_recipes.components["Long shaft"] = new ComponentRecipe({
         recipe_type: "usable",
         materials: [{material_id: "Golmoon leaf", count: 5}],
         result: {result_id: "Weak healing powder", count: 1},
-        success_chance: [0.1,1],
+        success_chance: [0.5,1],
         recipe_level: [1,10],
         recipe_skill: "Alchemy",
     });
@@ -890,7 +890,7 @@ crafting_recipes.components["Long shaft"] = new ComponentRecipe({
                     {material_id: "Glass phial", count: 1},
         ],
         result: {result_id: "Oneberry juice", count: 1},
-        success_chance: [0.1,1],
+        success_chance: [0.4,1],
         recipe_level: [1,10],
         recipe_skill: "Alchemy",
     });
@@ -984,7 +984,222 @@ crafting_recipes.components["Long shaft"] = new ComponentRecipe({
         recipe_level: [28,32],
         recipe_skill: "Cooking",
     });
-	
+
+//instant heal items
+alchemy_recipes.items["Minor Healing Salve"] = new ItemRecipe({
+    name: "Minor Healing Salve",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Golmoon leaf", count: 2},
+        {material_id: "Belmart leaf", count: 1}
+    ],
+    result: {result_id: "Minor Healing Salve", count: 1},
+    success_chance: [0.5, 1],
+    recipe_level: [1, 5],
+    recipe_skill: "Alchemy",
+});
+
+alchemy_recipes.items["Standard Healing Potion"] = new ItemRecipe({
+    name: "Standard Healing Potion",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Oneberry", count: 3},
+        {material_id: "Golmoon leaf", count: 2},
+        {material_id: "Bloodnettle", count: 2}
+    ],
+    result: {result_id: "Standard Healing Potion", count: 1},
+    success_chance: [0.4, 1],
+    recipe_level: [4, 10],
+    recipe_skill: "Alchemy",
+});
+
+alchemy_recipes.items["Major Healing Elixir"] = new ItemRecipe({
+    name: "Major Healing Elixir",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Oneberry", count: 5},
+        {material_id: "Bloodnettle", count: 5},
+        {material_id: "Veindust", count: 3}
+    ],
+    result: {result_id: "Major Healing Elixir", count: 1},
+    success_chance: [0.4, 1],
+    recipe_level: [8, 16],
+    recipe_skill: "Alchemy",
+});
+//status healing items
+
+alchemy_recipes.items["Antidote"] = new ItemRecipe({
+    name: "Antidote",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Duskrill", count: 1},
+        {material_id: "Glowcap", count: 1},
+        {material_id: "Starshade", count: 1}
+    ],
+    result: {result_id: "Antidote", count: 1},
+    success_chance: [0.3, 1],
+    recipe_level: [5, 15],
+    recipe_skill: "Alchemy",
+});
+
+alchemy_recipes.items["Burn Ointment"] = new ItemRecipe({
+    name: "Burn Ointment",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Cinderpetal", count: 1},
+        {material_id: "Ashroot", count: 1},
+        {material_id: "Belmart leaf", count: 1}
+    ],
+    result: {result_id: "Burn Ointment", count: 1},
+    success_chance: [0.3, 1],
+    recipe_level: [5, 15],
+    recipe_skill: "Alchemy",
+});
+
+alchemy_recipes.items["Cryogel"] = new ItemRecipe({
+    name: "Cryogel",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Cryoroot", count: 1},
+        {material_id: "Winterbloom", count: 1},
+        {material_id: "Starshade", count: 1}
+    ],
+    result: {result_id: "Cryogel", count: 1},
+    success_chance: [0.3, 1],
+    recipe_level: [5, 15],
+    recipe_skill: "Alchemy",
+});
+
+alchemy_recipes.items["Focus Salts"] = new ItemRecipe({
+    name: "Focus Salts",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Veindust", count: 1},
+        {material_id: "Duskrill", count: 1},
+        {material_id: "Starshade", count: 1}
+    ],
+    result: {result_id: "Focus Salts", count: 1},
+    success_chance: [0.3, 1],
+    recipe_level: [5, 15],
+    recipe_skill: "Alchemy",
+});
+
+alchemy_recipes.items["Panacea"] = new ItemRecipe({
+    name: "Panacea",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Oneberry", count: 1},
+        {material_id: "Golmoon leaf", count: 1},
+        {material_id: "Glowcap", count: 1},
+        {material_id: "Veindust", count: 1},
+        {material_id: "Duskrill", count: 1},
+        {material_id: "Sunberry", count: 1},
+        {material_id: "Cryoroot", count: 1},
+        {material_id: "Ashroot", count: 1},
+        {material_id: "Winterbloom", count: 1}
+    ],
+    result: {result_id: "Panacea", count: 1},
+    success_chance: [0.1, 1],
+    recipe_level: [8, 18],
+    recipe_skill: "Alchemy",
+});
+
+//status immunity items
+
+alchemy_recipes.items["Venom Ward"] = new ItemRecipe({
+    name: "Venom Ward",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Glowcap", count: 6},
+        {material_id: "Duskrill", count: 6},
+        {material_id: "Starshade", count: 6}
+    ],
+    result: {result_id: "Venom Ward", count: 1},
+    success_chance: [0.2, 1],
+    recipe_level: [10, 20],
+    recipe_skill: "Alchemy",
+});
+
+alchemy_recipes.items["Fireproof Draught"] = new ItemRecipe({
+    name: "Fireproof Draught",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Cinderpetal", count: 6},
+        {material_id: "Ashroot", count: 6},
+        {material_id: "Flamevine", count: 6}
+    ],
+    result: {result_id: "Fireproof Draught", count: 1},
+    success_chance: [0.2, 1],
+    recipe_level: [10, 20],
+    recipe_skill: "Alchemy",
+});
+
+alchemy_recipes.items["Cryo Coating"] = new ItemRecipe({
+    name: "Cryo Coating",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Cryoroot", count: 6},
+        {material_id: "Winterbloom", count: 6},
+        {material_id: "Frostleaf", count: 6}
+    ],
+    result: {result_id: "Cryo Coating", count: 1},
+    success_chance: [0.2, 1],
+    recipe_level: [10, 20],
+    recipe_skill: "Alchemy",
+});
+
+alchemy_recipes.items["Shockguard Brew"] = new ItemRecipe({
+    name: "Shockguard Brew",
+    recipe_type: "usable",
+    materials: [
+        {material_id: "Veindust", count: 6},
+        {material_id: "Duskrill", count: 6},
+        {material_id: "Starshade", count: 6}
+    ],
+    result: {result_id: "Shockguard Brew", count: 1},
+    success_chance: [0.2, 1],
+    recipe_level: [10, 20],
+    recipe_skill: "Alchemy",
+});
+
+//elixirs
+
+function make_elixir_recipe(name, result_id, materials, count_each = 25) {
+    return new ItemRecipe({
+        name,
+        recipe_type: "usable",
+        materials: materials.map(id => ({material_id: id, count: count_each})),
+        result: {result_id, count: 1},
+        success_chance: [0.0, 1],
+        recipe_level: [25, 30],
+        recipe_skill: "Alchemy",
+    });
+}
+
+alchemy_recipes.items["Elixir of Strength"] = make_elixir_recipe(
+    "Elixir of Strength", "Elixir of Strength",
+    ["Bloodnettle", "Veindust", "Sunberry", "Glowcap"]
+);
+
+alchemy_recipes.items["Elixir of Dexterity"] = make_elixir_recipe(
+    "Elixir of Dexterity", "Elixir of Dexterity",
+    ["Duskrill", "Sunberry", "Golmoon leaf", "Bloodnettle"]
+);
+
+alchemy_recipes.items["Elixir of Agility"] = make_elixir_recipe(
+    "Elixir of Agility", "Elixir of Agility",
+    ["Starshade", "Sunberry", "Oneberry", "Duskrill"]
+);
+
+alchemy_recipes.items["Elixir of Intuition"] = make_elixir_recipe(
+    "Elixir of Intuition", "Elixir of Intuition",
+    ["Veindust", "Glowcap", "Duskrill", "Winterbloom"]
+);
+
+alchemy_recipes.items["Elixir of Magic"] = make_elixir_recipe(
+    "Elixir of Magic", "Elixir of Magic",
+    ["Veindust", "Glowcap", "Duskrill", "Ashroot"]
+);
 	
 	
 })();
