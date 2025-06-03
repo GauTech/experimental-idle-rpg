@@ -3951,6 +3951,7 @@ item_templates["Glowcap"] = new Material({
     name: "Minor Healing Salve",
     description: "Heals a small amount of health instantly.",
     value: 30,
+	tags: { potion: true },
     instant_health_recovery: 15,
 });
 
@@ -3958,6 +3959,7 @@ item_templates["Standard Healing Potion"] = new UsableItem({
     name: "Standard Healing Potion",
     description: "Restores a moderate amount of health right away.",
     value: 120,
+	tags: { potion: true },
     instant_health_recovery: 50,
 });
 
@@ -3965,6 +3967,7 @@ item_templates["Major Healing Elixir"] = new UsableItem({
     name: "Major Healing Elixir",
     description: "Rapidly recovers a large portion of health.",
     value: 1000,
+	tags: { potion: true },
     instant_health_recovery: 300,
 });
 // healing active effects
@@ -4067,6 +4070,7 @@ item_templates["Elixir of Strength"] = new UsableItem({
     name: "Elixir of Strength",
     description: "A small but permanent boost to raw physical power.",
     value: 10000,
+	 tags: { elixir: true },
     elixir_bonus: {
         stats: {
             "strength": {flat: 1},
@@ -4078,6 +4082,7 @@ item_templates["Elixir of Dexterity"] = new UsableItem({
     name: "Elixir of Dexterity",
     description: "A small but permanent boost to coordination and precision.",
     value: 10000,
+	tags: { elixir: true },
     elixir_bonus: {
         stats: {
             "dexterity": {flat: 1},
@@ -4089,6 +4094,7 @@ item_templates["Elixir of Agility"] = new UsableItem({
     name: "Elixir of Agility",
     description: "A small but permanent boost to quickness and mobility.",
     value: 10000,
+	tags: { elixir: true },
     elixir_bonus: {
         stats: {
             "agility": {flat: 1},
@@ -4100,6 +4106,7 @@ item_templates["Elixir of Intuition"] = new UsableItem({
     name: "Elixir of Intuition",
     description: "A small but permanent boost to perception and gut feeling.",
     value: 10000,
+	tags: { elixir: true },
     elixir_bonus: {
         stats: {
             "intuition": {flat: 1},
@@ -4111,6 +4118,7 @@ item_templates["Elixir of Magic"] = new UsableItem({
     name: "Elixir of Magic",
     description: "A small but permanent boost to magical ability.",
     value: 10000,
+	tags: { elixir: true },
     elixir_bonus: {
         stats: {
             "magic": {flat: 1},

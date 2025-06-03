@@ -1396,11 +1396,13 @@ function create_inventory_item_div({key, item_count, target, is_equipped, trade_
 				item_use_button.classList.add("item_use_button");
 
 				const isLootChest = target_item.tags?.loot_chest;
+				const isElixir = target_item.tags?.elixir;
+				const isPotion = target_item.tags?.potion;
 
 				item_use_button.innerText = isLootChest ? "[open]" : "[use]";
 				item_additional.appendChild(item_use_button);
 
-				if (!isLootChest) {
+				if (!isLootChest && !isPotion && !isElixir) {
 					const item_auto_use_button = document.createElement("div");
 					item_auto_use_button.classList.add("item_auto_use_button");
 					item_auto_use_button.innerText = "auto";
