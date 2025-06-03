@@ -2213,7 +2213,6 @@ for (const effect_name of status_effects) {
 }
 
 function apply_on_connectedstrike_effects(attacker) {
-	console.log("con strike effects called, attacker:", attacker);
     if (!attacker.on_connectedstrike) return;
 
     const data = attacker.on_connectedstrike;

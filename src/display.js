@@ -430,7 +430,10 @@ function create_item_tooltip_content({item, options={}}) {
 			if (item.gluttony_value) {
 				item_tooltip += `<br><br>Gluttony Value: ${item.gluttony_value}  `;
 			}
-			
+				if (item.cures?.length > 0) {
+			item_tooltip += "<br>Cures: " + item.cures.join(", ");
+		}
+					
 			if (item.instant_health_recovery) {
 				item_tooltip += `<br><br>Instant Health Recovery: ${item.instant_health_recovery}  `;
 			}
