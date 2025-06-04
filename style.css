@@ -1557,6 +1557,7 @@ width: 198px;
 				height: fit-content;
 				outline: 2px solid gray;
 				top: 45px;
+				z-index: 12;
 				background-color:#232f47;
 				text-align: left;
 			}
@@ -2348,6 +2349,11 @@ danger_rating {
     font-style: italic;
 }
 
+.message_autocast_failure {
+    background-color: rgba(255, 100, 100, 0.1);
+    color: #f88;
+    font-weight: bold;
+}
 
 #mapOverlay {
     display: none;

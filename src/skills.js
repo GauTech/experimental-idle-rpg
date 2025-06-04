@@ -2216,6 +2216,21 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                 },
 	});	
 
+	    skills["Tool Mastery"] = new Skill({skill_id: "Tool Mastery", 
+                                names: {0: "Tool Mastery"}, 
+                                description: "Expertise with heavy .",
+                                base_xp_cost: 100,
+                                category: "Profession",
+                                max_level: 30,
+                                xp_scaling: 2,
+								base_xp_cost: 100,
+								max_level_coefficient: 1.5,
+								visibility_treshold: 1,
+								get_effect_description: ()=> {
+                                    return `${Math.round((skills["Tool Mastery"].get_coefficient("flat")-1)*1000)/10}% chance for +1 resource harvest when mining ores or cutting trees`;
+                                },
+	});	
+
     skills["Salvaging"] = new Skill({skill_id: "Salvaging", 
                                 names: {0: "Salvaging"}, 
                                 description: "Salvaging",

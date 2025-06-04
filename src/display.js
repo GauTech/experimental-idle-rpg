@@ -566,7 +566,7 @@ function end_activity_animation() {
  * @param {String} message_to_add text to display
  * @param {String} message_type used for adding proper class to html element
  */
- function log_message(message_to_add, message_type) {
+ function log_message(message_to_add, message_type, is_priority = false) {
     if(typeof message_to_add === 'undefined') {
         return;
     }
@@ -689,7 +689,11 @@ function end_activity_animation() {
             group_to_add = "message_unlocks";
             message_count.message_unlocks += 1;
             break;
-
+	 case "autocast_failure":
+            group_to_add = "message_events";
+            class_to_add = "message_autocast_failure";
+            message_count.message_events += 1;
+            break;
         case "message_travel":
             class_to_add = "message_travel";
             group_to_add = "message_events";
@@ -722,34 +726,55 @@ function end_activity_animation() {
             class_to_add = "message_critical";
             break;
     }
-
-    if(group_to_add === "message_combat" && message_count.message_combat > 80
-    || group_to_add === "message_loot" && message_count.message_loot > 40
-	|| group_to_add === "message_rare_loot" && message_count.message_rare_loot > 10
-    || group_to_add === "message_unlocks" && message_count.message_unlocks > 40
-    || group_to_add === "message_events" && message_count.message_events > 20
-    || group_to_add === "message_background" && message_count.message_background > 20
-    || group_to_add === "message_crafting" && message_count.message_crafting > 20
-    ) {
-        // find first child with specified group
-        // delete it
-        message_log.removeChild(message_log.getElementsByClassName(group_to_add)[0]);
+	 
+	 if (is_priority && message_type === "autocast_failure") {
+        message.id = "autocast_failure_msg";
     }
 
+     if (!is_priority && (
+        group_to_add === "message_combat" && message_count.message_combat > 80 ||
+        group_to_add === "message_loot" && message_count.message_loot > 40 ||
+        group_to_add === "message_rare_loot" && message_count.message_rare_loot > 10 ||
+        group_to_add === "message_unlocks" && message_count.message_unlocks > 40 ||
+        group_to_add === "message_events" && message_count.message_events > 20 ||
+        group_to_add === "message_background" && message_count.message_background > 20 ||
+        group_to_add === "message_crafting" && message_count.message_crafting > 20
+    )) {
+        const toDelete = message_log.getElementsByClassName(group_to_add)[0];
+        if (toDelete && toDelete.id !== "autocast_failure_msg") {
+            message_log.removeChild(toDelete);
+        }
+    }
 
-		   // Get the current scroll state
-		const isScrolledToBottom = message_log.scrollHeight - message_log.scrollTop <= message_log.clientHeight + 5;
+    // Get scroll state before appending
+    const isScrolledToBottom = message_log.scrollHeight - message_log.scrollTop <= message_log.clientHeight + 5;
 
-		// Add message content and styles
-		message.classList.add(class_to_add, group_to_add);
-		message.innerHTML = message_to_add + "<div class='message_border'> </div>";
-		message_log.appendChild(message);
+    // Add content and style
+    message.classList.add(class_to_add, group_to_add);
+    message.innerHTML = message_to_add + "<div class='message_border'> </div>";
 
-		// Only auto-scroll if the user was at (or near) the bottom
-		if (isScrolledToBottom) {
-			message_log.scrollTop = message_log.scrollHeight;
-		}
+    // Remove old autocast failure message if present
+    if (is_priority) {
+        const existing = document.getElementById("autocast_failure_msg");
+        if (existing) {
+            existing.remove();
+        }
+    }
 
+       message_log.appendChild(message);
+
+    // Ensure priority message stays at the bottom
+    if (!is_priority) {
+        const priority = document.getElementById("autocast_failure_msg");
+        if (priority) {
+            message_log.appendChild(priority); // move it to the end
+        }
+    }
+
+    // Auto-scroll only if near bottom
+    if (isScrolledToBottom) {
+        message_log.scrollTop = message_log.scrollHeight;
+    }
 }
 
 function isAnyOtherButtonActive(currentButtonId) {

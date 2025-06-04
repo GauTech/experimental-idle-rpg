@@ -1787,9 +1787,13 @@ function cast_magic(magicId, is_auto_cast = false) {
         }
 
         if (character.stats.full.mana < mana_cost) {
+        if (is_auto_cast) {
+            return "low_mana"; // Only for consolidation
+        } else {
             log_message("Not enough mana to cast " + magic.names[0]);
-            return;
         }
+        return;
+    }
 
         character.stats.full.mana -= mana_cost;
 
@@ -1828,8 +1832,12 @@ function cast_magic(magicId, is_auto_cast = false) {
 
     // Handle self_effect spells (non-combat)
    if (magic.self_effect.length > 0) {
-    if (character.stats.full.mana < mana_cost) {
-        log_message("Not enough mana to cast " + magic.names[0]);
+        if (character.stats.full.mana < mana_cost) {
+        if (is_auto_cast) {
+            return "low_mana"; // Only for consolidation
+        } else {
+            log_message("Not enough mana to cast " + magic.names[0]);
+        }
         return;
     }
 
@@ -1872,10 +1880,14 @@ function cast_magic(magicId, is_auto_cast = false) {
     // Handle cooldown (optional — depends on your implementation)
 		if (magic.special_effect.length > 0) {
 
-        if (character.stats.full.mana < mana_cost) {
+           if (character.stats.full.mana < mana_cost) {
+        if (is_auto_cast) {
+            return "low_mana"; // Only for consolidation
+        } else {
             log_message("Not enough mana to cast " + magic.names[0]);
-            return;
         }
+        return;
+    }
 
         character.stats.full.mana -= mana_cost;
 		
@@ -6047,15 +6059,32 @@ for (let i = 0; i < resources.length; i++) {
     }
 });
 function handle_auto_cast_magic() {
+    const low_mana_auto_casts = [];
+
     Object.keys(magics).forEach(magicId => {
         const magic = magics[magicId];
         if (!magic.is_unlocked) return;
 
         const checkbox = document.getElementById(`auto_magic_${magicId}`);
         if (checkbox && checkbox.checked && !magic_cooldowns[magicId]) {
-            cast_magic(magicId, true); // auto-cast flag
+            const result = cast_magic(magicId, true); // returns "low_mana" on low mana auto-cast
+            if (result === "low_mana") {
+                low_mana_auto_casts.push(magic.names[0]);
+            }
         }
     });
+
+    const existingMsg = document.getElementById("autocast_failure_msg");
+    if (low_mana_auto_casts.length > 0) {
+        const content = `Not enough mana to auto-cast: ${low_mana_auto_casts.join(", ")}`;
+        if (existingMsg) {
+            existingMsg.innerHTML = content + "<div class='message_border'> </div>";
+        } else {
+            log_message(content, "autocast_failure", true); // true = priority
+        }
+    } else if (existingMsg) {
+        existingMsg.remove(); // Remove if nothing is failing
+    }
 }
 update_displayed_magic_list();
 
