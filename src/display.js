@@ -3259,27 +3259,38 @@ combat_switch.addEventListener('click', function() {
 
 function update_stat_description(stat) {
     let target;
+    let tooltipTextElement;
 
     if(stats_divs[stat]){
         target = stats_divs[stat].parentNode.children[2].children[1];
+        tooltipTextElement = stats_divs[stat].parentNode.children[2].children[0];
     } else if(other_combat_divs[stat] && stat !== "defensive_action") {
-        target = other_combat_divs[stat].parentNode.children[2].children[1]; 
-		} else if(stat === "max_health") {
-			target = document.querySelector("#character_health_div .stat_tooltip .stat_breakdown");
-			if (!target) return;
-		} else {
-			return;
-		}
+        target = other_combat_divs[stat].parentNode.children[2].children[1];
+        tooltipTextElement = other_combat_divs[stat].parentNode.children[2].children[0];
+    } else if(stat === "max_health") {
+        target = document.querySelector("#character_health_div .stat_tooltip .stat_breakdown");
+        if (!target) return;
+    } else {
+        return;
+    }
 
     // Custom breakdown for known stats
-    if(stat === "attack_power") {
-        target.innerHTML = 
-        `<br>Breakdown:
-        <br>Base value (weapon * str/10): ${Math.round(100 * character.stats.total_flat.attack_power) / 100}`;
-    } else if (stat === "magic_power") {
-        target.innerHTML = 
-        `<br>Breakdown:
-        <br>Base value (mgc * 10): ${Math.round(100 * character.stats.total_flat.magic_power) / 100}`;
+    if (stat === "attack_power") {
+        if (stances[current_stance].stance_type === "Magical") {
+            // Update tooltip text
+            tooltipTextElement.textContent = "Magic power. Scales sharply with magic";
+            // Update breakdown
+            target.innerHTML = 
+            `<br>Breakdown:
+            <br>Base value (mgc * 10): ${Math.round(100 * character.stats.total_flat.magic_power) / 100}`;
+        } else {
+            // Revert to physical attack tooltip
+            tooltipTextElement.textContent = "Attack power. Based on weapon statistics and strength";
+            // Update breakdown
+            target.innerHTML = 
+            `<br>Breakdown:
+            <br>Base value (weapon * str/10): ${Math.round(100 * character.stats.total_flat.attack_power) / 100}`;
+        }
     } else if (stat === "attack_points") {
         target.innerHTML = 
         `<br>Breakdown:
