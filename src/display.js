@@ -157,6 +157,11 @@ let trader_inventory_sorting_direction = "asc";
 let character_inventory_sorting = "name";
 let character_inventory_sorting_direction = "asc";
 
+let recent_evade_stack = {
+    messageElement: null,
+    count: 1
+};
+
 const message_count = {
     message_combat: 0,
     message_unlocks: 0,
@@ -599,10 +604,30 @@ function end_activity_animation() {
             group_to_add = "message_combat";
             message_count.message_combat += 1;
             break;
+		       case "ally_attacked":
+            class_to_add = "message_ally_attacked";
+            group_to_add = "message_crafting";
+            message_count.message_crafting += 1;
+            break;
+        case "ally_attacked_critically":
+            class_to_add = "message_ally_attacked_critically";
+            group_to_add = "message_crafting";
+            message_count.message_crafting += 1;
+            break;
+		    case "ally_missed":
+            group_to_add = "message_crafting";
+            message_count.message_crafting += 1;
+            break;
+		    case "party_change":
+            group_to_add = "message_crafting";
+            message_count.message_crafting += 1;
+            break;
         case "hero_attacked":
             class_to_add = "message_hero_attacked";
             group_to_add = "message_combat";
             message_count.message_combat += 1;
+			recent_evade_stack.messageElement = null;
+			recent_evade_stack.count = 1;
             break;
         case "hero_missed":
             group_to_add = "message_combat";
@@ -618,12 +643,45 @@ function end_activity_animation() {
             break;    
         case "enemy_missed":
             group_to_add = "message_combat";
+				if (recent_evade_stack.messageElement) {
+				const messages = Array.from(message_log.children);
+				const lastIndex = messages.indexOf(recent_evade_stack.messageElement);
+
+				if (lastIndex >= messages.length - 5) {
+					// Still within last 5 messages → stack
+					recent_evade_stack.count += 1;
+
+					const baseText = "Hero evaded attack.";
+					recent_evade_stack.messageElement.innerHTML =
+						`${baseText} (x${recent_evade_stack.count})<div class='message_border'> </div>`;
+
+					// Move it to bottom
+					message_log.appendChild(recent_evade_stack.messageElement);
+
+					// Scroll if near bottom
+					if (message_log.scrollHeight - message_log.scrollTop <= message_log.clientHeight + 5) {
+						message_log.scrollTop = message_log.scrollHeight;
+					}
+
+					return; // Prevent new message from being added
+				} else {
+					// Too old → reset stack
+					recent_evade_stack.messageElement = null;
+					recent_evade_stack.count = 1;
+				}
+			}
             message_count.message_combat += 1;
-            break;    
+            break;  
+	case "enemy_deflected":
+            group_to_add = "message_combat";
+            message_count.message_combat += 1;
+            break; 			
         case "hero_attacked_critically":
             class_to_add = "message_hero_attacked_critically";
             group_to_add = "message_combat";
             message_count.message_combat += 1;
+			recent_evade_stack.messageElement = null;
+			recent_evade_stack.count = 1;
             break;
 
         case "combat_loot":
@@ -717,8 +775,8 @@ function end_activity_animation() {
             group_to_add = "message_background";
             break;
         case "crafting":
-            message_count.message_crafting +=1;
-            group_to_add = "message_crafting";
+            message_count.message_events +=1;
+            group_to_add = "message_events";
             break;
         case "message_critical":
             message_count.message_events += 1;
@@ -762,6 +820,11 @@ function end_activity_animation() {
     }
 
        message_log.appendChild(message);
+	   
+	  if (message_type === "enemy_missed") {
+    recent_evade_stack.messageElement = message;
+    recent_evade_stack.count = 1;
+		}
 
     // Ensure priority message stays at the bottom
     if (!is_priority) {

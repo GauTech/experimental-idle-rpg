@@ -89,11 +89,9 @@ class Enemy {
 	
 get_loot() {
     let loot = [];
-    let item;
 
-    // Normal loot
     for (let i = 0; i < this.loot_list.length; i++) {
-        item = this.loot_list[i];
+        const item = this.loot_list[i];
         if (!item_templates[item.item_name]) {
             console.warn(`Tried to loot an item "${item.item_name}" from "${this.name}", but such an item doesn't exist!`);
             continue;
@@ -101,11 +99,13 @@ get_loot() {
 
         if (item.chance * this.get_droprate_modifier() >= Math.random()) {
             let item_count = "count" in item ? item.count : 1;
-            loot.push({ "item": getItem(item_templates[item.item_name]), "count": item_count });
+            loot.push({
+                item_key: item.item_name,
+                item: getItem(item_templates[item.item_name]),
+                count: item_count
+            });
         }
     }
-
-
 
     return loot;
 }

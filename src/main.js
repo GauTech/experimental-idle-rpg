@@ -346,16 +346,18 @@ function option_combat_autoswitch(option) {
 }
 
 function roll_time_demon(location) {
-	
-	
-	
-    if (Math.random() < 0.01 && global_flags.is_hero_level10 == true) { // 1% 
-		locations["Time Demon"].is_finished = false;
-        location.connected_locations.push({
-            location: locations["Time Demon"],
-            custom_text: "Encounter the Time Demon"
-        })
-		log_message("A time demon appeared!");
+    if (Math.random() < 0.01 && global_flags.is_hero_level10 === true) {
+        // Check if the Time Demon is already connected
+        const already_connected = location.connected_locations.some(conn => conn.location === locations["Time Demon"]);
+
+        if (!already_connected) {
+            locations["Time Demon"].is_finished = false;
+            location.connected_locations.push({
+                location: locations["Time Demon"],
+                custom_text: "Encounter the Time Demon"
+            });
+            log_message("A time demon appeared!");
+        }
     }
 }
 
@@ -1802,22 +1804,87 @@ function cast_magic(magicId, is_auto_cast = false) {
 		const magic_power = Math.round(base_multiplier * character.stats.full.magic_power * skill_bonus);
 
 		// Get all alive enemies and pick the first `target_count` ones
-		const targets = current_enemies.filter(e => e.is_alive).slice(0, Math.min((target_count + (skills["MultiCasting"].get_level_bonus() || 0)),8)); // adds extra targets from multicasting skill, but caps at 8
+const extraTargets = skills["MultiCasting"].get_level_bonus() || 0;
+const targets = current_enemies.filter(e => e.is_alive).slice(0, Math.min(target_count + extraTargets, 8));
 
-		// Cast the spell on each selected target
-		targets.forEach(target => {
-		do_character_combat_action({
-        target,
-        attack_power: magic_power, // handling of do_character_combat_action uses attack_power for physical stances and magic_power, but cast_magic we want to exclusively use magic_power
-        magic_power: magic_power,
-        magic_name: magic.names[0],
-        damage_type
-    });
-	add_xp_to_skill({skill: skills[magic.related_skill], xp_to_add: 100});
-	    if (magic.cooldown && magic.cooldown > 0) {
-        magic_cooldowns[magicId] = magic.cooldown;
-    }
+const summary = { results: [] };
+
+targets.forEach(target => {
+	do_character_combat_action({
+		target,
+		attack_power: magic_power, // even though it's called attack_power, magical stances will use magic_power
+		magic_power: magic_power,
+		magic_name: magic.names[0],
+		damage_type,
+		summary
+	});
+	
+	add_xp_to_skill({ skill: skills[magic.related_skill], xp_to_add: 100 });
+
+	if (magic.cooldown && magic.cooldown > 0) {
+		magic_cooldowns[magicId] = magic.cooldown;
+	}
 });
+
+// Summarize results if 3 or more targets hit
+if (targets.length >= 3) {
+	// 1. Summarize combat results (hits, crits, damage)
+	summarize_combat_results(summary.results, magic.names[0]);
+
+	// 2. Summarize defeated enemies
+	const defeated_targets = summary.results
+		.filter(r => r.defeated)
+		.map(r => r.target_name);
+
+	if (defeated_targets.length > 0) {
+		const defeat_message = `${character.name} defeated ${defeated_targets.join(", ")}`;
+		log_message(defeat_message, "enemy_defeated");
+	}
+
+	// 3. Summarize loot
+		const consolidated_loot = {};
+
+		summary.results.forEach(res => {
+			res.loot.forEach(lootItem => {
+				const key = lootItem.item_key;
+				if (!consolidated_loot[key]) {
+					consolidated_loot[key] = {
+						item_key: key,
+						item: lootItem.item,
+						count: lootItem.count
+					};
+				} else {
+					consolidated_loot[key].count += lootItem.count;
+				}
+			});
+		});
+
+		const loot_array = Object.values(consolidated_loot);
+		if (loot_array.length > 0) {
+			log_loot(loot_array, true, true); // is_combat = true, is_summary = true
+		}
+}
+else {
+	summary.results.forEach(res => {
+		if (res.hit) {
+			const msg = res.crit 
+				? `${res.target_name} was critically hit by ${magic.names[0]} for ${res.damage} dmg`
+				: `${res.target_name} was hit by ${magic.names[0]} for ${res.damage} dmg`;
+			log_message(msg, res.crit ? "enemy_attacked_critically" : "enemy_attacked");
+		} else {
+			log_message(`${character.name} missed ${res.target_name}`, "hero_missed");
+		}
+
+		if (res.defeated) {
+			log_message(`${res.target_name} was defeated`, "enemy_defeated");
+		}
+
+		if (res.loot.length > 0) {
+			log_loot(res.loot, true);
+		}
+	});
+}
+
 
      if(current_enemies != null && current_enemies.filter(enemy => enemy.is_alive).length == 0) { //set next loop if there's still an enemy left;
                 current_location.enemy_groups_killed += 1;
@@ -2417,6 +2484,8 @@ function set_character_attack_loop({base_cooldown}) {
         return;
     }
 
+
+
     let target_count = stances[current_stance].target_count;
     if (target_count > 1 && stances[current_stance].related_skill) {
         target_count = target_count + Math.round(target_count * skills[stances[current_stance].related_skill].current_level / skills[stances[current_stance].related_skill].max_level);
@@ -2468,15 +2537,74 @@ function do_character_attack_loop({base_cooldown, actual_cooldown, attack_power,
             let leveled = false;
 
 
-if (stances[current_stance].stance_type === "Physical") {
-            for(let i = 0; i < targets.length; i++) {
-                do_character_combat_action({target: targets[i], attack_power});
-            }
-			
-} else if (stances[current_stance].stance_type === "Magical") {
-			for(let i = 0; i < targets.length; i++) {
-                do_character_combat_action({target: targets[i], magic_power});
-            }
+if (stances[current_stance].stance_type === "Physical" || stances[current_stance].stance_type === "Magical") {
+    const summary = { results: [] };
+
+    for (let i = 0; i < targets.length; i++) {
+        do_character_combat_action({
+            target: targets[i],
+            attack_power,
+            magic_power,
+            summary
+        });
+    }
+
+		if (targets.length >= 3) {
+			// 1. Summarize combat results (hits, crits, damage)
+			summarize_combat_results(summary.results);
+
+			// 2. Summarize defeated enemies
+			const defeated_targets = summary.results
+				.filter(r => r.defeated)
+				.map(r => r.target_name);
+
+			if (defeated_targets.length > 0) {
+				const defeat_message = `${character.name} defeated ${defeated_targets.join(", ")}`;
+				log_message(defeat_message, "enemy_defeated");
+			}
+
+			// 3. Summarize loot
+						const consolidated_loot = {};
+
+			summary.results.forEach(res => {
+				res.loot.forEach(lootItem => {
+					const key = lootItem.item_key;
+					if (!consolidated_loot[key]) {
+						consolidated_loot[key] = {
+							item_key: key,
+							item: lootItem.item,
+							count: lootItem.count
+						};
+					} else {
+						consolidated_loot[key].count += lootItem.count;
+					}
+				});
+			});
+
+			const loot_array = Object.values(consolidated_loot);
+			if (loot_array.length > 0) {
+				log_loot(loot_array, true, true); // is_combat = true, is_summary = true
+			}
+		}else {
+			summary.results.forEach(res => {
+				if (res.hit) {
+					const msg = res.crit 
+						? `${res.target_name} was critically hit by for ${res.damage} dmg`
+						: `${res.target_name} was hit by for ${res.damage} dmg`;
+					log_message(msg, res.crit ? "enemy_attacked_critically" : "enemy_attacked");
+				} else {
+					log_message(`${character.name} missed ${res.target_name}`, "hero_missed");
+				}
+
+				if (res.defeated) {
+					log_message(`${res.target_name} was defeated`, "enemy_defeated");
+				}
+
+				if (res.loot.length > 0) {
+					log_loot(res.loot, true);
+				}
+			});
+		}
 } else {
     // Optionally, handle cases where the stance_type is neither "Physical" nor "Magical"
     console.log("Unknown stance type");
@@ -2530,6 +2658,33 @@ function start_combat() {
     }
 }
 
+function summarize_combat_results(results, magic_name = null) {
+    const totalAttacks = results.length;
+    const misses = results.filter(r => !r.hit).length;
+    const crits = results.filter(r => r.crit).length;
+    const normalHits = results.filter(r => r.hit && !r.crit).length;
+    const totalDamage = results.reduce((sum, r) => sum + (r.damage || 0), 0);
+
+    let message = `${character.name} attacked ${totalAttacks} time${totalAttacks > 1 ? "s" : ""}`;
+
+    const details = [];
+
+    if (misses > 0) details.push(`missed ${misses} time${misses > 1 ? "s" : ""}`);
+    if (normalHits > 0) details.push(`dealt ${Math.round(totalDamage)} total damage across ${normalHits} normal hit${normalHits > 1 ? "s" : ""}`);
+    if (crits > 0) details.push(`scored ${crits} critical hit${crits > 1 ? "s" : ""}`);
+
+    if (details.length > 0) {
+        message += `: ${details.join(", ")}`;
+    } else {
+        message += ", but nothing happened.";
+    }
+
+    if (magic_name) {
+        message += ` (using ${magic_name})`;
+    }
+
+    log_message(message, crits > 0 ? "enemy_attacked_critically" : "enemy_attacked");
+}
 
 ///ally_attack_loop_handling
 
@@ -2581,9 +2736,14 @@ function do_ally_combat_action(ally_index) {
     if (!current_party[ally_index]) return;
 	if (!current_enemies) return;
 
+
+
     const ally_id = current_party[ally_index];
     const ally = allies[ally_id];
     if (!ally) return;
+	
+	const defeated_targets = [];
+	const all_loot = [];
 
     const ally_base_damage = (ally.attack_power * skills["Leadership"].get_coefficient("multiplicative") * Math.max(character.xp.current_level,1));
     const target_count = ally.target_count;
@@ -2610,10 +2770,10 @@ function do_ally_combat_action(ally_index) {
             target.stats.health -= damage_dealt;
 
             if (critted) {
-                log_message(`${target.name} was critically hit by ${ally.name} for ${damage_dealt} dmg`, "enemy_attacked_critically");
+                log_message(`${target.name} was critically hit by ${ally.name} for ${damage_dealt} dmg`, "ally_attacked_critically");
                 
             } else {
-                log_message(`${target.name} was hit by ${ally.name} for ${damage_dealt} dmg`, "enemy_attacked");
+                log_message(`${target.name} was hit by ${ally.name} for ${damage_dealt} dmg`, "ally_attacked");
             }
 			
 			add_xp_to_skill({ skill: skills["Leadership"], xp_to_add: target.xp_value });
@@ -2621,17 +2781,19 @@ function do_ally_combat_action(ally_index) {
             if (target.stats.health <= 0) {
                 target.stats.health = 0;
                 total_kills++;
-                log_message(`${target.name} was defeated`, "enemy_defeated");
+               
 
                 const xp_reward = target.xp_value * (current_enemies.length ** 0.3334) * 0.5; //half xp when ally kills enemy
                 add_xp_to_character(xp_reward, true); // XP goes to character, not ally
 
-                var loot = target.get_loot();
-                if (loot.length > 0) {
-                    log_loot(loot);
-                    add_to_character_inventory(loot);
-                }
-				
+				defeated_targets.push(target.name);
+
+				const loot = target.get_loot();
+				if (loot.length > 0) {
+					all_loot.push(...loot);
+					add_to_character_inventory(loot);
+				}
+								
                 kill_enemy(target);
 				
 
@@ -2642,9 +2804,37 @@ function do_ally_combat_action(ally_index) {
 
             update_displayed_health_of_enemies();
         } else {
-            log_message(`${ally.name} has missed`, "hero_missed");
+            log_message(`${ally.name} has missed`, "ally_missed");
         }
     }
+	
+// Summarize enemy defeats if 2 or more
+if (defeated_targets.length >= 2) {
+	log_message(`${ally.name} defeated ${defeated_targets.join(", ")}`, "enemy_defeated");
+} else if (defeated_targets.length === 1) {
+	log_message(`${defeated_targets[0]} was defeated`, "enemy_defeated");
+}
+
+// Consolidate all loot into single summary
+if (all_loot.length > 0) {
+	const consolidated_loot = {};
+
+	all_loot.forEach(lootItem => {
+		const key = lootItem.item_key;
+		if (!consolidated_loot[key]) {
+			consolidated_loot[key] = {
+				item_key: key,
+				item: lootItem.item,
+				count: lootItem.count
+			};
+		} else {
+			consolidated_loot[key].count += lootItem.count;
+		}
+	});
+
+	const loot_array = Object.values(consolidated_loot);
+	log_loot(loot_array, true, true); // is_combat = true, is_summary = true
+}
 	
 	            if(current_enemies != null && current_enemies.filter(enemy => enemy.is_alive).length == 0) { //set next loop if there's still an enemy left;
                 current_location.enemy_groups_killed += 1;
@@ -2706,7 +2896,7 @@ function do_enemy_combat_action(enemy_id) {
             //50% more parrying & shielding xp if going without armor
             add_xp_to_skill({skill: skills["Parrying"], xp_to_add});
 			add_xp_to_skill({skill: skills["Shield blocking"], xp_to_add});
-            log_message(character.name + " parried an attack", "enemy_missed");
+            log_message(character.name + " parried an attack", "enemy_deflected");
 			perform_counterattack(attacker);
             return; //damage fully evaded, nothing more can happen
       
@@ -2835,7 +3025,24 @@ function enemy_tag_to_skill(tag) {
     return tagToSkillMap[tag];
 }
 
-function do_character_combat_action({target, attack_power, magic_power, magic_name = null, damage_type = "Physical"}) {
+function do_character_combat_action({
+    target, 
+    attack_power, 
+    magic_power, 
+    magic_name = null, 
+    damage_type = "Physical", 
+    summary = null 
+}) {
+
+let local_result = {
+    target_name: target.name,
+    hit: false,
+    crit: false,
+    damage: 0,
+    magic_name: magic_name,
+	defeated: false,
+	loot:[],
+};
 
 let hero_base_damage;
 
@@ -2934,37 +3141,44 @@ tags_bonus = 1; // returns to 1 if less than 1
 		if(damage_dealt > 3*target.stats.max_health){
 			add_xp_to_skill({skill: skills["Obliteration"], xp_to_add: target.xp_value});
 		}	
-		if (critted) {
-			const msg = magic_name 
-			? `${target.name} was critically hit by ${magic_name} for ${damage_dealt} dmg`
-			: `${target.name} was critically hit for ${damage_dealt} dmg`;
-			log_message(msg, "enemy_attacked_critically");
-			add_xp_to_skill({skill: skills["Criticality"], xp_to_add: target.xp_value});
+		if (summary) {
+			local_result.hit = true;
+			local_result.crit = critted;
+			local_result.damage = damage_dealt;
+			summary.results.push(local_result);
+		} else {
+			if (critted) {
+				const msg = magic_name 
+					? `${target.name} was critically hit by ${magic_name} for ${damage_dealt} dmg`
+					: `${target.name} was critically hit for ${damage_dealt} dmg`;
+				log_message(msg, "enemy_attacked_critically");
+				add_xp_to_skill({skill: skills["Criticality"], xp_to_add: target.xp_value});
 			} else {
-			const msg = magic_name 
-			? `${target.name} was hit by ${magic_name} for ${damage_dealt} dmg`
-			: `${target.name} was hit for ${damage_dealt} dmg`;
-			log_message(msg, "enemy_attacked");
+				const msg = magic_name 
+					? `${target.name} was hit by ${magic_name} for ${damage_dealt} dmg`
+					: `${target.name} was hit for ${damage_dealt} dmg`;
+				log_message(msg, "enemy_attacked");
 			}
+		}
 
         if(target.stats.health <= 0) {
             total_kills++;
             target.stats.health = 0; //to not go negative on displayed value
-
-
-            log_message(target.name + " was defeated", "enemy_defeated");
 
             //gained xp multiplied ny TOTAL size of enemy group raised to 1/3
             let xp_reward = target.xp_value * (current_enemies.length**0.3334);
             add_xp_to_character(xp_reward, true);
             
 
-            var loot = target.get_loot();
-            if(loot.length > 0) {
-                log_loot(loot);
-                add_to_character_inventory(loot);
-            }
-		
+			
+			local_result.defeated = true;
+
+			const loot = target.get_loot();
+			if (loot.length > 0) {
+				local_result.loot = loot;
+				add_to_character_inventory(loot);
+			}
+			
 		
 		// Rare loot generation (0.1% chance)
 let rare_loot = [];
@@ -2999,28 +3213,46 @@ if (rare_loot.length > 0) {
 			execute_death_effects(target.on_death)
 }
 
-			//add_xp_to_skill({skill: skills["MultiCasting"], xp_to_add: 1000});
-			//unlock_magic("Fireball");
-			//regress();
-			//console.log(character.stats.total_flat.max_health * character.stats.total_multiplier.max_health);
-			//console.log(target); //enable for debugging purposes
 
-
-
-		// magic stance xp for killing enemies
 		if (stances[current_stance].stance_type === "Magical") {
 				add_xp_to_skill({skill: skills["Magic Potency"], xp_to_add: 100});
             }
         }
 
-        
-		
-
-
         update_displayed_health_of_enemies();
     } else {
-        log_message(character.name + " has missed", "hero_missed");
+			   if (summary) {
+			local_result.hit = false;
+			summary.results.push(local_result);
+		} else {
+			log_message(character.name + " has missed", "hero_missed");
+		}
     }
+}
+
+function consolidate_loot(loot_arrays) {
+	const combined = {};
+
+	loot_arrays.flat().forEach(entry => {
+		let key;
+		if (entry.item) {
+			key = entry.item.id || entry.item.name;
+		} else if (entry.item_id) {
+			key = entry.item_id;
+		} else if (entry.item_key) {
+			key = entry.item_key;
+		}
+
+		if (!key) return;
+
+		if (!combined[key]) {
+			combined[key] = { ...entry };
+		} else {
+			combined[key].count += entry.count;
+		}
+	});
+
+	return Object.values(combined);
 }
 
 
@@ -3172,7 +3404,6 @@ function perform_counterattack(attacker) {
 
 	add_xp_to_skill({skill: skills["Counterattack"], xp_to_add: attack_damage})
 	do_character_combat_action({target: attacker, attack_power: attack_damage, magic_power: attack_damage, magic_name: "Counterattack"});
-	log_message(character.name + " performed counterattack", "hero_missed");
 	
 	
 	     if(current_enemies != null && current_enemies.filter(enemy => enemy.is_alive).length == 0) { //set next loop if there's still an enemy left;
@@ -5840,7 +6071,7 @@ for (let i = 0; i < resources.length; i++) {
 	
     }
 }
-
+			console.log(items);
                         if(items.length > 0) {
                             log_loot(items, false);
 							
@@ -6117,28 +6348,28 @@ function add_allies_to_party(ally_id, suppress_messages = false) {
 
     if (!ally) {
         if (!suppress_messages) {
-            log_message(`Ally with ID ${ally_id} does not exist.`);
+            log_message(`Ally with ID ${ally_id} does not exist.`,"party_change");
         }
         return;
     }
 
     if (current_party.includes(ally.ally_id)) {
         if (!suppress_messages) {
-            log_message(`${ally.name} is already in the party. How did you manage that?`);
+            log_message(`${ally.name} is already in the party. How did you manage that?`,"party_change");
         }
         return;
     }
 
     if (current_party.length >= 4) {
         if (!suppress_messages) {
-            log_message(`Party is full. Cannot add ${ally.name}.`);
+            log_message(`Party is full. Cannot add ${ally.name}.`,"party_change");
         }
         return;
     }
 
     current_party.push(ally.ally_id);
     if (!suppress_messages) {
-        log_message(`${ally.name} has joined the party.`);
+        log_message(`${ally.name} has joined the party.`,"party_change");
     }
 	update_party_list();
 }
@@ -6148,12 +6379,12 @@ function remove_allies_from_party(ally_id) {
     const index = current_party.findIndex(a => a.id === ally_id.ally_id);
 
     if (index === -1) {
-        log_message(`Nobody named ${ally_id} is in your party.`);
+        log_message(`Nobody named ${ally_id} is in your party.`,"party_change");
         return;
     }
 
     const removed = current_party.splice(index, 1)[0];
-    log_message(`The ${capitalize_first_letter(removed)} has been removed from the party.`);
+    log_message(`The ${capitalize_first_letter(removed)} has been removed from the party.`,"party_change");
 	update_party_list();
 }
 

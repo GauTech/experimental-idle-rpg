@@ -163,6 +163,14 @@ body {
  .message_enemy_attacked_critically {
 	color: rgb(90, 151, 221);
  }
+ 
+  .message_ally_attacked {
+	 color: lightblue;
+ }
+
+ .message_ally_attacked_critically {
+	color: rgb(90, 151, 221);
+ }
 
  .message_hero_attacked {
 	 color: crimson;

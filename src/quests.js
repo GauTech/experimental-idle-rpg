@@ -155,7 +155,7 @@ quests["The Super Pickaxe"] = new Quest({
 quests["The Super Axe"] = new Quest({
     quest_name: "The Super Axe",
 	quest_id: "The Super Axe",
-	quest_description: "The confused madman who gave me the old pickaxe seemed to want ores. With my honed skills perhaps I can satisfy his demands.",
+	quest_description: "The confused madman who gave me the old axe seemed to want wood. With my honed skills perhaps I can satisfy his demands.",
 
 	quest_rewards: {type: "item", item_name: "Super axe",},
 	quest_condition: [{requires_item: "Piece of ash wood", count: 3000}],
@@ -173,7 +173,7 @@ quests["The Super Rod"] = new Quest({
 quests["The Super Sickle"] = new Quest({
     quest_name: "The Super Sickle",
 	quest_id: "The Super Sickle",
-	quest_description: "The fisherman who gave me the old sickle might have a better rod to offer if I demonstrate my skills.",
+	quest_description: "The confused madman who gave me the old sickle seemed to want herbs. With my honed skills perhaps I can satisfy his demands.",
 
 	quest_rewards: {type: "item", item_name: "Super sickle",},
 	quest_condition: [{requires_item: "Veindust", count: 700}],
