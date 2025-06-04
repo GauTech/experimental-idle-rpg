@@ -556,6 +556,8 @@ function questRewardHandler(rewards, quest_id) {
 
 			 default:
 				if (reward.type.startsWith("dummy_")) {
+					log_message(`Gained +50 Hero XP from completing quest "${quest_id}"`,"quest_completed");
+					add_xp_to_character(50);
 					console.log(`Skipping dummy reward type "${reward.type}" in quest "${quest_id}"`);
 					break;
 				}
@@ -2570,9 +2572,9 @@ function do_ally_combat_action(ally_index) {
     const ally = allies[ally_id];
     if (!ally) return;
 
-    const ally_base_damage = (ally.attack_power * skills["Leadership"].get_coefficient("multiplicative"));
+    const ally_base_damage = (ally.attack_power * skills["Leadership"].get_coefficient("multiplicative") * Math.max(character.xp.current_level,1));
     const target_count = ally.target_count;
-    const AP = (ally.AP * skills["Leadership"].get_coefficient("multiplicative"));
+    const AP = (ally.AP * skills["Leadership"].get_coefficient("multiplicative") * Math.max(character.xp.current_level,1));
 
     const alive_targets = current_enemies.filter(enemy => enemy.is_alive).slice(-target_count);
     const targets = [...alive_targets].reverse(); // Get last N alive enemies
@@ -5740,6 +5742,9 @@ if (Math.random() < 0.0001) {
             break;
 		case "Fishing":
             rareItemName = "Succulent Shark";
+            break;
+		case "Herbalism":
+            rareItemName = "Miracle Weed";
             break;
         default: 
             

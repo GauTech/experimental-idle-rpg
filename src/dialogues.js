@@ -682,7 +682,7 @@ dialogues["Fisherman"] = new Dialogue({
             }),
 						           "QuestFinish": new Textline({ 
 								   
-                name: "Here you go. (Give Ore)",
+                name: "Here you go. (Give Fish)",
 				is_unlocked: false,
 						requires_items: {
                 item_template_key: "Cunning Carp",
@@ -779,6 +779,30 @@ dialogues["Mad Herbalist"] = new Dialogue({
                     items: ["Old sickle"],
                 },
                 locks_lines: ["HerbHuh"],
+            }),
+						"QuestStart": new Textline({ 
+                name: "What kind of herbs were you looking for exactly?",
+                text: "700 Veindust!",
+				required_flags: {yes: ["is_herbalism_level20"]},
+                unlocks: {
+					textlines: [{dialogue: "Mad Herbalist", lines: ["QuestFinish"]}],
+					start_quests: ["The Super Sickle"],
+                },
+                locks_lines: ["QuestStart"],
+            }),
+						           "QuestFinish": new Textline({ 
+								   
+                name: "Here you go. (Give Herbs)",
+				is_unlocked: false,
+					requires_items: {
+                item_template_key: "Veindust",
+                quantity: 700
+            },
+                text: "I knew you had it in you lad! Now take this, and devote yourself evermore to the path of woodcutting",
+                unlocks: {
+					update_quests: [{type: "QuestUpdate", id: "The Super Sickle", completion: "y", updates: [],}]
+                },
+                locks_lines: ["QuestFinish"],
             }),
         }
     });

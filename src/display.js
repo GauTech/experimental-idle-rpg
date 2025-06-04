@@ -3146,9 +3146,9 @@ function updateCombatDisplays(alliesInParty) {
                         const statElements = statsContainer.querySelectorAll('.ally_stat, .ally_power');
 
                         if (statElements.length >= 3) {
-                            statElements[0].textContent = `Atk Pwr: ${(Math.round(allyData.attack_power*(skills["Leadership"].get_coefficient("multiplicative"))*10))/10}`;
+                            statElements[0].textContent = `Atk Pwr: ${(Math.round(allyData.attack_power*(skills["Leadership"].get_coefficient("multiplicative")) * Math.max(character.xp.current_level,1)*10))/10}`;
                             statElements[1].textContent = `Atk Spd: ${allyData.attack_speed}`;
-                            statElements[2].textContent = `AP: ${(Math.round(allyData.AP*(skills["Leadership"].get_coefficient("multiplicative"))*10))/10}`;
+                            statElements[2].textContent = `AP: ${(Math.round(allyData.AP*(skills["Leadership"].get_coefficient("multiplicative")) * Math.max(character.xp.current_level,1)*10))/10}`;
                         }
                     }
                 }

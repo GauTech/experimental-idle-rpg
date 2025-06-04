@@ -3060,7 +3060,8 @@ locations["Loose Specimens"] = new Combat_zone({
         },
         repeatable_reward: {
             xp: 1750,
-			items: [{name:"Research paper"}]
+			items: [{name:"Research paper"}],
+			locations: [{location:"Wild Dragons"}]
         }
     });
 locations["Laboratory"].connected_locations.push({location: locations["Loose Specimens"]});
@@ -3073,7 +3074,7 @@ locations["Wild Dragons"] = new Combat_zone({
         enemy_count: 20, 
         enemy_group_size: [1,1],
         enemy_stat_variation: 0.2,
-        is_unlocked: true,
+        is_unlocked: false,
         name: "Wild Dragons", 
         parent_location: locations["The Roost"],
         first_reward: {
@@ -3081,6 +3082,7 @@ locations["Wild Dragons"] = new Combat_zone({
         },
         repeatable_reward: {
             xp: 3500,
+			locations: [{location:"Calamity Dragon"},{location:"Nightmare Dragon"},{location:"Primordial Dragon"},{location:"Hellfire Dragon"},{location:"Eclipse Dragon"}] 
         }
     });
 locations["The Roost"].connected_locations.push({location: locations["Wild Dragons"]});
@@ -3821,9 +3823,9 @@ locations["Dark Woods"].activities = {
         gained_resources: {
             resources: [
                 {name: "Bloodnettle", ammount: [[1,1], [1,1]], chance: [0.5, 1]},
-                {name: "Starshade", ammount: [[1,1], [1,1]], chance: [0.25, 0.9], skill_required: 10},
-				{name: "Glowcap", ammount: [[1,1], [1,1]], chance: [0.1, 0.5], skill_required: 16},
-                {name: "Veindust", ammount: [[1,1], [1,1]], chance: [0.2, 0.7], skill_required: 22},
+                {name: "Starshade", ammount: [[1,1], [1,1]], chance: [0.25, 0.9], skill_required: 21},
+				{name: "Glowcap", ammount: [[1,1], [1,1]], chance: [0.1, 0.5], skill_required: 22},
+                {name: "Veindust", ammount: [[1,1], [1,1]], chance: [0.2, 0.7], skill_required: 23},
                 {name: "Duskrill", ammount: [[1,1], [1,1]], chance: [0.15, 0.6], skill_required: 28},
                 
             ],

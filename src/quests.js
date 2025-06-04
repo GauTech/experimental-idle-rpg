@@ -170,6 +170,16 @@ quests["The Super Rod"] = new Quest({
 	quest_condition: [{requires_item: "Cunning Carp", count: 1000}],
 });
 
+quests["The Super Sickle"] = new Quest({
+    quest_name: "The Super Sickle",
+	quest_id: "The Super Sickle",
+	quest_description: "The fisherman who gave me the old sickle might have a better rod to offer if I demonstrate my skills.",
+
+	quest_rewards: {type: "item", item_name: "Super sickle",},
+	quest_condition: [{requires_item: "Veindust", count: 700}],
+});
+
+
 quests["Crazy for Craniums"] = new Quest({
     quest_name: "Crazy for Craniums",
 	quest_id: "Crazy for Craniums",
@@ -182,7 +192,7 @@ quests["Crazy for Craniums"] = new Quest({
 quests["Sky's the Limit"] = new Quest({
     quest_name: "Sky's the Limit",
 	quest_id: "Sky's the Limit",
-	quest_description: "The only way up the tower is climbing the exterior. My adventurer’s intuition tells me I need a Climbing skill of at least 9 to make it.",
+	quest_description: "The only way up the tower is climbing the exterior. My adventurer’s intuition tells me I need a Climbing skill of at least 10 to make it.",
 
 	quest_rewards: {type: "dummy_location", value: "Upper Tower",},
 	quest_condition: [{clear: "Tower climbing"}],
