@@ -14,6 +14,7 @@ class Activity {
                   action_text,
                   base_skills_names,
                   is_unlocked = false,
+				
         }) 
     {
         this.name = name;
@@ -24,6 +25,7 @@ class Activity {
         //some will have only 1 (e.g. "foraging", "mining") and some multiple
         this.tags = [];
         this.is_unlocked = is_unlocked;
+		
     }
 }
 
@@ -49,11 +51,13 @@ class Gathering extends Training {
         base_skills_names,
         is_unlocked = false,
         required_tool_type,
+		bonus_skill,
     }) {
         super({name, description, action_text, base_skills_names, is_unlocked});
         this.type = "GATHERING";
         this.tags["gathering"] = true;
         this.required_tool_type = required_tool_type;
+		this.bonus_skill = bonus_skill;
         //drops are defined in locations
     }
 }
@@ -174,6 +178,7 @@ class Gathering extends Training {
         base_skills_names: ["Herbalism"],
         is_unlocked: true,
         required_tool_type: "sickle",
+		bonus_skill: ["Foraging"],
     });
 	
     activities["fishing"] = new Gathering({

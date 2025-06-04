@@ -1602,7 +1602,7 @@ locations["Training Grounds"] = new Location({
         connected_locations: [{location: locations["Sanctuary"]}],
         description: "An area used by the Sanctuary inhabitants for sparring and training.",
         name: "Training Grounds",
-		dialogues: ["Instructor"],
+		dialogues: ["Instructor","Barbarian"],
         is_unlocked: false,
     });
 	
@@ -3823,10 +3823,10 @@ locations["Dark Woods"].activities = {
         gained_resources: {
             resources: [
                 {name: "Bloodnettle", ammount: [[1,1], [1,1]], chance: [0.5, 1]},
-                {name: "Starshade", ammount: [[1,1], [1,1]], chance: [0.25, 0.9], skill_required: 21},
-				{name: "Glowcap", ammount: [[1,1], [1,1]], chance: [0.1, 0.5], skill_required: 22},
-                {name: "Veindust", ammount: [[1,1], [1,1]], chance: [0.2, 0.7], skill_required: 23},
-                {name: "Duskrill", ammount: [[1,1], [1,1]], chance: [0.15, 0.6], skill_required: 28},
+                {name: "Starshade", ammount: [[1,1], [1,1]], chance: [0.3, 0.9], skill_required: 21},
+				{name: "Glowcap", ammount: [[1,1], [1,1]], chance: [0.25, 0.9], skill_required: 22},
+                {name: "Veindust", ammount: [[1,1], [1,1]], chance: [0.2, 0.9], skill_required: 23},
+                {name: "Duskrill", ammount: [[1,1], [1,1]], chance: [0.15, 0.9], skill_required: 28},
                 
             ],
             time_period: [30, 60],
@@ -3846,9 +3846,9 @@ locations["Lava Lake"].activities = {
         skill_xp_per_tick: 10,
         gained_resources: {
             resources: [
-                {name: "Cinderpetal", ammount: [[1,1], [1,2]], chance: [0.5, 1]},
-                {name: "Ashroot", ammount: [[1,1], [1,1]], chance: [0.25, 0.8], skill_required: 20},
-                {name: "Flamevine", ammount: [[1,1], [1,1]], chance: [0.12, 0.5], skill_required: 25}
+                {name: "Cinderpetal", ammount: [[1,1], [1,2]], chance: [0.5, 1.2]},
+                {name: "Ashroot", ammount: [[1,1], [1,1]], chance: [0.25, 1], skill_required: 20},
+                {name: "Flamevine", ammount: [[1,1], [1,1]], chance: [0.12, 0.9], skill_required: 25}
             ],
             time_period: [20, 45],
             skill_required: [15, 30],
@@ -3867,8 +3867,8 @@ locations["Glacier Wing"].activities = {
         gained_resources: {
             resources: [
                 {name: "Frostleaf", ammount: [[1,1], [1,2]], chance: [0.6, 1.2]},
-                {name: "Winterbloom", ammount: [[1,1], [1,1]], chance: [0.3, 0.8], skill_required: 20},
-                {name: "Cryoroot", ammount: [[1,1], [1,1]], chance: [0.15, 0.5], skill_required: 25}
+                {name: "Winterbloom", ammount: [[1,1], [1,1]], chance: [0.3, 1], skill_required: 20},
+                {name: "Cryoroot", ammount: [[1,1], [1,1]], chance: [0.15, 0.9], skill_required: 25}
             ],
                time_period: [20, 45],
             skill_required: [15, 30],

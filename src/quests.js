@@ -201,7 +201,7 @@ quests["Sky's the Limit"] = new Quest({
 quests["Stone Door to Somewhere"] = new Quest({
     quest_name: "Stone Door to Somewhere",
 	quest_id: "Stone Door to Somewhere",
-	quest_description: "The Catacombs house a great stone door leading who knows where. My adventurer’s intuition tells me I need a Strength of at least 25 to open it.",
+	quest_description: "The Catacombs house a great stone door leading who knows where. My adventurer’s intuition tells me I need a Strength greater than 25 to open it.",
 
 	quest_rewards: {type: "dummy_location", value: "Cavern",},
 	quest_condition: [{clear: "Open the stone door"}],

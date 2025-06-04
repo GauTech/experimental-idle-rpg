@@ -496,7 +496,32 @@ function format_skill_rewards(milestone){
 									<br>Multiplies damage against medium sized enemies by ${Math.round(skills["Battling"].get_coefficient("multiplicative")*1000)/1000}
 									<br>Multiplies evasion against large-type enemies by ${Math.round(skills["Giant slayer"].get_coefficient("multiplicative")*1000)/1000}`;
 									
-                                }});
+                                },
+									        rewards: {
+            milestones: {
+                15: {
+                    stats: {
+                        agility: {flat: 2},
+                    }
+                },
+                20: {
+                    stats: {
+                        agility: {flat: 3},
+                    }
+                },
+                25: {
+                    stats: {
+                        agility: {flat: 5},
+                    }
+                },
+                30: {
+                    stats: {
+                        agility: {multiplier: 1.02},
+                    }
+                },
+            }
+        }
+								});
 
     skills["Evasion"] = new Skill({skill_id: "Evasion", 
                                 names: {0: "Evasion"},                                
@@ -594,6 +619,30 @@ function format_skill_rewards(milestone){
 			<br>Multiplies counterattack chance and damage by ${Math.round(skills["Counterattack"].get_coefficient("multiplicative")*1000)/1000}
 			<br>Increases block chance by flat ${Math.round(skills["Shield blocking"].get_level_bonus()*1000)/10}%. Increases blocked damage by ${Math.round(skills["Shield blocking"].get_level_bonus()*5000)/10}%`;
         },
+		        rewards: {
+            milestones: {
+                15: {
+                    stats: {
+                        dexterity: {flat: 2},
+                    }
+                },
+                20: {
+                    stats: {
+                        dexterity: {flat: 3},
+                    }
+                },
+                25: {
+                    stats: {
+                        dexterity: {flat: 5},
+                    }
+                },
+                30: {
+                    stats: {
+                        dexterity: {multiplier: 1.02},
+                    }
+                },
+            }
+        }
     });
 	
      
@@ -1387,135 +1436,7 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                 max_level_coefficient: 8});
 })();
 
-//work related
-(function(){
-    skills["Farming"] = new Skill({skill_id: "Farming", 
-                                names: {0: "Farming"}, 
-                                description: "Even a simple action of plowing some fields, can be performed better with skills and experience",
-                                base_xp_cost: 40,
-                                category: "Profession",
-                                max_level: 10,
-                                xp_scaling: 1.6,
-                                max_level_coefficient: 2,
-                                rewards: {
-                                    milestones: {
-                                        1: {
-                                            stats: {
-                                                max_stamina: {flat: 2},
-                                            },
-                                        },
-                                        2: {
-                                            stats: {
-                                                strength: {flat: 1}
-                                            },
-                                        },
-                                        3: {
-                                            stats: {
-                                                dexterity: {flat: 1},
-                                                max_stamina: {flat: 2},
-                                            }
-                                        },
-                                        4: {
-                                            stats: {
-                                                strength: {flat: 1},
-                                                max_stamina: {flat: 2},
-                                            }
-                                        },
-                                        5: {
-                                            stats: {
-                                                strength: {flat: 1},
-                                                max_stamina: {flat: 2},
-                                            },
-                                            xp_multipliers: {
-                                                "Herbalism": 1.05,
-                                            }
-                                        },
-                                        6: {
-                                            stats: {
-                                                strength: {flat: 1},
-                                            },
-                                            xp_multipliers: {
-                                                Weightlifting: 1.1,
-                                            }
-                                        },
-                                        7: {
-                                            stats: {
-                                                dexterity: {flat: 1},
-                                                max_stamina: {flat: 2},
-                                            },
-                                            xp_multipliers: {
-                                                "Unarmed": 1.05,
-                                            }
-                                        },
-                                        8: {
-                                            stats: {
-                                                strength: {flat: 1},
-                                                max_stamina: {flat: 2},
-                                            }
-                                        },
-                                        9: {
-                                            stats: {
-                                                strength: {flat: 1},
-                                                dexterity: {flat: 1},
-                                            },
-                                        },
-                                        10: {
-                                            stats: {
-                                                max_stamina: {flat: 4},
-                                                strength: {multiplier: 1.05},
-                                                dexterity: {multiplier: 1.05},
-                                            },
-                                            xp_multipliers: {
-                                                "Unarmed": 1.1,
-                                                "Herbalism": 1.1,
-                                            }
-                                        }
-                                    }
-                                }});
-    skills["Salvaging"] = new Skill({skill_id: "Salvaging", 
-                                names: {0: "Salvaging"}, 
-                                description: "Salvaging",
-                                base_xp_cost: 100,
-                                category: "Profession",
-                                max_level: 10,
-                                xp_scaling: 1.8,
-                                max_level_coefficient: 2,
-								get_effect_description: ()=> {
-                                    return `Multiplies droprate by ${Math.round(skills["Salvaging"].get_coefficient("multiplicative")*1000)/1000}`;
-                                },
-	});		
-	    skills["Scrap Mechanic"] = new Skill({skill_id: "Scrap Mechanic", 
-                                names: {0: "Scrap Mechanic"}, 
-                                description: "Scrap Mechanic",
-                                base_xp_cost: 100,
-                                category: "Profession",
-								is_unlocked: true,
-                                max_level: 30,
-                                xp_scaling: 2,
-								base_xp_cost: 100,
-                                max_level_coefficient: 10,
-								visibility_treshold: 1,
-								get_effect_description: ()=> {
-                                    return `Multiplies droprate by ${Math.round(skills["Salvaging"].get_coefficient("multiplicative")*1000)/1000}
-									<br> Multiplies crafting XP gain by ${Math.round(skills["Scrap Mechanic"].get_coefficient("multiplicative")*1000)/1000}`;
-                                },
-	});	
 
-
-    skills["Lockpicking"] = new Skill({skill_id: "Lockpicking", 
-                                names: {0: "Lockpicking"}, 
-                                description: "Improves your ability to pick locks",
-                                base_xp_cost: 50,
-                                category: "Character",
-                                max_level: 30,
-                                xp_scaling: 1.6,
-                                max_level_coefficient: 2,
-								get_effect_description: ()=> {
-                                    return `Increases ability to pick locks`;
-                                },
-	});		
-								
-})();
 
 //non-work activity related
 (function(){
@@ -2192,6 +2113,155 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
     });
 })();
 
+//work related
+(function(){
+    skills["Farming"] = new Skill({skill_id: "Farming", 
+                                names: {0: "Farming"}, 
+                                description: "Even a simple action of plowing some fields, can be performed better with skills and experience",
+                                base_xp_cost: 40,
+                                category: "Profession",
+                                max_level: 10,
+                                xp_scaling: 1.6,
+                                max_level_coefficient: 2,
+                                rewards: {
+                                    milestones: {
+                                        1: {
+                                            stats: {
+                                                max_stamina: {flat: 2},
+                                            },
+                                        },
+                                        2: {
+                                            stats: {
+                                                strength: {flat: 1}
+                                            },
+                                        },
+                                        3: {
+                                            stats: {
+                                                dexterity: {flat: 1},
+                                                max_stamina: {flat: 2},
+                                            }
+                                        },
+                                        4: {
+                                            stats: {
+                                                strength: {flat: 1},
+                                                max_stamina: {flat: 2},
+                                            }
+                                        },
+                                        5: {
+                                            stats: {
+                                                strength: {flat: 1},
+                                                max_stamina: {flat: 2},
+                                            },
+                                            xp_multipliers: {
+                                                "Herbalism": 1.05,
+                                            }
+                                        },
+                                        6: {
+                                            stats: {
+                                                strength: {flat: 1},
+                                            },
+                                            xp_multipliers: {
+                                                Weightlifting: 1.1,
+                                            }
+                                        },
+                                        7: {
+                                            stats: {
+                                                dexterity: {flat: 1},
+                                                max_stamina: {flat: 2},
+                                            },
+                                            xp_multipliers: {
+                                                "Unarmed": 1.05,
+                                            }
+                                        },
+                                        8: {
+                                            stats: {
+                                                strength: {flat: 1},
+                                                max_stamina: {flat: 2},
+                                            }
+                                        },
+                                        9: {
+                                            stats: {
+                                                strength: {flat: 1},
+                                                dexterity: {flat: 1},
+                                            },
+                                        },
+                                        10: {
+                                            stats: {
+                                                max_stamina: {flat: 4},
+                                                strength: {multiplier: 1.05},
+                                                dexterity: {multiplier: 1.05},
+                                            },
+                                            xp_multipliers: {
+                                                "Unarmed": 1.1,
+                                                "Herbalism": 1.1,
+                                            }
+                                        }
+                                    },
+									get_effect_description: ()=> {
+                                    return `Improves reward from fieldwork activity`;
+                                },
+                                }});
+	    skills["Foraging"] = new Skill({skill_id: "Foraging", 
+                                names: {0: "Foraging"}, 
+                                description: "A deep understanding of flora allows you to farm and forage more efficiently.",
+                                base_xp_cost: 100,
+                                category: "Profession",
+                                max_level: 30,
+                                xp_scaling: 2,
+								base_xp_cost: 100,
+								max_level_coefficient: 2,
+								visibility_treshold: 1,
+								get_effect_description: ()=> {
+                                    return `Retains all Farming bonuses<br>${Math.round((skills["Foraging"].get_coefficient("flat")-1)*1000)/10}% chance for +1 resource harvest when herb gathering`;
+                                },
+	});	
+
+    skills["Salvaging"] = new Skill({skill_id: "Salvaging", 
+                                names: {0: "Salvaging"}, 
+                                description: "Salvaging",
+                                base_xp_cost: 100,
+                                category: "Profession",
+                                max_level: 10,
+                                xp_scaling: 1.8,
+                                max_level_coefficient: 2,
+								get_effect_description: ()=> {
+                                    return `Multiplies droprate by ${Math.round(skills["Salvaging"].get_coefficient("multiplicative")*1000)/1000}`;
+                                },
+	});		
+	    skills["Scrap Mechanic"] = new Skill({skill_id: "Scrap Mechanic", 
+                                names: {0: "Scrap Mechanic"}, 
+                                description: "Scrap Mechanic",
+                                base_xp_cost: 100,
+                                category: "Profession",
+								is_unlocked: true,
+                                max_level: 30,
+                                xp_scaling: 2,
+								base_xp_cost: 100,
+                                max_level_coefficient: 10,
+								visibility_treshold: 1,
+								get_effect_description: ()=> {
+                                    return `Multiplies droprate by ${Math.round(skills["Salvaging"].get_coefficient("multiplicative")*1000)/1000}
+									<br> Multiplies crafting XP gain by ${Math.round(skills["Scrap Mechanic"].get_coefficient("multiplicative")*1000)/1000}`;
+                                },
+	});	
+
+
+
+    skills["Lockpicking"] = new Skill({skill_id: "Lockpicking", 
+                                names: {0: "Lockpicking"}, 
+                                description: "Improves your ability to pick locks",
+                                base_xp_cost: 50,
+                                category: "Character",
+                                max_level: 30,
+                                xp_scaling: 1.6,
+                                max_level_coefficient: 2,
+								get_effect_description: ()=> {
+                                    return `Increases ability to pick locks`;
+                                },
+	});		
+								
+})();
+
 //crafting skills
 (function(){
     skills["Crafting"] = new Skill({
@@ -2611,6 +2681,20 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 										return `Increases crit rate by ${skills["Criticality"].get_level_bonus().toPrecision(3)}
 										<br>Increases crit multiplier by ${skills["Obliteration"].get_level_bonus().toPrecision(3)}`;
 								},
+								rewards: {
+        milestones: {
+            15: {
+                stats: {
+					"crit_rate": {flat: 0.01},
+                },
+            },
+			     25: {
+                stats: {
+					"crit_rate": {flat: 0.02},
+                },
+            },
+		}
+								}
 								
 	});	
 })();

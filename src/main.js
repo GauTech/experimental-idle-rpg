@@ -98,6 +98,7 @@ const global_flags = {
 	is_swimming_level10: false,
 	is_climbing_level20: false,
 	is_swimming_level20: false,
+	is_strength_train_level20: false,
 	is_farming_level2: false,
 	is_ahandling_level2: false,
 };
@@ -3532,9 +3533,13 @@ if(skill.skill_id === "Animal handling" && skill.current_level > 1 && global_fla
 	global_flags.is_ahandling_level2 = true;
 }
 
+if(skill.skill_id === "Weightlifting" && skill.current_level > 1 && global_flags.is_strength_train_level20 == false){
+	global_flags.is_strength_train_level20 = true;
+}
+
+
 //unpaired evolutions
-if(skill.skill_id === "Crafting" && skill.current_level > 14 && skills["Salvaging"].current_level == 10 && skills["Scrap Mechanic"].current_level == 0){ //&& skills["Scrap Mechanic"].is_unlocked == false
-	    //skills["Scrap Mechanic"].is_unlocked = true; //unlocking locked skills this way seems to cause errors.
+if(skill.skill_id === "Crafting" && skill.current_level > 14 && skills["Salvaging"].current_level == 10 && skills["Scrap Mechanic"].current_level == 0){ 
 		skills["Salvaging"].is_hidden = true;
                 update_displayed_skill_bar(skills["Salvaging"], true);
                 hidden_skills.push("Salvaging");
@@ -3547,6 +3552,21 @@ if(skill.skill_id === "Crafting" && skill.current_level > 14 && skills["Salvagin
                 use_pairing: false
             })
 				log_message("Skill EVOLUTION. Salvaging evolved into Scrap Mechanic", "skill_evolution");
+}
+
+if(skill.skill_id === "Herbalism" && skill.current_level > 17 && skills["Farming"].current_level == 10 && skills["Foraging"].current_level == 0){ 
+		skills["Farming"].is_hidden = true;
+                update_displayed_skill_bar(skills["Farming"], true);
+               hidden_skills.push("Farming");
+		     add_xp_to_skill({
+                skill: skills["Foraging"],
+                xp_to_add: 100,
+                should_info: true,
+                add_to_parent: false,
+                use_bonus: false,
+                use_pairing: false
+            })
+				log_message("Skill EVOLUTION. Farming evolved into Foraging", "skill_evolution");
 }
 
 }
@@ -5728,6 +5748,7 @@ function update() {
 
                         const {resources} = current_activity.gained_resources;
 				const base_skill_names = activities[current_activity.activity_name].base_skills_names || [];
+				
 
 let rare_loot = [];
 if (Math.random() < 0.0001) {
@@ -5783,15 +5804,27 @@ for (let i = 0; i < resources.length; i++) {
     });
 
     if (!meetsRequirement) continue;
+	
+				const bonus_skill = activities[current_activity.activity_name]?.bonus_skill;
+		const chance = Array.isArray(resource.chance) ? resource.chance[1] : resource.chance;
 
-    // Apply chance logic
-    const chance = Array.isArray(resource.chance) ? resource.chance[1] : resource.chance;
-    if (Math.random() > (1 - chance)) {
-        const countRange = Array.isArray(resource.ammount) ? resource.ammount[1] : [1, 1];
-        const count = Math.floor(Math.random() * (countRange[1] - countRange[0] + 1)) + countRange[0];
+		if (Math.random() > (1 - chance)) {
+			const countRange = Array.isArray(resource.ammount) ? resource.ammount[1] : [1, 1];
+			const baseCount = Math.floor(Math.random() * (countRange[1] - countRange[0] + 1)) + countRange[0];
 
-        items.push({ item_key: resource.name, item: item_templates[resource.name], count });
-        gathered_materials[gained_resources[i].name] = (gathered_materials[resource.name] || 0) + count;
+			// Skill coefficient (0 to 1)
+			const skillCoefficient = bonus_skill ? (skills[bonus_skill]?.get_coefficient("flat") || 0) : 0;
+	
+			// Apply bonus per unit
+			let bonusCount = 0;
+			for (let j = 0; j < baseCount; j++) {
+				if (Math.random() < (skillCoefficient-1)) bonusCount++;
+			}
+
+			const totalCount = baseCount + bonusCount;
+
+			items.push({ item_key: resource.name, item: item_templates[resource.name], count: totalCount });
+			gathered_materials[resource.name] = (gathered_materials[resource.name] || 0) + totalCount;
 	
     }
 }
@@ -5812,7 +5845,11 @@ for (let i = 0; i < resources.length; i++) {
                             for(let i = 0; i < activities[current_activity.activity_name].base_skills_names?.length; i++) {
                                 leveled = add_xp_to_skill({skill: skills[activities[current_activity.activity_name].base_skills_names[i]], xp_to_add: current_activity.skill_xp_per_tick}) || leveled;
                             }
-                            
+                          
+							if(activities[current_activity.activity_name].bonus_skill && skills[activities[current_activity.activity_name].bonus_skill].current_level > 0){
+								
+							add_xp_to_skill({skill: skills[activities[current_activity.activity_name].bonus_skill], xp_to_add: current_activity.skill_xp_per_tick})
+							}
                             //if(leveled) {
                                 update_gathering_tooltip(current_activity);
                             //}

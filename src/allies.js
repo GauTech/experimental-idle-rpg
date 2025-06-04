@@ -65,6 +65,15 @@ class Ally {
 		AP: 12,
 		target_count: 2,
     });
+    allies["barbarian"] = new Ally({
+        name: "Barbarian",
+		ally_id: "knight",
+        description: "barbarian", //try to keep it short
+        attack_power: 14,
+        attack_speed: 1.2,
+		AP: 10,
+		target_count: 3,
+    });
     allies["scholar"] = new Ally({
         name: "Scholar",
 		ally_id: "scholar",

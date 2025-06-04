@@ -3824,7 +3824,7 @@ function update_displayed_skill_bar(skill, leveled_up=true) {
 }
 
 function update_displayed_skill_description(skill) {
-    if(!skill_bar_divs[skill.category][skill.skill_id]) {
+    if (skill.is_hidden || !skill_bar_divs[skill.category] || !skill_bar_divs[skill.category][skill.skill_id]) {
         return;
     }
     skill_bar_divs[skill.category][skill.skill_id].children[0].children[2].children[3].innerHTML = `${skill.get_effect_description()}`;

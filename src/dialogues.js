@@ -806,7 +806,39 @@ dialogues["Mad Herbalist"] = new Dialogue({
             }),
         }
     });
-	
+
+dialogues["Barbarian"] = new Dialogue({
+        name: "Barbarian",
+        textlines: {
+            "Hello1": new Textline({ 
+                name: "Hello.",
+				required_flags: {no: ["is_strength_train_level20"]},
+                text: "*disapproving grunt.* \n\nPuny, noodle armed wimps. Where real warriors?",
+				unlocks: {
+                },
+			}),
+            "Hello2": new Textline({ 
+                name: "Hello.",
+                text: "*approving grunt*",
+				required_flags: {yes: ["is_strength_train_level20"]},
+                unlocks: {
+					textlines: [{dialogue: "Barbarian", lines: ["Invite"]}],
+                },
+                locks_lines: ["Hello1"],
+			}),	
+            "Invite": new Textline({ 
+				is_unlocked: false,
+                name: "Uhm, would you like to join my party?",
+                text: "*affirmative grunt*",
+                unlocks: {
+					allies: ["barbarian"],
+                },
+                locks_lines: ["Hello2","Invite"],
+			}),					
+			}
+    });
+
+
 dialogues["Fallen"] = new Dialogue({
         name: "Fallen",
 		is_unlocked: false,
