@@ -17,7 +17,8 @@ import { current_enemies, options,
     global_flags,
 	end_actions,
 	active_quests,
-	finished_quests
+	finished_quests,
+	getGroupLeaderName
 	} from "./main.js";
 import { dialogues } from "./dialogues.js";
 import { activities } from "./activities.js";
@@ -561,7 +562,7 @@ function create_effect_tooltip(effect_name, duration) {
                 const sign = stat_value.flat > 0 ? "+" : "";
                 tooltip.innerHTML += `<br>${displayName}: ${sign}${stat_value.flat}`;
             } 
-            else if(key === "health_regeneration_percent" || key === "stamina_regeneration_percent" || key === "mana_regeneration_percent") {
+            else if(key === "health_regeneration_percent" || key === "stamina_regeneration_percent" || key === "mana_regeneration_percent" || key === "health_loss_percent" || key === "stamina_loss_percent" || key === "mana_loss_percent") {
                 const sign = stat_value.percent > 0 ? "+" : "";
                 tooltip.innerHTML += `<br>${displayName}: ${sign}${stat_value.percent}%`;
             } 
@@ -773,37 +774,46 @@ function log_message(message_to_add, message_type, is_priority = false) {
 let was_stacked = false;
 
 if (stackable_types.has(message_type)) {
-    const existing = recent_message_stacks[message_type];
-    const messages = Array.from(message_log.children);
+	const existing = recent_message_stacks[message_type];
+	const messages = Array.from(message_log.children);
 
-    if (existing && existing.messageElement instanceof Node) {
-        const index = messages.indexOf(existing.messageElement);
+	if (existing && existing.messageElement instanceof Node) {
+		const index = messages.indexOf(existing.messageElement);
 
-        if (index >= messages.length - 5) {
-            was_stacked = true;
+		if (index !== -1) {
+			// === MAGIC CAST SELF MERGE HANDLING ===
+			if (message_type === "magic_cast_self" && index >= messages.length - 20) {
+				was_stacked = true;
 
-            if (message_type === "magic_cast_self") {
-                // Merge magic names into a single list
-                let match = existing.messageElement.textContent.match(/^Cast (.+) on self/);
-                let existingSpells = match ? match[1].split(/, | & /) : [];
+				let match = existing.messageElement.textContent.match(/^Cast (.+) on self/);
+				let existingSpells = match ? match[1].split(/, | & /) : [];
 
-                const newSpell = message_to_add.replace(/^Cast (.+) on self$/, "$1");
-                if (!existingSpells.includes(newSpell)) {
-                    existingSpells.push(newSpell);
-                }
+				const newSpell = message_to_add.replace(/^Cast (.+) on self$/, "$1");
+				if (!existingSpells.includes(newSpell)) {
+					existingSpells.push(newSpell);
+				}
 
-                let mergedText = "Cast ";
-                if (existingSpells.length === 1) {
-                    mergedText += existingSpells[0];
-                } else if (existingSpells.length === 2) {
-                    mergedText += existingSpells.join(" & ");
-                } else {
-                    mergedText += existingSpells.slice(0, -1).join(", ") + " & " + existingSpells.slice(-1);
-                }
-                mergedText += " on self";
+				// Ensure no duplicates
+				existingSpells = [...new Set(existingSpells)];
 
-                existing.messageElement.innerHTML = `${mergedText}<div class='message_border'> </div>`;
-				} else if (message_type === "combat_loot" || message_type === "gathered_loot") {
+				let mergedText = "Cast ";
+				if (existingSpells.length === 1) {
+					mergedText += existingSpells[0];
+				} else if (existingSpells.length === 2) {
+					mergedText += existingSpells.join(" & ");
+				} else {
+					mergedText += existingSpells.slice(0, -1).join(", ") + " & " + existingSpells.slice(-1);
+				}
+				mergedText += " on self";
+
+				existing.messageElement.innerHTML = `${mergedText}<div class='message_border'> </div>`;
+			}
+
+			// === OTHER STACKABLE TYPES (last 5 only) ===
+			else if (index >= messages.length - 5) {
+				was_stacked = true;
+
+				if (message_type === "combat_loot" || message_type === "gathered_loot") {
 					const parseItems = str => {
 						const parts = str.match(/"([^"]+)" x\d+/g) || [];
 						const items = {};
@@ -823,7 +833,7 @@ if (stackable_types.has(message_type)) {
 						mergedItems[name] = (prevItems[name] || 0) + count;
 					}
 
-					// Ensure unchanged items are still included
+					// Include unchanged items
 					for (const name of Object.keys(prevItems)) {
 						if (!newItems[name]) {
 							mergedItems[name] = prevItems[name];
@@ -838,28 +848,31 @@ if (stackable_types.has(message_type)) {
 					const prefix = message_type === "combat_loot" ? "Looted " : "Gained ";
 					existing.messageElement.innerHTML = `${prefix}${combinedList.join(", ")}<div class='message_border'> </div>`;
 				} else {
-                // Default stacking behavior
-                existing.count += 1;
-                existing.messageElement.innerHTML = `${message_to_add} (x${existing.count})<div class='message_border'> </div>`;
-            }
+					// Generic stacking with count
+					existing.count += 1;
+					existing.messageElement.innerHTML = `${message_to_add} (x${existing.count})<div class='message_border'> </div>`;
+				}
+			}
 
-            // === Insert ABOVE priority message if it exists ===
-            const priority = document.getElementById("autocast_failure_msg");
-            if (priority && message_log.contains(priority)) {
-                message_log.insertBefore(existing.messageElement, priority);
-            } else {
-                message_log.appendChild(existing.messageElement);
-            }
+			if (was_stacked) {
+				// Reinsert above priority if present
+				const priority = document.getElementById("autocast_failure_msg");
+				if (priority && message_log.contains(priority)) {
+					message_log.insertBefore(existing.messageElement, priority);
+				} else {
+					message_log.appendChild(existing.messageElement);
+				}
 
-            if (isScrolledToBottom) {
-                message_log.scrollTop = message_log.scrollHeight;
-            }
+				if (isScrolledToBottom) {
+					message_log.scrollTop = message_log.scrollHeight;
+				}
+				return; // Done, don't insert new
+			}
+		}
 
-            return; // Don't add new message
-        } else {
-            delete recent_message_stacks[message_type]; // too old
-        }
-    }
+		// Too old, remove reference
+		delete recent_message_stacks[message_type];
+	}
 }
 
 // === NORMAL MESSAGE ADDITION ===
@@ -1906,6 +1919,9 @@ function update_displayed_normal_location(location) {
     //add butttons to change location
 
 			getMapDirectionVectors(current_location).then(vectors => {
+				if(current_location.parent_location){
+					return
+				}	
 			const vectorMap = new Map(vectors.map(v => [v.to, v]));
 
 			const available_locations = current_location.connected_locations.filter(loc => {
@@ -3682,7 +3698,7 @@ function start_activity_display(current_activity) {
     if(activities[current_activity.activity_name].base_skills_names) {
         const needed_xp = skills[activities[current_activity.activity_name].base_skills_names].current_level == skills[activities[current_activity.activity_name].base_skills_names].max_level? "Max": `${Math.round(10000*skills[activities[current_activity.activity_name].base_skills_names].current_xp/skills[activities[current_activity.activity_name].base_skills_names].xp_to_next_lvl)/100}%`
         if(activities[current_activity.activity_name].type !== "GATHERING") {
-            action_xp_div.innerText = `Getting ${current_activity.skill_xp_per_tick} base xp per in-game minute to ${skills[activities[current_activity.activity_name].base_skills_names].name()} (${needed_xp})` + 
+            action_xp_div.innerText = `Getting ${current_activity.skill_xp_per_tick} base xp per in-game minute to ${getGroupLeaderName(skills[activities[current_activity.activity_name].base_skills_names].name())} (${needed_xp})` + 
 			(current_activity.activity_cost && current_activity.activity_cost.amount > 0 ? ` | Cost: ${current_activity.activity_cost.amount} ${current_activity.activity_cost.type}` : '');
         } else {
             action_xp_div.innerText = `Getting ${current_activity.skill_xp_per_tick} base xp per gathering cycle to ${skills[activities[current_activity.activity_name].base_skills_names].name()} (${needed_xp})` ;
@@ -3762,7 +3778,7 @@ function update_displayed_ongoing_activity(current_activity, is_job){
     const needed_xp = skills[activities[current_activity.activity_name].base_skills_names].current_level == skills[activities[current_activity.activity_name].base_skills_names].max_level? "Max": `${Math.round(10000*skills[activities[current_activity.activity_name].base_skills_names].current_xp/skills[activities[current_activity.activity_name].base_skills_names].xp_to_next_lvl)/100}%`
     
     if(activities[current_activity.activity_name].type !== "GATHERING") {
-        action_xp_div.innerText = `Getting ${current_activity.skill_xp_per_tick} base xp per in-game minute to ${skills[activities[current_activity.activity_name].base_skills_names].name()} (${needed_xp})`+ 
+        action_xp_div.innerText = `Getting ${current_activity.skill_xp_per_tick} base xp per in-game minute to ${getGroupLeaderName(skills[activities[current_activity.activity_name].base_skills_names].name())} (${needed_xp})`+ 
 			(current_activity.activity_cost && current_activity.activity_cost.amount > 0 ? ` | Cost: ${current_activity.activity_cost.amount} ${current_activity.activity_cost.type}` : '');
     } else {
         action_xp_div.innerText = `Getting ${current_activity.skill_xp_per_tick} base xp per gathering cycle to ${skills[activities[current_activity.activity_name].base_skills_names].name()} (${needed_xp})`;
@@ -5333,7 +5349,6 @@ function getMapDirectionVectors(current_location) {
             });
 
             resolve(results);
-			console.log(results);
         };
 
         tryResolve(); // first try

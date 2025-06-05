@@ -60,9 +60,14 @@ const stat_names = {"strength": "str",
                     "evasion_points": "EP",
                     "attack_points": "AP",
 					"stamina_regeneration_flat": "stamina regeneration (flat)",
+					"stamina_regeneration_percent": "stamina regeneration (percent)",
 					"mana_regeneration_flat": "mana regeneration (flat)",
 					"health_loss_flat": "HP loss (flat)",
 					"health_loss_multiplier": "HP loss (%)",
+					"health_loss_percent": "HP loss (%)",
+					"stamina_loss_flat": "stamina loss (flat)",
+					"stamina_loss_multiplier": "stamina loss (%)",
+					"stamina_loss_percent": "stamina loss (%)",
                 };
 
 function get_hit_chance(attack_points, evasion_points) {

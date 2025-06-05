@@ -1678,12 +1678,7 @@ item_templates["Chitin Shard"] = new Junk({
         price_recovers: true,
     });
 
-    item_templates["Rotten Flesh"] = new Junk({
-        name: "Rotten Flesh", 
-        description: "A rotting lump of flesh. Why would you even pick it up?",
-        value: 1,
-        price_recovers: true,
-    });
+
    item_templates["Rat fang"] = new Junk({
         name: "Rat fang", 
         description: "Fang of a huge rat, not very sharp, but can still pierce a human skin if enough force is applied", 
@@ -4127,7 +4122,14 @@ item_templates["Elixir of Magic"] = new UsableItem({
 });
 
 // foods
-
+    item_templates["Rotten Flesh"] = new UsableItem({
+        name: "Rotten Flesh", 
+        description: "A rotting lump of flesh. Why would you even pick it up?",
+        value: 1,
+        price_recovers: true,
+		gluttony_value: 10,
+        effects: [{effect: "Corruption", duration: 60}],
+    });
 
 item_templates["Grilled goo"] = new UsableItem({
         name: "Grilled goo", 

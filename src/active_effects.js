@@ -43,6 +43,18 @@ effect_templates["Weak healing powder"] = new ActiveEffect({
         }
     }
 });
+
+effect_templates["Corruption"] = new ActiveEffect({
+    name: "Corruption",
+    effects: {
+        stats: {
+            health_regeneration_flat: {flat: 1},
+			stamina_loss_percent: {percent: 5},
+        }
+    }
+});
+
+
 effect_templates["Weak healing potion"] = new ActiveEffect({
     name: "Weak healing potion",
     effects: {

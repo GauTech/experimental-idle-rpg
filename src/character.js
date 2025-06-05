@@ -30,7 +30,9 @@ class Hero extends InventoryHaver {
 						max_stamina: 100,
 						stamina: 100,
 						stamina_regeneration_flat: 0, //in combat
-						stamina_regeneration_percenty: 0, //in combat
+						stamina_regeneration_percent: 0, //in combat
+						stamina_loss_flat: 0, //in combat
+						stamina_loss_percent: 0, //in combat
 						stamina_efficiency: 1,
 						max_mana: 10,
 						mana: 10,
@@ -77,7 +79,8 @@ class Hero extends InventoryHaver {
                                 stance: {},
                                 light_level: {},
                                 environment: {},
-                        }
+                        },
+						percent: {},
                 };
                 this.reputation = { //effects go up to 1000?
                         village: 0,
@@ -439,8 +442,10 @@ character.stats.add_book_bonus = function ({multipliers = {}, xp_multipliers = {
 
 
 character.stats.add_active_effect_bonus = function () {
-	character.stats.immunities = {};
+    character.stats.immunities = {};
     character.stats.flat.active_effect = {};
+    character.stats.percent = character.stats.percent || {};
+    character.stats.percent.active_effect = {};
     character.stats.multiplier.active_effect = {};
 
     Object.values(active_effects).forEach(effect => {
@@ -448,25 +453,26 @@ character.stats.add_active_effect_bonus = function () {
 
         if (statEffects) {
             for (const [key, value] of Object.entries(statEffects)) {
-                if (value.flat) {
+                if (value.flat !== undefined) {
                     character.stats.flat.active_effect[key] = (character.stats.flat.active_effect[key] || 0) + value.flat;
                 }
-
-                if (value.multiplier) {
+                if (value.percent !== undefined) {
+                    character.stats.percent.active_effect[key] = (character.stats.percent.active_effect[key] || 0) + value.percent;
+                }
+                if (value.multiplier !== undefined) {
                     character.stats.multiplier.active_effect[key] = (character.stats.multiplier.active_effect[key] || 1) * value.multiplier;
                 }
             }
         }
-		    const immunityEffects = effect.effects?.immunities;
-    if (immunityEffects) {
-        for (const [type, isImmune] of Object.entries(immunityEffects)) {
-            if (isImmune) {
-                character.stats.immunities[type] = true;
+
+        const immunityEffects = effect.effects?.immunities;
+        if (immunityEffects) {
+            for (const [type, isImmune] of Object.entries(immunityEffects)) {
+                if (isImmune) {
+                    character.stats.immunities[type] = true;
+                }
             }
         }
-    }
-
-        
     });
 };
 
@@ -616,40 +622,55 @@ character.update_stats = function () {
     character.stats.add_all_stance_bonus();
 
     Object.keys(character.stats.full).forEach(function(stat){
-        let stat_sum = 0;
-        let stat_mult = 1;
+    let stat_sum = 0;
+    let stat_mult = 1;
+    let stat_percent = 0;
 
-        if(stat === "block_chance") {
-                stat_sum = base_block_chance + Math.round(skills["Shield blocking"].get_level_bonus() * 10000)/10000;
-        } else if(stat === "attack_points") {
-                stat_sum = Math.sqrt(character.stats.full.intuition) * character.stats.full.dexterity * skills["Combat"].get_coefficient("multiplicative");
-        } else if(stat === "evasion_points") {
-                stat_sum = character.stats.full.agility * Math.sqrt(character.stats.full.intuition) * skills["Evasion"].get_coefficient("multiplicative");
-        } else {
-                //just sum all flats
-                Object.values(character.stats.flat).forEach(piece => {
-                        stat_sum += (piece[stat] || 0);
-                });
-        }
-
-        Object.values(character.stats.multiplier).forEach(piece => {
-                stat_mult *= (piece[stat] || 1);
+    if(stat === "block_chance") {
+        stat_sum = base_block_chance + Math.round(skills["Shield blocking"].get_level_bonus() * 10000)/10000;
+    } else if(stat === "attack_points") {
+        stat_sum = Math.sqrt(character.stats.full.intuition) * character.stats.full.dexterity * skills["Combat"].get_coefficient("multiplicative");
+    } else if(stat === "evasion_points") {
+        stat_sum = character.stats.full.agility * Math.sqrt(character.stats.full.intuition) * skills["Evasion"].get_coefficient("multiplicative");
+    } else {
+        // Sum all flats
+        Object.values(character.stats.flat).forEach(piece => {
+            stat_sum += (piece[stat] || 0);
         });
 
-        character.stats.full[stat] = (character.base_stats[stat] + stat_sum) * stat_mult;
+        // Sum all percent effects
+        Object.values(character.stats.percent).forEach(piece => {
+            stat_percent += (piece[stat] || 0);
+        });
+    }
 
+    // Multiply all multipliers
+    Object.values(character.stats.multiplier).forEach(piece => {
+        stat_mult *= (piece[stat] || 1);
+    });
+
+    // Calculate full stat
+    if (stat.endsWith("_percent")) {
+        character.stats.full[stat] = (character.base_stats[stat] || 0) + stat_percent;
+        character.stats.total_flat[stat] = character.base_stats[stat] + stat_percent;
+        character.stats.total_multiplier[stat] = 1; // Percent stats are not multiplied
+    } else {
+        character.stats.full[stat] = (character.base_stats[stat] + stat_sum) * stat_mult;
         character.stats.total_flat[stat] =  character.base_stats[stat] + stat_sum;
         character.stats.total_multiplier[stat] = stat_mult || 1;
+    }
 
-        if(stat === "health") {
-                character.stats.full["health"] = Math.max(1, character.stats.full["max_health"] - missing_health);
-        }
-        else if(stat === "stamina") {
-                character.stats.full["stamina"] = Math.max(0, character.stats.full["max_stamina"] - missing_stamina);
-        } else if(stat === "mana") {
-                character.stats.full["mana"] = Math.max(0, character.stats.full["max_mana"] - missing_mana);
-        }
-    });
+    // Restore resource values based on max - missing
+    if(stat === "health") {
+        character.stats.full["health"] = Math.max(1, character.stats.full["max_health"] - missing_health);
+    }
+    else if(stat === "stamina") {
+        character.stats.full["stamina"] = Math.max(0, character.stats.full["max_stamina"] - missing_stamina);
+    }
+    else if(stat === "mana") {
+        character.stats.full["mana"] = Math.max(0, character.stats.full["max_mana"] - missing_mana);
+    }
+});
 
      
     if(character.equipment.weapon != null) { 

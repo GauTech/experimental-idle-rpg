@@ -290,7 +290,8 @@ class TradeItem {
 			new TradeItem({item_name: "Elixir of Dexterity", count: [100]}),
 			new TradeItem({item_name: "Elixir of Agility", count: [100]}),
 			new TradeItem({item_name: "Elixir of Intuition", count: [100]}),
-			new TradeItem({item_name: "Elixir of Magic", count: [100]}),
+			new TradeItem({item_name: "Elixir of Magic", count: [100]}), 
+			new TradeItem({item_name: "Oneberry juice", count: [100]}),
 			
     ];
 	

@@ -3544,7 +3544,7 @@ function use_stamina(num = 1, use_efficiency = true) {
     }
 
     if(character.stats.full.stamina < 1) {
-        add_xp_to_skill({skill: skills["Persistence"], xp_to_add: num});
+        add_xp_to_skill({skill: skills["Persistence"], xp_to_add: (character.stats.full.max_stamina/2)*num});
         update_displayed_stats();
     }
 
@@ -3560,7 +3560,7 @@ function use_mana(num = 1, use_efficiency = true) {
     }
 
     if(character.stats.full.mana < 0.5*(character.stats.full.max_mana)){
-        add_xp_to_skill({skill: skills["Mana Control"], xp_to_add: 100000*num});
+        add_xp_to_skill({skill: skills["Mana Control"], xp_to_add: character.stats.full.max_mana*100*num});
         update_displayed_stats();
     }
 
@@ -3930,9 +3930,9 @@ if ((skill.skill_id === "Pyromancy" || skill.skill_id === "Cryomancy" || skill.s
 }
 
 // Magic Convergence
-if ((skill.skill_id === "Magic Extension" || skill.skill_id === "Rapid Casting") && skill.current_level > 7) {
+if ((skill.skill_id === "Magic Extension" || skill.skill_id === "Rapid Casting") && skill.current_level > 9) {
     evolve_if_needed({
-        conditions: () => skills["Magic Extension"].current_level > 7 && skills["Rapid Casting"].current_level > 7,
+        conditions: () => skills["Magic Extension"].current_level > 9 && skills["Rapid Casting"].current_level > 9,
         evolved_skill_id: "Magic Convergence",
         involved_skills: ["Magic Extension", "Rapid Casting"],
         xp_source_skill: ["Magic Extension", "Rapid Casting"],
@@ -6230,7 +6230,7 @@ for (let i = 0; i < resources.length; i++) {
             character.stats.full.health += character.stats.full.health_loss_flat;
         }
         if(character.stats.full.health_loss_percent) {
-            character.stats.full.health += character.stats.full.max_health * character.stats.full.health_loss_percent/100;
+            character.stats.full.health -= character.stats.full.max_health * character.stats.full.health_loss_percent/100;
         }
 
        if(character.stats.full.health <= 0) {
@@ -6244,6 +6244,14 @@ for (let i = 0; i < resources.length; i++) {
         }
         if(character.stats.full.stamina_regeneration_percent) {
             character.stats.full.stamina += character.stats.full.max_stamina * character.stats.full.stamina_regeneration_percent/100;
+        }
+		
+		      //stamina loss
+        if(character.stats.full.stamina_loss_flat) {
+            character.stats.full.stamina += character.stats.full.stamina_loss_flat;
+        }
+        if(character.stats.full.stamina_loss_percent) {
+            character.stats.full.stamina -= character.stats.full.max_stamina * character.stats.full.stamina_loss_percent/100;
         }
         //mana regen
         if(character.stats.full.mana_regeneration_flat) {
