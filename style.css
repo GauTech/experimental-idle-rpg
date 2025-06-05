@@ -200,15 +200,37 @@ body {
 	color: rgb(171, 171, 255);
  }
 
- .action_travel, .activity_unavailable, .start_dialogue,  .end_dialogue_button, .start_trade, .start_location_action, .dialogue_trade, .choices_return_button, .start_activity, .location_choices, #action_status_div, #action_end_div {
+ .action_travel, .travel_quick, .activity_unavailable, .start_dialogue,  .end_dialogue_button, .start_trade, .start_location_action, .dialogue_trade, .choices_return_button, .start_activity, .location_choices, #action_status_div, #action_end_div {
 	text-align: left;
 	font-size: 20px;
 	border-bottom: 1px solid white;
 	cursor: pointer;
 	padding: 5px;
  }
+ 
+.travel_normal,
+.travel_combat {
+    display: block; /* default to normal block layout */
+}
 
-
+.travel_normal.has-arrow,
+.travel_combat.has-arrow {
+    display: flex;
+	width: 370px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+ 
+ .travel-label {
+    text-align: left;
+    flex-grow: 1;
+}
+ 
+.travel-arrow {
+    width: 20px;
+    text-align: right;
+}
 
  #action_status_div, #action_end_div {
 	text-align: center;
@@ -1205,6 +1227,7 @@ width: 198px;
 
 #location_actions_div :not(#action_end_div):hover #gathering_tooltip, .location_action_div :not(#action_end_div):hover #location_action_tooltip{
 	display: block;
+	
 }
 
 #action_end_earnings {

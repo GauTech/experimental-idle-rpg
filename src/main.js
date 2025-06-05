@@ -345,6 +345,8 @@ function option_combat_autoswitch(option) {
     }
 }
 
+
+
 function roll_time_demon(location) {
     if (Math.random() < 0.01 && global_flags.is_hero_level10 === true) {
         // Check if the Time Demon is already connected
@@ -6620,6 +6622,11 @@ if(is_on_dev()) {
     }
 }
 
+window.addEventListener("DOMContentLoaded", () => {
+	loadMapSvg(() => {
+		initializeMapInteractivity();
+	});
+});
 
 
 

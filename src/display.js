@@ -1905,19 +1905,36 @@ function update_displayed_normal_location(location) {
     /////////////////////////////////
     //add butttons to change location
 
-    const available_locations = location.connected_locations.filter(location => {if(location.location.is_unlocked && !location.location.is_finished && !location.location.is_challenge) return true});
+			getMapDirectionVectors(current_location).then(vectors => {
+			const vectorMap = new Map(vectors.map(v => [v.to, v]));
 
-    if(available_locations.length > 3 && (location.sleeping + available_trainings.length + available_jobs.length +  available_traders.length + available_dialogues.length) > 2) {
-        const locations_button = document.createElement("div");
-        locations_button.setAttribute("data-location", location.name);
-        locations_button.classList.add("location_choices");
-        locations_button.setAttribute("onclick", 'update_displayed_location_choices({location_name: this.getAttribute("data-location"), category: "travel"});');
-        locations_button.innerHTML = '<i class="material-icons">format_list_bulleted</i>  Move somewhere else';
-        action_div.appendChild(locations_button);
-    } else if(available_locations.length > 0) {
-        action_div.append(...create_location_choices({location: location, category: "travel"}));
-    }
+			const available_locations = current_location.connected_locations.filter(loc => {
+				const target = loc.location;
+				return target.is_unlocked && !target.is_finished && !target.is_challenge;
+			});
 
+			if (available_locations.length > 0) {
+				const locationButtons = create_location_choices({ location: current_location, category: "travel" });
+
+				locationButtons.forEach(button => {
+					const locName = button.getAttribute("data-location");
+					const vector = vectorMap.get(locName);
+					if (vector) {
+						const angle = Math.atan2(vector.dy, vector.dx) * 180 / Math.PI;
+
+						const arrow = document.createElement("span");
+						arrow.innerText = "➤";
+						arrow.style.display = "inline-block";
+						arrow.style.transform = `rotate(${angle}deg)`;
+						arrow.style.marginLeft = "0.5em";
+						arrow.style.transition = "transform 0.2s";
+						button.appendChild(arrow);
+					}
+				});
+
+				action_div.append(...locationButtons);
+			}
+		});
     location_name_span.innerText = current_location.name.replace(/\d$/, '');
     document.getElementById("location_description_div").innerText = current_location.getDescription();
 }
@@ -2093,42 +2110,67 @@ if (!has_valid_textlines) {
         });
     } else if (category === "travel") {
         if(!is_combat){
-            for(let i = 0; i < location.connected_locations.length; i++) { 
-                
-                if(location.connected_locations[i].location.is_unlocked == false || location.connected_locations[i].location.is_finished) { //skip if not unlocked or if finished
-                    continue;
-                }
-                if(location.connected_locations[i].location.is_challenge) {
-                    continue;
-                    //challenges displayed separately
-                }
+           for (let i = 0; i < location.connected_locations.length; i++) { 
+    const conn = location.connected_locations[i];
+    const targetLoc = conn.location;
 
-                const action = document.createElement("div");
-                
-                if("connected_locations" in location.connected_locations[i].location) {// check again if connected location is normal or combat
-                    action.classList.add("travel_normal");
-                    if("custom_text" in location.connected_locations[i]) {
-                        action.innerHTML = `<i class="material-icons">directions</i> ` + location.connected_locations[i].custom_text;
-                    }
-                    else {
-                        action.innerHTML = `<i class="material-icons">directions</i>  ` + "Go to [" + location.connected_locations[i].location.name+"]";
-                    }
-                } else {
-                    action.classList.add("travel_combat");
-                    if("custom_text" in location.connected_locations[i]) {
-                        action.innerHTML = `<i class="material-icons">warning_amber</i> ` + location.connected_locations[i].custom_text;
-                    }
-                    else {
-                        action.innerHTML = `<i class="material-icons">warning_amber</i>  ` + "Face the [" + location.connected_locations[i].location.name+"]";
-                    }
-                }
-            
-                action.classList.add("action_travel");
-                action.setAttribute("data-travel", location.connected_locations[i].location.name);
-                action.setAttribute("onclick", "change_location(this.getAttribute('data-travel'));");
-        
-                choice_list.push(action);
-            } 
+    if (!targetLoc.is_unlocked || targetLoc.is_finished || targetLoc.is_challenge) {
+        continue; // skip if not available
+    }
+
+    const action = document.createElement("div");
+
+    const isNormal = "connected_locations" in targetLoc;
+
+   if (isNormal) {
+    action.classList.add("travel_normal");
+    if ("custom_text" in conn) {
+        action.innerHTML = `
+            <span class="travel-label"><i class="material-icons">directions</i> ${conn.custom_text}</span>
+            <span class="travel-arrow"></span>`;
+    } else {
+        action.innerHTML = `
+            <span class="travel-label"><i class="material-icons">directions</i> Go to [${targetLoc.name}]</span>
+            <span class="travel-arrow"></span>`;
+    }
+} else {
+    action.classList.add("travel_combat");
+    if ("custom_text" in conn) {
+        action.innerHTML = `
+            <span class="travel-label"><i class="material-icons">warning_amber</i> ${conn.custom_text}</span>
+            <span class="travel-arrow"></span>`;
+    } else {
+        action.innerHTML = `
+            <span class="travel-label"><i class="material-icons">warning_amber</i> Face the [${targetLoc.name}]</span>
+            <span class="travel-arrow"></span>`;
+    }
+}
+
+action.classList.add("action_travel");
+action.setAttribute("data-travel", targetLoc.name);
+action.setAttribute("onclick", "change_location(this.getAttribute('data-travel'));");
+
+choice_list.push(action);
+
+// === Add directional arrow if available ===
+if (isNormal) {
+    getMapDirectionVectors(location).then(vectors => {
+        const vector = vectors.find(v => v.to === targetLoc.name);
+		 if (vector) {
+			 const angle = Math.atan2(vector.dy, vector.dx) * (180 / Math.PI);
+			action.classList.add("has-arrow"); // only apply flex if arrow is present
+			const arrowContainer = action.querySelector(".travel-arrow");
+			if (arrowContainer) {
+				arrowContainer.innerHTML = `<span style="
+					display: inline-block;
+					transform: rotate(${angle}deg);
+					transition: transform 0.2s ease;
+				">➤</span>`;
+			}
+		}
+    });
+}
+}
 
             if(last_combat_location && location.connected_locations.filter(loc => loc.location.name === last_combat_location).length == 0) {
                 const last_combat = locations[last_combat_location];
@@ -5242,6 +5284,59 @@ window.initializeMapInteractivity = function() {
             const location = locations[baseId];
             markerEl.style.display = (location && location.is_unlocked) ? "block" : "none";
         }
+    });
+}
+
+function getMapDirectionVectors(current_location) {
+    return new Promise(resolve => {
+        const tryResolve = () => {
+            const currentRegionEl = document.querySelector(`[data-cell-id="region-${current_location.name.replace(/ /g, "_")}"]`);
+            if (!currentRegionEl) {
+                console.warn("SVG not ready, retrying...");
+                setTimeout(tryResolve, 50); // retry until SVG is ready
+                return;
+            }
+
+            const results = [];
+            const currentRect = currentRegionEl.querySelector("rect");
+            if (!currentRect) {
+                console.warn(`No rect for ${current_location.name}`);
+                resolve(results);
+                return;
+            }
+
+            const currentX = parseFloat(currentRect.getAttribute("x")) + parseFloat(currentRect.getAttribute("width")) / 2;
+            const currentY = parseFloat(currentRect.getAttribute("y")) + parseFloat(currentRect.getAttribute("height")) / 2;
+
+            const available_locations = current_location.connected_locations.filter(loc => {
+                const target = loc.location;
+                return target.is_unlocked && !target.is_finished && !target.is_challenge;
+            });
+
+            available_locations.forEach(loc => {
+                const target = loc.location;
+                const targetRegionEl = document.querySelector(`[data-cell-id="region-${target.name.replace(/ /g, "_")}"]`);
+                if (!targetRegionEl) return;
+
+                const targetRect = targetRegionEl.querySelector("rect");
+                if (!targetRect) return;
+
+                const targetX = parseFloat(targetRect.getAttribute("x")) + parseFloat(targetRect.getAttribute("width")) / 2;
+                const targetY = parseFloat(targetRect.getAttribute("y")) + parseFloat(targetRect.getAttribute("height")) / 2;
+
+                results.push({
+                    from: current_location.name,
+                    to: target.name,
+                    dx: targetX - currentX,
+                    dy: targetY - currentY
+                });
+            });
+
+            resolve(results);
+			console.log(results);
+        };
+
+        tryResolve(); // first try
     });
 }
 

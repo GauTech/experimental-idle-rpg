@@ -1017,12 +1017,15 @@
 		
 		<!-- Map Overlay -->
 		<div id="mapOverlay">
+		<div id="svgMapPreload" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; z-index: -999;"></div>
 			<div id="mapContainer">
 				<button id="closeMapBtn" onclick="closeMap()">✖</button>
 				<!-- PASTE SVG CONTENT HERE -->
-				<div id="svgMap">
+			
+				
 
-				</div>
+<!-- Visible map container -->
+			<div id="svgMap"></div> <!-- SVG for actual map display -->
 			</div>
 		</div>	
 
@@ -1945,39 +1948,43 @@
                 });
             }
 			
-		let svgLoaded = false;
+	let svgLoaded = false;
 
-function loadMapSvg(callback) {
-    if (svgLoaded) {
-        callback(); // already loaded
-        return;
-    }
+function loadMapSvg(callback = () => {}) {
+	if (svgLoaded) {
+		callback();
+		return;
+	}
 
-    fetch('map.svg') // make sure this path is correct
-        .then(response => response.text())
-        .then(svgText => {
-            document.getElementById("svgMap").innerHTML = svgText;
-            svgLoaded = true;
-            callback(); // initialize interactivity after loading
-        })
-        .catch(error => {
-            console.error("Failed to load map.svg:", error);
-        });
+	fetch('map.svg')
+		.then(response => response.text())
+		.then(svgText => {
+			// Load into preload container AND visible map area
+			document.getElementById("svgMapPreload").innerHTML = svgText;
+			document.getElementById("svgMap").innerHTML = svgText;
+
+			svgLoaded = true;
+			callback();
+		})
+		.catch(error => {
+			console.error("Failed to load map.svg:", error);
+		});
 }
 			
 		let mapOpen = false;
 
-			function openMap() {
-			const mapOverlay = document.getElementById("mapOverlay");
-			mapOverlay.style.display = "flex";
-			mapOverlay.classList.remove("fade-out"); // reset fade-out if previously triggered
+function openMap() {
+	const mapOverlay = document.getElementById("mapOverlay");
+	mapOverlay.style.display = "flex";
+	mapOverlay.classList.remove("fade-out");
 
-			loadMapSvg(() => {
-				initializeMapInteractivity(); // once SVG is in the DOM
-			});
+	// Only re-initialize if you have dynamic changes (like unlocking new regions)
+	if (svgLoaded) {
+		initializeMapInteractivity();
+	}
 
-			mapOpen = true;
-		}
+	mapOpen = true;
+}
 
 		function closeMap() {
 			const mapOverlay = document.getElementById("mapOverlay");

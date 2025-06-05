@@ -1639,7 +1639,7 @@ locations["Courtyard"].connected_locations.push({location: locations["Docks"]});
 
 locations["Castle"] = new Location({ 
         connected_locations: [{location: locations["Courtyard"]}],
-        description: "A grand cxastle. It has a advanced smithing facilities that you could make use of.",
+        description: "A grand castle. It has a advanced smithing facilities that you could make use of.",
         name: "Castle",
 		dialogues: ["Kon4"],
         is_unlocked: false,

@@ -2189,7 +2189,7 @@ item_templates["Glowcap"] = new Material({
 (function(){
     item_templates["Order Badge"] = new OtherItem({
         name: "Order Badge", 
-        description: "A knightly proof.",
+        description: "A knightly proof. If you got enough of them you could make a fine weapon.",
         value: 200, 
     });
 }());
@@ -4273,7 +4273,7 @@ item_templates["Stale bread"] = new UsableItem({
 (function(){
     item_templates["Dragon Heart"] = new UsableItem({
         name: "Dragon Heart", 
-        description: "Dragon Heart",
+        description: "The heart of a great dragon, brimming with power. Devour it to make that power your own.",
         value: 100000,
 		effects: [{effect: "Minor magic boost", duration: 300},{effect: "Cheap meat meal", duration: 300}],
     });
