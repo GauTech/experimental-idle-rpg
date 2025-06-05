@@ -431,8 +431,6 @@ function change_location(location_name) {
         }
     }
 	
-	//console.log(location);  // enable for debugging purposes
-	//console.log(visited_locations);
 }
 
 function handle_location_visit(location) {
@@ -1497,6 +1495,21 @@ function start_textline(textline_key){
 	
 
 if (
+    textline.requires_money &&
+    typeof textline.requires_money === 'number' &&
+    textline.requires_money > 0
+) {
+    if (character.money >= textline.requires_money) {
+        character.money -= textline.requires_money;
+        log_message(`${character.name} paid ${format_money(textline.requires_money)}`);
+        update_displayed_money();
+    } else {
+        log_message("You don't have enough money to proceed.", "warning");
+        return;
+    }
+}
+
+if (
     textline.requires_items &&
     typeof textline.requires_items === 'object' &&
     textline.requires_items.item_template_key &&
@@ -1766,6 +1779,7 @@ function cast_magic(magicId, is_auto_cast = false) {
     const magic = magics[magicId];
 	const base_duration = magic.duration;
 	let magic_duration = magic.duration;
+	const rapidc_reduction = skills["Rapid Casting"].get_coefficient("reverse_multiplicative");
 
     if (!magic) {
         console.error(`Magic with ID "${magicId}" not found.`);
@@ -1822,7 +1836,7 @@ targets.forEach(target => {
 	add_xp_to_skill({ skill: skills[magic.related_skill], xp_to_add: 100 });
 
 	if (magic.cooldown && magic.cooldown > 0) {
-		magic_cooldowns[magicId] = magic.cooldown;
+		magic_cooldowns[magicId] = magic.cooldown * rapidc_reduction;
 	}
 });
 
@@ -1934,7 +1948,7 @@ else {
 		add_xp_to_skill({skill: skills[magic.related_skill], xp_to_add: 100});
 		add_xp_to_skill({skill: skills["Magic Extension"], xp_to_add: 100});
 		    if (magic.cooldown && magic.cooldown > 0) {
-        magic_cooldowns[magicId] = magic.cooldown;
+        magic_cooldowns[magicId] = magic.cooldown * rapidc_reduction;
     }
     
 
@@ -1961,16 +1975,15 @@ else {
 		if (magic.special_effect == "Warp"){
 			change_location("Nexus");
 			log_message("Cast " + magic.names[0], "magic_cast_self");
-			magic_cooldowns[magicId] = magic.cooldown;
+			
 			add_xp_to_skill({skill: skills[magic.related_skill], xp_to_add: 1000});
 		}
 		
 			if (magic.special_effect == "Raise Dead"){
 			add_allies_to_party("skeleton1");
-			
-			magic_cooldowns[magicId] = magic.cooldown;
 			add_xp_to_skill({skill: skills[magic.related_skill], xp_to_add: 1000});
 		}
+		magic_cooldowns[magicId] = magic.cooldown * rapidc_reduction;
 		}
 
     update_displayed_mana();
@@ -2203,7 +2216,7 @@ for (const effect_name of status_effects) {
 
         if (Math.random() <= chance) {
             let stats = {};
-
+			let msgtype = "";
             switch (effect_name) {
                 case "poison":
                     stats = {
@@ -2218,6 +2231,7 @@ for (const effect_name of status_effects) {
                         },
                     };
                     add_xp_to_skill({ skill: skills["Poison resistance"], xp_to_add: 3 });
+					msgtype = "hero_poisoned";
                     break;
 
                 case "toxic":
@@ -2233,6 +2247,7 @@ for (const effect_name of status_effects) {
                         },
                     };
                     add_xp_to_skill({ skill: skills["Poison resistance"], xp_to_add: 20 });
+					msgtype = "hero_poisoned";
                     break;
 
                 case "freeze":
@@ -2248,6 +2263,7 @@ for (const effect_name of status_effects) {
                         },
                     };
                     add_xp_to_skill({ skill: skills["Cold resistance"], xp_to_add: 3 });
+					msgtype = "hero_frozen";
                     break;
 
                 case "burn":
@@ -2263,12 +2279,14 @@ for (const effect_name of status_effects) {
                         },
                     };
                     add_xp_to_skill({ skill: skills["Heat resistance"], xp_to_add: 3 });
+					msgtype = "hero_burned";
                     break;
 
                 case "stun":
                     stats = {
                         attack_speed: { multiplier: 0.1 },
                     };
+					msgtype = "hero_burned";
                     break;
             }
 
@@ -2286,7 +2304,7 @@ for (const effect_name of status_effects) {
             update_character_stats();
             update_displayed_stats();
 
-            log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
+            log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", msgtype);
         }
     }
 }
@@ -2346,8 +2364,8 @@ for (const effect_name of status_effects) {
         }
 
         if (Math.random() <= chance) {
-            let stats = {};
-
+           let stats = {};
+			let msgtype = "";
             switch (effect_name) {
                 case "poison":
                     stats = {
@@ -2362,6 +2380,7 @@ for (const effect_name of status_effects) {
                         },
                     };
                     add_xp_to_skill({ skill: skills["Poison resistance"], xp_to_add: 3 });
+					msgtype = "hero_poisoned";
                     break;
 
                 case "toxic":
@@ -2377,6 +2396,7 @@ for (const effect_name of status_effects) {
                         },
                     };
                     add_xp_to_skill({ skill: skills["Poison resistance"], xp_to_add: 20 });
+					msgtype = "hero_poisoned";
                     break;
 
                 case "freeze":
@@ -2392,6 +2412,7 @@ for (const effect_name of status_effects) {
                         },
                     };
                     add_xp_to_skill({ skill: skills["Cold resistance"], xp_to_add: 3 });
+					msgtype = "hero_frozen";
                     break;
 
                 case "burn":
@@ -2407,12 +2428,14 @@ for (const effect_name of status_effects) {
                         },
                     };
                     add_xp_to_skill({ skill: skills["Heat resistance"], xp_to_add: 3 });
+					msgtype = "hero_burned";
                     break;
 
                 case "stun":
                     stats = {
                         attack_speed: { multiplier: 0.1 },
                     };
+					msgtype = "hero_burned";
                     break;
             }
 
@@ -2430,7 +2453,7 @@ for (const effect_name of status_effects) {
             update_character_stats();
             update_displayed_stats();
 
-            log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", "status_effect");
+            log_message(character.name + " was affected by " + effect.name + " for " + duration + " ticks.", msgtype);
         }
     }
 }
@@ -2896,7 +2919,7 @@ function do_enemy_combat_action(enemy_id) {
             //50% more parrying & shielding xp if going without armor
             add_xp_to_skill({skill: skills["Parrying"], xp_to_add});
 			add_xp_to_skill({skill: skills["Shield blocking"], xp_to_add});
-            log_message(character.name + " parried an attack", "enemy_deflected");
+            log_message(character.name + " parried an attack", "enemy_missed");
 			perform_counterattack(attacker);
             return; //damage fully evaded, nothing more can happen
       
@@ -3305,7 +3328,7 @@ function execute_death_effects(on_death) {
 
     // Handle special hero damage with a message
     if (typeof on_death.hero_damage === 'number' && on_death.hero_damage > 0) {
-        log_message(character.name + " received " + (on_death.hero_damage) + " defense bypassing damage from a dying enemy", "hero_missed");
+        log_message(character.name + " received " + (on_death.hero_damage) + " defense bypassing damage from a dying enemy", "deathrattle_damage");
         let { damage_taken, fainted } = character.take_damage({ damage_value: on_death.hero_damage, negate_defense: true });
         update_displayed_health();
 
@@ -3355,7 +3378,7 @@ function enemy_entrance_effects(on_entry) {
 
     // Handle instant hero damage
     if (typeof on_entry.hero_damage === 'number' && on_entry.hero_damage > 0) {
-        log_message(character.name + " took " + on_entry.hero_damage + " damage from a sudden ambush!", "hero_missed");
+        log_message(character.name + " took " + on_entry.hero_damage + " damage from a sudden ambush!", "hero_ambushed");
 
         let { damage_taken, fainted } = character.take_damage({ damage_value: on_entry.hero_damage, negate_defense: true });
         update_displayed_health();
@@ -3858,6 +3881,8 @@ function check_pairings(skill) {
         });
     }
 
+
+
     // Thermal resistance
     if ((skill.skill_id === "Cold resistance" || skill.skill_id === "Heat resistance") && skill.current_level > 10) {
         evolve_if_needed({
@@ -3890,6 +3915,29 @@ function check_pairings(skill) {
             log_text: "Skill EVOLUTION. Battling, Pest killer and Giant Slayer combined into Adaptive combat"
         });
     }
+
+//Elemental Mastery
+if ((skill.skill_id === "Pyromancy" || skill.skill_id === "Cryomancy" || skill.skill_id === "Electromancy") && skill.current_level > 14) {
+    evolve_if_needed({
+        conditions: () => skills["Pyromancy"].current_level > 14 && skills["Cryomancy"].current_level > 14 && skills["Electromancy"].current_level > 14,
+        evolved_skill_id: "Elemental Mastery",
+        involved_skills: ["Pyromancy", "Cryomancy", "Electromancy"],
+        xp_source_skill: ["Pyromancy", "Cryomancy", "Electromancy"],
+        log_text: "Skill EVOLUTION. Pyromancy, Cryomancy and Electromancy combined into Elemental Mastery"
+    });
+}
+
+// Magic Convergence
+if ((skill.skill_id === "Magic Extension" || skill.skill_id === "Rapid Casting") && skill.current_level > 7) {
+    evolve_if_needed({
+        conditions: () => skills["Magic Extension"].current_level > 7 && skills["Rapid Casting"].current_level > 7,
+        evolved_skill_id: "Magic Convergence",
+        involved_skills: ["Magic Extension", "Rapid Casting"],
+        xp_source_skill: ["Magic Extension", "Rapid Casting"],
+        log_text: "Skill EVOLUTION. Magic Extension and Rapid Casting combined into Magic Convergence"
+    });
+}
+
 
     // Reactive combat
     if ((skill.skill_id === "Parrying" || skill.skill_id === "Shield blocking") && skill.current_level > 9) {
@@ -4827,13 +4875,15 @@ function create_save() {
         save_data["faved_stances"] = faved_stances;
 
 		save_data["magics"] = {};
-			Object.keys(magics).forEach(magic => {
+		Object.keys(magics).forEach(magic => {
 			if (magics[magic].is_unlocked) {
-        save_data["magics"][magic] = {
-            unlocked: true,
-            auto_cast: !!magics[magic].auto_cast
-        };
+				save_data["magics"][magic] = {
+					unlocked: true,
+					auto_cast: !!magics[magic].auto_cast
+				};
 			}
+		});
+		
 			
 		save_data["magic_cooldowns"] = magic_cooldowns;
 		
@@ -4855,7 +4905,7 @@ function create_save() {
 		}
 		
 			
-});
+
 
         save_data["message_filters"] = {
             unlocks: document.documentElement.style.getPropertyValue('--message_unlocks_display') !== "none",
@@ -5123,17 +5173,20 @@ if (skills["Thermal resistance"].current_level > 0 && !containsSet(paired_skill_
             }
         });
     }
-	if(save_data["magics"]) {
-        Object.keys(save_data["magics"]).forEach(magic => {
-            if(save_data["magics"]) {
-                magics[magic].is_unlocked = true;
-            } 
-        });
-    }
-	
-	if(save_data.magic_cooldowns) {
-		 magic_cooldowns = save_data["magic_cooldowns"];
-    }
+if (save_data["magics"]) {
+    Object.keys(save_data["magics"]).forEach(magic => {
+        if (save_data["magics"][magic].unlocked) {
+            magics[magic].is_unlocked = true;
+
+            // Persist auto_cast into the main data model
+            magics[magic].auto_cast = !!save_data["magics"][magic].auto_cast;
+        }
+    });
+}
+
+if (save_data.magic_cooldowns) {
+    magic_cooldowns = save_data["magic_cooldowns"];
+}
 	
 if (save_data.current_party) {
     // Optionally clear current_party first (if it's not already empty)
@@ -6071,7 +6124,7 @@ for (let i = 0; i < resources.length; i++) {
 	
     }
 }
-			console.log(items);
+			
                         if(items.length > 0) {
                             log_loot(items, false);
 							

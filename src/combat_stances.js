@@ -214,7 +214,6 @@ stances["serpent"] = new Stance({
     id: "serpent",
     related_skill: "Serpent Strikes",
     stat_multipliers: {
-        //attack multis are stronger than they appear since enemies have defense stat
         "crit_rate": 1.1,
 		"attack_points" : 1.4
     },

@@ -115,6 +115,20 @@ class Gathering extends Training {
         base_skills_names: ["Equilibrium"],
         is_unlocked: true,
     });
+    activities["multicasting"] = new Training({
+        name: "multicasting",
+        action_text: "Trying to multicast",
+        description: "Advanced magic practice",
+        base_skills_names: ["MultiCasting"],
+        is_unlocked: true,
+    });
+    activities["rapidcasting"] = new Training({
+        name: "rapidcasting",
+        action_text: "Practicing spells",
+        description: "Advanced magic practice",
+        base_skills_names: ["Rapid Casting"],
+        is_unlocked: true,
+    });
     activities["practice"] = new Training({
         name: "practice",
         action_text: "Practice attacks",

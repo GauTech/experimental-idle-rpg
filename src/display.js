@@ -157,10 +157,39 @@ let trader_inventory_sorting_direction = "asc";
 let character_inventory_sorting = "name";
 let character_inventory_sorting_direction = "asc";
 
-let recent_evade_stack = {
-    messageElement: null,
+let recent_message_stacks = {};
+
+recent_message_stacks["enemy_missed"] = {
+    messageElement: HTMLElement,
     count: 1
-};
+}
+recent_message_stacks["hero_poisoned"] = {
+    messageElement: HTMLElement,
+    count: 1
+}
+recent_message_stacks["hero_burned"] = {
+    messageElement: HTMLElement,
+    count: 1
+}
+recent_message_stacks["hero_frozen"] = {
+    messageElement: HTMLElement,
+    count: 1
+}
+recent_message_stacks["hero_stunned"] = {
+    messageElement: HTMLElement,
+    count: 1
+}
+recent_message_stacks["hero_ambushed"] = {
+    messageElement: HTMLElement,
+    count: 1
+}
+recent_message_stacks["deathrattle_damage"] = {
+    messageElement: HTMLElement,
+    count: 1
+}
+
+
+    
 
 const message_count = {
     message_combat: 0,
@@ -571,8 +600,8 @@ function end_activity_animation() {
  * @param {String} message_to_add text to display
  * @param {String} message_type used for adding proper class to html element
  */
- function log_message(message_to_add, message_type, is_priority = false) {
-    if(typeof message_to_add === 'undefined') {
+function log_message(message_to_add, message_type, is_priority = false) {
+    if (typeof message_to_add === 'undefined') {
         return;
     }
 
@@ -582,214 +611,148 @@ function end_activity_animation() {
     let class_to_add = "message_default";
     let group_to_add = "message_events";
 
-    //selects proper class to add based on argument
-    switch(message_type) {
+    const stackable_types = new Set([
+        "enemy_missed",
+        "hero_poisoned",
+        "hero_burned",
+        "hero_frozen",
+        "hero_stunned",
+        "hero_ambushed",
+        "deathrattle_damage",
+		"combat_loot",
+		"gathered_loot",
+		"magic_cast_self",
+    ]);
+
+    // === MESSAGE TYPE SWITCH ===
+    switch (message_type) {
+        case "enemy_missed":
+        case "hero_poisoned":
+        case "hero_burned":
+        case "hero_frozen":
+        case "hero_stunned":
+        case "hero_ambushed":
+        case "deathrattle_damage":
+            group_to_add = "message_combat";
+            break;
+
         case "enemy_defeated":
             class_to_add = "message_victory";
             group_to_add = "message_combat";
-            message_count.message_combat += 1;
             break;
         case "hero_defeat":
             class_to_add = "message_hero_defeated";
             group_to_add = "message_combat";
-            message_count.message_combat += 1;
             break;
         case "enemy_attacked":
             class_to_add = "message_enemy_attacked";
             group_to_add = "message_combat";
-            message_count.message_combat += 1;
             break;
         case "enemy_attacked_critically":
             class_to_add = "message_enemy_attacked_critically";
             group_to_add = "message_combat";
-            message_count.message_combat += 1;
-            break;
-		       case "ally_attacked":
-            class_to_add = "message_ally_attacked";
-            group_to_add = "message_crafting";
-            message_count.message_crafting += 1;
-            break;
-        case "ally_attacked_critically":
-            class_to_add = "message_ally_attacked_critically";
-            group_to_add = "message_crafting";
-            message_count.message_crafting += 1;
-            break;
-		    case "ally_missed":
-            group_to_add = "message_crafting";
-            message_count.message_crafting += 1;
-            break;
-		    case "party_change":
-            group_to_add = "message_crafting";
-            message_count.message_crafting += 1;
             break;
         case "hero_attacked":
             class_to_add = "message_hero_attacked";
             group_to_add = "message_combat";
-            message_count.message_combat += 1;
-			recent_evade_stack.messageElement = null;
-			recent_evade_stack.count = 1;
+            recent_message_stacks["enemy_missed"] = null;
             break;
-        case "hero_missed":
-            group_to_add = "message_combat";
-            message_count.message_combat += 1;
-            break;
-		  case "status_effect":
-            group_to_add = "message_combat";
-            message_count.message_combat += 1;
-            break;
-        case "hero_blocked":
-            group_to_add = "message_combat";
-            message_count.message_combat += 1;
-            break;    
-        case "enemy_missed":
-            group_to_add = "message_combat";
-				if (recent_evade_stack.messageElement) {
-				const messages = Array.from(message_log.children);
-				const lastIndex = messages.indexOf(recent_evade_stack.messageElement);
-
-				if (lastIndex >= messages.length - 5) {
-					// Still within last 5 messages → stack
-					recent_evade_stack.count += 1;
-
-					const baseText = "Hero evaded attack.";
-					recent_evade_stack.messageElement.innerHTML =
-						`${baseText} (x${recent_evade_stack.count})<div class='message_border'> </div>`;
-
-					// Move it to bottom
-					message_log.appendChild(recent_evade_stack.messageElement);
-
-					// Scroll if near bottom
-					if (message_log.scrollHeight - message_log.scrollTop <= message_log.clientHeight + 5) {
-						message_log.scrollTop = message_log.scrollHeight;
-					}
-
-					return; // Prevent new message from being added
-				} else {
-					// Too old → reset stack
-					recent_evade_stack.messageElement = null;
-					recent_evade_stack.count = 1;
-				}
-			}
-            message_count.message_combat += 1;
-            break;  
-	case "enemy_deflected":
-            group_to_add = "message_combat";
-            message_count.message_combat += 1;
-            break; 			
         case "hero_attacked_critically":
             class_to_add = "message_hero_attacked_critically";
             group_to_add = "message_combat";
-            message_count.message_combat += 1;
-			recent_evade_stack.messageElement = null;
-			recent_evade_stack.count = 1;
+            recent_message_stacks["enemy_missed"] = null;
             break;
-
+        case "hero_blocked":
+        case "hero_missed":
+        case "status_effect":
+        case "enemy_deflected":
+            group_to_add = "message_combat";
+            break;
+        case "ally_attacked":
+            class_to_add = "message_ally_attacked";
+            group_to_add = "message_crafting";
+            break;
+        case "ally_attacked_critically":
+            class_to_add = "message_ally_attacked_critically";
+            group_to_add = "message_crafting";
+            break;
+        case "ally_missed":
+        case "party_change":
+            group_to_add = "message_crafting";
+            break;
         case "combat_loot":
-            class_to_add = "message_items_obtained";
-            group_to_add = "message_loot";
-            message_count.message_loot += 1;
-            break;
-		case "rare_loot":
-			class_to_add = "message_rare_loot";
-			group_to_add = "message_rare_loot";
-			message_count.message_rare_loot += 1;
-			
-			const rareButton = document.getElementById('message_show_rare');
-			if (isAnyOtherButtonActive(rareButton.id)) {
-				rareButton.classList.add('sparkle');
-			}
-			break;
         case "gathered_loot":
             class_to_add = "message_items_obtained";
             group_to_add = "message_loot";
-            message_count.message_loot += 1;
+            break;
+        case "rare_loot":
+            class_to_add = "message_rare_loot";
+            group_to_add = "message_rare_loot";
+            const rareButton = document.getElementById('message_show_rare');
+            if (isAnyOtherButtonActive(rareButton.id)) {
+                rareButton.classList.add('sparkle');
+            }
             break;
         case "location_reward":
             group_to_add = "message_loot";
-            message_count.message_loot += 1;
             break;
-
         case "skill_raised":
             class_to_add = "message_skill_leveled_up";
             group_to_add = "message_unlocks";
-            message_count.message_unlocks += 1;
             break;
-			  case "skill_evolution":
+        case "skill_evolution":
             class_to_add = "skill_evolution";
             group_to_add = "message_unlocks";
-            message_count.message_unlocks += 1;
             break;
         case "level_up":
+        case "dialogue_unlocked":
             group_to_add = "message_unlocks";
-            message_count.message_unlocks += 1;
             break;
-		     case "quest_update":
+        case "quest_update":
             class_to_add = "quest_update";
             group_to_add = "message_unlocks";
-            message_count.message_unlocks += 1;
             break;
-		     case "quest_completed":
+        case "quest_completed":
             class_to_add = "message_quest_completed";
             group_to_add = "message_unlocks";
-            message_count.message_unlocks += 1;
             break;
-        case "activity_unlocked": 
-            //currently uses default style class
-            group_to_add = "message_unlocks";
-            message_count.message_unlocks += 1;
-            break;
+        case "activity_unlocked":
         case "location_unlocked":
             class_to_add = "message_location_unlocked";
             group_to_add = "message_unlocks";
-            message_count.message_unlocks += 1;
             break;
-        case "dialogue_unlocked":
-            group_to_add = "message_unlocks";
-            message_count.message_unlocks += 1;
-            break;
-	 case "autocast_failure":
+        case "autocast_failure":
             group_to_add = "message_events";
             class_to_add = "message_autocast_failure";
-            message_count.message_events += 1;
             break;
         case "message_travel":
             class_to_add = "message_travel";
             group_to_add = "message_events";
-            message_count.message_events += 1;
             break;
         case "activity_finished":
-            group_to_add = "message_events";
-            message_count.message_events += 1;
-            break;
         case "activity_money":
-            group_to_add = "message_events";
-            message_count.message_events += 1;
-            break;
         case "notification":
-            message_count.message_events += 1;
-            group_to_add = "message_events";
-            class_to_add = "message_notification";
-            break;
-        case "background":
-            message_count.message_background +=1;
-            group_to_add = "message_background";
-            break;
         case "crafting":
-            message_count.message_events +=1;
             group_to_add = "message_events";
+            if (message_type === "notification") {
+                class_to_add = "message_notification";
+            }
             break;
         case "message_critical":
-            message_count.message_events += 1;
             group_to_add = "message_events";
             class_to_add = "message_critical";
             break;
+        case "background":
+            group_to_add = "message_background";
+            break;
     }
-	 
-	 if (is_priority && message_type === "autocast_failure") {
+
+    if (is_priority && message_type === "autocast_failure") {
         message.id = "autocast_failure_msg";
     }
 
-     if (!is_priority && (
+    // Remove old message if we're over the limit
+    if (!is_priority && (
         group_to_add === "message_combat" && message_count.message_combat > 80 ||
         group_to_add === "message_loot" && message_count.message_loot > 40 ||
         group_to_add === "message_rare_loot" && message_count.message_rare_loot > 10 ||
@@ -804,40 +767,161 @@ function end_activity_animation() {
         }
     }
 
-    // Get scroll state before appending
     const isScrolledToBottom = message_log.scrollHeight - message_log.scrollTop <= message_log.clientHeight + 5;
 
-    // Add content and style
-    message.classList.add(class_to_add, group_to_add);
-    message.innerHTML = message_to_add + "<div class='message_border'> </div>";
+// === STACKABLE MESSAGE HANDLING ===
+let was_stacked = false;
 
-    // Remove old autocast failure message if present
-    if (is_priority) {
-        const existing = document.getElementById("autocast_failure_msg");
-        if (existing) {
-            existing.remove();
+if (stackable_types.has(message_type)) {
+    const existing = recent_message_stacks[message_type];
+    const messages = Array.from(message_log.children);
+
+    if (existing && existing.messageElement instanceof Node) {
+        const index = messages.indexOf(existing.messageElement);
+
+        if (index >= messages.length - 5) {
+            was_stacked = true;
+
+            if (message_type === "magic_cast_self") {
+                // Merge magic names into a single list
+                let match = existing.messageElement.textContent.match(/^Cast (.+) on self/);
+                let existingSpells = match ? match[1].split(/, | & /) : [];
+
+                const newSpell = message_to_add.replace(/^Cast (.+) on self$/, "$1");
+                if (!existingSpells.includes(newSpell)) {
+                    existingSpells.push(newSpell);
+                }
+
+                let mergedText = "Cast ";
+                if (existingSpells.length === 1) {
+                    mergedText += existingSpells[0];
+                } else if (existingSpells.length === 2) {
+                    mergedText += existingSpells.join(" & ");
+                } else {
+                    mergedText += existingSpells.slice(0, -1).join(", ") + " & " + existingSpells.slice(-1);
+                }
+                mergedText += " on self";
+
+                existing.messageElement.innerHTML = `${mergedText}<div class='message_border'> </div>`;
+				} else if (message_type === "combat_loot" || message_type === "gathered_loot") {
+					const parseItems = str => {
+						const parts = str.match(/"([^"]+)" x\d+/g) || [];
+						const items = {};
+						for (const part of parts) {
+							const [, name, count] = part.match(/"(.+?)" x(\d+)/);
+							items[name] = parseInt(count);
+						}
+						return items;
+					};
+
+					const prevItems = parseItems(existing.messageElement.textContent);
+					const newItems = parseItems(message_to_add);
+
+					const mergedItems = { ...prevItems };
+
+					for (const [name, count] of Object.entries(newItems)) {
+						mergedItems[name] = (prevItems[name] || 0) + count;
+					}
+
+					// Ensure unchanged items are still included
+					for (const name of Object.keys(prevItems)) {
+						if (!newItems[name]) {
+							mergedItems[name] = prevItems[name];
+						}
+					}
+
+					const combinedList = Object.entries(mergedItems).map(([name, count]) => {
+						const diff = count - (prevItems[name] || 0);
+						return `"${name}" x${count}` + (diff > 0 ? ` (+${diff})` : "");
+					});
+
+					const prefix = message_type === "combat_loot" ? "Looted " : "Gained ";
+					existing.messageElement.innerHTML = `${prefix}${combinedList.join(", ")}<div class='message_border'> </div>`;
+				} else {
+                // Default stacking behavior
+                existing.count += 1;
+                existing.messageElement.innerHTML = `${message_to_add} (x${existing.count})<div class='message_border'> </div>`;
+            }
+
+            // === Insert ABOVE priority message if it exists ===
+            const priority = document.getElementById("autocast_failure_msg");
+            if (priority && message_log.contains(priority)) {
+                message_log.insertBefore(existing.messageElement, priority);
+            } else {
+                message_log.appendChild(existing.messageElement);
+            }
+
+            if (isScrolledToBottom) {
+                message_log.scrollTop = message_log.scrollHeight;
+            }
+
+            return; // Don't add new message
+        } else {
+            delete recent_message_stacks[message_type]; // too old
         }
     }
+}
 
-       message_log.appendChild(message);
-	   
-	  if (message_type === "enemy_missed") {
-    recent_evade_stack.messageElement = message;
-    recent_evade_stack.count = 1;
-		}
+// === NORMAL MESSAGE ADDITION ===
+message.classList.add(class_to_add, group_to_add);
+message.innerHTML = message_to_add + "<div class='message_border'> </div>";
 
-    // Ensure priority message stays at the bottom
-    if (!is_priority) {
-        const priority = document.getElementById("autocast_failure_msg");
-        if (priority) {
-            message_log.appendChild(priority); // move it to the end
-        }
+// Remove old autocast failure message if this is a new one
+if (is_priority && message.id === "autocast_failure_msg") {
+    const existing = document.getElementById("autocast_failure_msg");
+    if (existing) {
+        existing.remove();
     }
+}
 
-    // Auto-scroll only if near bottom
-    if (isScrolledToBottom) {
-        message_log.scrollTop = message_log.scrollHeight;
+message_log.appendChild(message);
+
+if(was_stacked = false){// === INCREMENT MESSAGE COUNT (only for newly appended messages) ===
+switch (group_to_add) {
+    case "message_combat":
+        message_count.message_combat += 1;
+        break;
+    case "message_loot":
+        message_count.message_loot += 1;
+        break;
+    case "message_rare_loot":
+        message_count.message_rare_loot += 1;
+        break;
+    case "message_unlocks":
+        message_count.message_unlocks += 1;
+        break;
+    case "message_events":
+        message_count.message_events += 1;
+        break;
+    case "message_background":
+        message_count.message_background += 1;
+        break;
+    case "message_crafting":
+        message_count.message_crafting += 1;
+        break;
+}
+}
+
+// === STORE STACK TRACKING IF APPLICABLE ===
+if (stackable_types.has(message_type)) {
+    recent_message_stacks[message_type] = {
+        messageElement: message,
+        count: 1
+    };
+}
+
+// === ENSURE PRIORITY MESSAGE STAYS ON BOTTOM ===
+if (!is_priority) {
+    const priority = document.getElementById("autocast_failure_msg");
+    if (priority) {
+        message_log.appendChild(priority); // move to end
     }
+}
+
+// === AUTO-SCROLL TO BOTTOM IF NEEDED ===
+if (isScrolledToBottom) {
+    message_log.scrollTop = message_log.scrollHeight;
+}
 }
 
 function isAnyOtherButtonActive(currentButtonId) {
@@ -4119,7 +4203,7 @@ function create_magic_tooltip(magic_id) {
     const magic = magics[magic_id];
     const tooltip_div = document.createElement("div");
     tooltip_div.classList.add("magic_tooltip");
-	
+	const cooldown_reduction = skills["Rapid Casting"].get_coefficient("reverse_multiplicative");
 
     const type_labels = [
         magic.target_effect?.length ? "<b>Targeted Magic</b>" : "",
@@ -4148,6 +4232,7 @@ function create_magic_tooltip(magic_id) {
 		const current_damage = Math.round(base_damage * (skills[magic.related_skill].get_coefficient("multiplicative") || 1)*10)/10;
         const damage_type = magic.target_effect[2];
         const current_targets = Math.min(base_targets + (skills["MultiCasting"]?.get_level_bonus() || 0), 8);
+		
 
         target_effect_html = `<div><b>Target Effect:</b><ul>`;
 		target_effect_html += `<li>Damage: ${current_damage} (Base: ${base_damage})</li>`;
@@ -4188,7 +4273,7 @@ function create_magic_tooltip(magic_id) {
 		
 		<br> ${magic_duration_html}
 		
-        <br><div>Base Cooldown: ${magic.cooldown}</div>
+        <br><div>Cooldown: ${magic.cooldown*cooldown_reduction} (Base:${magic.cooldown}</div>
     `;
 	
 	const remaining_cd = magic_cooldowns[magic.names[0]] ?? 0;
@@ -4278,13 +4363,6 @@ function update_displayed_faved_stances() {
 function update_displayed_magic_list() {
     const magic_list = document.getElementById("magic_list");
 
-    // Preserve auto-magic states
-    const previous_auto_states = {};
-    document.querySelectorAll('.magic_button_auto input[type="checkbox"]').forEach(cb => {
-        const magicId = cb.id.replace("auto_magic_", "");
-        previous_auto_states[magicId] = cb.checked;
-    });
-
     // Clear existing rows
     while (magic_list.firstChild) {
         magic_list.removeChild(magic_list.lastChild);
@@ -4310,36 +4388,60 @@ function update_displayed_magic_list() {
             row.classList.add("magic_list_entry");
             row.dataset.magic = magicId;
 
-            const isChecked = previous_auto_states[magicId] ?? false;
+            // === Cast button ===
+            const castTd = document.createElement("td");
+            castTd.className = "magic_button magic_button_cast";
+            const castButton = document.createElement("button");
+            castButton.innerText = "Cast";
+            castButton.onclick = () => cast_magic(magicId);
+            castTd.appendChild(castButton);
+            row.appendChild(castTd);
 
-            const castButton = `<td class="magic_button magic_button_cast"><button onclick="cast_magic('${magicId}')">Cast</button></td>`;
-            const autoToggle = `<td class="magic_button magic_button_auto"><input type="checkbox" id="auto_magic_${magicId}" ${isChecked ? "checked" : ""}></td>`;
-            const nameLabel = `<td class="magic_name">${magic.names[0]}</td>`;
+            // === Auto-cast checkbox ===
+            const autoTd = document.createElement("td");
+            autoTd.className = "magic_button magic_button_auto";
+            const autoInput = document.createElement("input");
+            autoInput.type = "checkbox";
+            autoInput.id = `auto_magic_${magicId}`;
+            autoInput.checked = !!magic.auto_cast;
+            autoInput.addEventListener("change", () => {
+                magic.auto_cast = autoInput.checked;
+            });
+            autoTd.appendChild(autoInput);
+            row.appendChild(autoTd);
 
+            // === Name label ===
+            const nameTd = document.createElement("td");
+            nameTd.className = "magic_name";
+            nameTd.innerText = magic.names[0];
+            row.appendChild(nameTd);
+
+            // === Cooldown display ===
             const cooldown = magic_cooldowns[magic.names[0]] ?? 0;
             const cooldownDisplay = cooldown > 0 ? cooldown : "Ready";
-			const cdClass = cooldown > 0 ? "magic_cd" : "magic_cd magic_cd_ready";
-			const cdCell = `<td class="${cdClass}">${cooldownDisplay}</td>`;
+            const cdClass = cooldown > 0 ? "magic_cd" : "magic_cd magic_cd_ready";
+            const cdTd = document.createElement("td");
+            cdTd.className = cdClass;
+            cdTd.innerText = cooldownDisplay;
+            row.appendChild(cdTd);
 
-            // Set main cells
-            row.innerHTML = castButton + autoToggle + nameLabel + cdCell;
+            // === Tooltip cell ===
+            const tooltipTd = document.createElement("td");
+            tooltipTd.appendChild(create_magic_tooltip(magicId));
+            row.appendChild(tooltipTd);
 
-            // Add tooltip cell
-            const magic_tooltip_entry = document.createElement("td");
-            magic_tooltip_entry.appendChild(create_magic_tooltip(magicId));
-            row.appendChild(magic_tooltip_entry);
+            // Tooltip hide/show events
+            row.addEventListener("mouseover", () => create_magic_tooltip(magicId));
+            row.addEventListener("mouseout", () => {
+                const tooltip = document.getElementById("tooltip");
+                if (tooltip) tooltip.style.display = "none";
+            });
 
             rows.push(row);
-			
-						    row.addEventListener("mouseover", () => create_magic_tooltip(magicId));
-				row.addEventListener("mouseout", () => {
-				const tooltip = document.getElementById("tooltip");
-				if (tooltip) tooltip.style.display = "none";
-		});
         }
     });
 
-    // Sort and append
+    // Sort alphabetically by name
     rows.sort((a, b) => {
         const nameA = a.querySelector('.magic_name').innerText.toLowerCase();
         const nameB = b.querySelector('.magic_name').innerText.toLowerCase();

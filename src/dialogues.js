@@ -21,6 +21,7 @@ class Dialogue {
         this.is_finished = is_finished; //separate bool to remove dialogue option if it's finished
         this.textlines = textlines; //all the lines in dialogue
 		this.requires_items  = requires_items;
+		
 
         this.location_name = location_name; //this is purely informative and wrong value shouldn't cause any actual issues
 		
@@ -49,6 +50,7 @@ class Textline {
                             },
                 locks_lines = {},
 				requires_items,
+				requires_money,
                 otherUnlocks,
                 required_flags,
             }) 
@@ -60,6 +62,7 @@ class Textline {
         this.is_unlocked = is_unlocked;
         this.is_finished = is_finished;
 		this.requires_items = requires_items;
+		this.requires_money  = requires_money;
         this.unlocks = unlocks || {};
         
         this.unlocks.textlines = unlocks.textlines || [];
@@ -835,6 +838,50 @@ dialogues["Barbarian"] = new Dialogue({
                 },
                 locks_lines: ["Hello2","Invite"],
 			}),					
+			}
+    });
+	
+	
+	dialogues["Battlemage"] = new Dialogue({
+        name: "Battlemage",
+        textlines: {
+            "Hello": new Textline({ 
+                name: "Hello.",
+                text: "What do you want?",
+				unlocks: {
+					textlines: [{dialogue: "Battlemage", lines: ["Magic"]}],
+                },
+				locks_lines: ["Hello"],
+			}),
+
+            "Magic": new Textline({ 
+				is_unlocked: false,
+                name: "Can you teach me magic",
+                text: "*snort*\n\n Not for free.\n\n I don't get out of bed for anything less than a piece of silver",
+                unlocks: {
+					textlines: [{dialogue: "Battlemage", lines: ["Pay","Training"]}],
+                },
+                locks_lines: ["Magic"],
+			}),		
+            "Training": new Textline({ 
+				is_unlocked: false,
+                name: "What about magic training?",
+                text: "I could definitely teach you a thing or two, but again my talents don't come cheap.",
+                unlocks: {
+					activities: [{location: "Upper Tower", activity: "multicasting"},{location: "Upper Tower", activity: "rapidcasting"}]
+                },
+                locks_lines: ["Training"],
+			}),		
+            "Pay": new Textline({ 
+				is_unlocked: false,
+				requires_money: 1000,
+                name: "Show me what you got (Pay money)",
+                text: "This one is a favorite of mine. Let's see how easily you pick it up.",
+                unlocks: {
+					magic: ["Thunderbolt"],
+                },
+                locks_lines: ["Pay"],
+			}),				
 			}
     });
 

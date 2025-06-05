@@ -1371,7 +1371,7 @@ enemy_templates["Rot Warden"] = new Enemy({
 //rank 8s
     enemy_templates["Artificial Hydra"] = new Enemy({
         name: "Artificial Hydra", 
-        description: "An 8-headed abomindation. ",
+        description: "An 8-headed abomination. ",
 		xp_value: 65625, 
         rank: 8,
         size: "large",
@@ -1457,7 +1457,7 @@ enemy_templates["Rot Warden"] = new Enemy({
 //rank 9
     enemy_templates["Black Dragon"] = new Enemy({
         name: "Black Dragon", 
-        description: "A lesser dragon with an affinity with darkmess.",
+        description: "A lesser dragon with an affinity with darkness.",
 		xp_value: 328125, 
         rank: 9,
         size: "large",
@@ -1562,7 +1562,7 @@ enemy_templates["Rot Warden"] = new Enemy({
     });
 	    enemy_templates["Hellfire Dragon"] = new Enemy({
         name: "Hellfire Dragon", 
-        description: "An ancient and terrible dragon. Its breath cam melt even the toughest steel.",
+        description: "An ancient and terrible dragon. Its breath can melt even the toughest steel.",
 		xp_value: 999999, 
         rank: 10,
         size: "large",

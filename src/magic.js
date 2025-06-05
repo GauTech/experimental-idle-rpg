@@ -53,6 +53,16 @@ magics["Ice Beam"] = new Magic({
 	cooldown:120
 });
 
+magics["Thunderbolt"] = new Magic({
+    names:  {0: "Thunderbolt"},
+    is_unlocked: false,
+    description: "Thunderbolt",
+	related_skill: "Electromancy",
+    mana_cost:2,
+	target_effect: [10,2,"Thunder"],
+	cooldown:120
+});
+
 magics["Magic Missile"] = new Magic({
     names:  {0: "Magic Missile"},
     description: "Magic Missile",
@@ -73,6 +83,21 @@ magics["Haste"] = new Magic({
         },
     ],
 	related_skill: "Chronomancy",
+	duration:60,
+	cooldown:120
+});
+
+magics["Sure Strike"] = new Magic({
+    names: {0: "Sure Strike"},
+    description: "Temporary attack point boost",
+    mana_cost:2,
+			self_effect: [
+        {
+            stat: "attack_points",
+            multiplier: 1.2,
+        },
+    ],
+	related_skill: "Enhancement",
 	duration:60,
 	cooldown:120
 });

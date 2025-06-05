@@ -1680,7 +1680,7 @@ locations["Upper Tower"] = new Location({
         connected_locations: [{location: locations["Tower"]}],
         description: "The heights of the tower, looming above the rest of the city. The area houses various alchemy tools you could use to your advantage.",
         name: "Upper Tower",
-		dialogues: ["Scholar2","Scholar3"],
+		dialogues: ["Scholar2","Scholar3","Battlemage"],
 		on_first_visit: [{type: "QuestUpdate", id: "Sky's the Limit", completion: "y", updates: [],}],
         is_unlocked: false,
 		   crafting: {
@@ -3425,6 +3425,31 @@ locations["Time Demon"] = new Challenge_zone({
 				},
         }),
 		
+    };
+	
+	locations["Upper Tower"].activities = {
+  	        "multicasting": new LocationActivity({
+            activity_name: "multicasting",
+            infinite: true,
+            starting_text: "Train multicasting",
+            skill_xp_per_tick: 10,
+            is_unlocked: false,
+			activity_cost: {
+					type: "money",  // "money" | "health" | "stamina" | "mana"
+					amount: 30
+				},
+        }),
+		  	        "rapidcasting": new LocationActivity({
+            activity_name: "rapidcasting",
+            infinite: true,
+            starting_text: "Train rapidcasting",
+            skill_xp_per_tick: 10,
+            is_unlocked: false,
+			activity_cost: {
+					type: "money",  // "money" | "health" | "stamina" | "mana"
+					amount: 30
+				},
+        }),
     };
 
 	locations["Ancient Bridge"].activities = {

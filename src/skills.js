@@ -264,18 +264,18 @@ class Skill {
         
         return gains;
     }
-    get_coefficient(scaling_type) { //starts from 1
-        //maybe lvl as param, with current lvl being used if it's undefined?
-
-        switch (scaling_type) {
-            case "flat":
-                return 1 + Math.round((this.max_level_coefficient - 1) * this.current_level / this.max_level * 1000) / 1000;
-            case "multiplicative":
-                return Math.round(Math.pow(this.max_level_coefficient, this.current_level / this.max_level) * 1000) / 1000;
-            default: //same as on multiplicative
-                return Math.round(Math.pow(this.max_level_coefficient, this.current_level / this.max_level) * 1000) / 1000;
-        }
-    }
+		get_coefficient(scaling_type) { //starts from 1
+			switch (scaling_type) {
+				case "flat":
+					return 1 + Math.round((this.max_level_coefficient - 1) * this.current_level / this.max_level * 1000) / 1000;
+				case "multiplicative":
+					return Math.round(Math.pow(this.max_level_coefficient, this.current_level / this.max_level) * 1000) / 1000;
+				case "reverse_multiplicative": // New scaling type (1.0 → 0.25)
+					return Math.round((1.0 - (0.75 * (this.current_level / this.max_level))) * 1000) / 1000;
+				default: //same as multiplicative
+					return Math.round(Math.pow(this.max_level_coefficient, this.current_level / this.max_level) * 1000) / 1000;
+			}
+		}
     get_level_bonus() { //starts from 0
         return this.max_level_bonus * this.current_level / this.max_level;
     }
@@ -2826,12 +2826,26 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
                                 category: "Magic",
 								max_level: 7,
 								max_level_bonus: 7,
-								xp_scaling: 10,
+								xp_scaling: 4,
 								is_unlocked: true,
 								get_effect_description: ()=> {
 										return `Increase max number of targets for combat magics by ${skills["MultiCasting"].get_level_bonus()}`;
 								},
 	});	
+	
+   skills["Rapid Casting"] = new Skill({skill_id: "Rapid Casting", 
+                                names: {0: "Rapid Casting"}, 
+                                description: "Rapid Casting", 
+                                category: "Magic",
+								max_level: 30,
+								xp_scaling: 2,
+								max_level_coefficient:3,
+								is_unlocked: true,
+								get_effect_description: () => {
+									const reduction = 100 * (1 - skills["Rapid Casting"].get_coefficient("reverse_multiplicative"));
+									return `Reduces magic cooldowns by ${Math.round(reduction * 10) / 10}%`;
+								}
+							});	
 
    skills["Spatial Magic"] = new Skill({skill_id: "Spatial Magic", 
                                 names: {0: "Spatial Magic"}, 
@@ -2859,6 +2873,19 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 										return `Multiplies Pyromancy magic damage by ${Math.round(skills["Pyromancy"].get_coefficient("multiplicative")*1000)/1000}`;
 								},
 	});
+	
+   skills["Electromancy"] = new Skill({skill_id: "Electromancy", 
+                                names: {0: "Electromancy"}, 
+                                description: "Electromancy", 
+                                category: "Magic",
+								max_level: 30,
+								max_level_coefficient: 2, 
+								xp_scaling: 2,
+								is_unlocked: true,
+								get_effect_description: ()=> {
+										return `Multiplies Electromancy magic damage by ${Math.round(skills["Electromancy"].get_coefficient("multiplicative")*1000)/1000}`;
+								},
+	});
    skills["Cryomancy"] = new Skill({skill_id: "Cryomancy", 
                                 names: {0: "Cryomancy"}, 
                                 description: "Cryomancy", 
@@ -2869,6 +2896,19 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 								is_unlocked: true,
 								get_effect_description: ()=> {
 										return `Multiplies Cryomancy magic damage by ${Math.round(skills["Cryomancy"].get_coefficient("multiplicative")*1000)/1000}`;
+								},
+	});
+	
+   skills["Elemental Mastery"] = new Skill({skill_id: "Elemental Mastery", 
+                                names: {0: "Elemental Mastery"}, 
+                                description: "Elemental Mastery", 
+                                category: "Magic",
+								max_level: 30,
+								max_level_coefficient: 2, 
+								xp_scaling: 2,
+								is_unlocked: true,
+								get_effect_description: ()=> {
+										return `Multiplies Cryomancy, Pyromancy and Electromancy magic damage by ${Math.round(skills["Cryomancy"].get_coefficient("multiplicative")*1000)/1000}`;
 								},
 	});
    skills["Enhancement"] = new Skill({skill_id: "Enhancement", 
@@ -2905,6 +2945,21 @@ Multiplies attack speed and AP in unarmed combat by ${Math.round((skills["Unarme
 								is_unlocked: true,
 								get_effect_description: ()=> {
 										return `Multiplies magic effect durations by ${Math.round(skills["Magic Extension"].get_coefficient("multiplicative")*1000)/1000}`;
+								},
+	});
+	
+   skills["Magic Convergence"] = new Skill({skill_id: "Magic Convergence", 
+                                names: {0: "Magic Convergence"}, 
+                                description: "Magic Convergence", 
+                                category: "Magic",
+								max_level: 30,
+								max_level_coefficient: 2, 
+								xp_scaling: 2,
+								is_unlocked: true,
+								get_effect_description: ()=> {
+									const reduction = 100 * (1 - skills["Rapid Casting"].get_coefficient("reverse_multiplicative"));
+									 
+										return `Reduces magic cooldowns by ${Math.round(reduction * 10) / 10}% <br> Multiplies magic effect durations by ${Math.round(skills["Magic Extension"].get_coefficient("multiplicative")*1000)/1000}`;
 								},
 	});
    skills["Illusion Magic"] = new Skill({skill_id: "Illusion Magic", 
