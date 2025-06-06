@@ -1882,7 +1882,7 @@ dialogues["Shadow"] = new Dialogue({
                 name: "uhh hello?",
                 is_unlocked: true,
                 text: "Ignorant vessel. Put your foolish ambitions to rest.",
-                required_flags: {yes: ["is_hero_level10"]},
+                required_flags: {yes: ["is_hero_level20"]},
                 unlocks: {
                     locations: ["Shadow1"],
                 },

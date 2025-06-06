@@ -1519,7 +1519,7 @@ item_templates["The Spellblade Chronicles vol. 1"] = new Book({
 
 	    item_templates["Platinum Shard"] = new Material({
         name: "Platinum Shard", 
-        description: "Platinum Shard",
+        description: "A metal fragment dropped by a peculiar slime. With enough of them you could make an unusual weapon....",
         value: 1000,
         price_recovers: true,
     });    

@@ -385,6 +385,10 @@ function option_log_gathering_result(option) {
 
 
 function change_location(location_name) {
+	if(is_sleeping == true){
+		end_sleeping();
+	}
+	
     let location = locations[location_name];
 	end_actions();
     if(location_name !== current_location?.name && location.is_finished) {
@@ -4171,8 +4175,12 @@ function get_location_rewards(location) {
 		change_location(current_location.parent_location.name);
     }
 
-    if(should_return) {
+    if(should_return && location.name != "Time Demon") {
         change_location(current_location.parent_location.name); //go back to parent location, only on first clear
+    }
+	  if(location.name == "Time Demon") {
+        log_message("You are hurled through space");
+		change_location("Burial Chamber"); 
     }
 }
 
@@ -5775,7 +5783,7 @@ if (save_data.current_party) {
             console.warn(`Couldn't find saved activity "${activity_id}"! It might have been removed`);
         }
     }
-
+	console.log(save_data.is_sleeping);
     if(save_data.is_sleeping) {
         start_sleeping();
     }

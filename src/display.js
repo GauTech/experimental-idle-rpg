@@ -137,10 +137,16 @@ function update_party_list() {
     if (current_party.length === 0) {
         partyDisplay = `${character.name} fights alone!`;
     } else {
-        // Capitalize first letter of each party member and join with commas
-        partyDisplay = current_party.map(member => 
-            member.charAt(0).toUpperCase() + member.slice(1)
-        ).join(', ');
+       
+       partyDisplay = current_party.map(member => {
+			// Capitalize first letter
+			let formatted = member.charAt(0).toUpperCase() + member.slice(1);
+			// Check if last character is a number
+			if (/\d$/.test(formatted)) {
+				formatted = formatted.slice(0, -1);
+			}
+			return formatted;
+		}).join(', ');
     }
     
     data_entry_divs.party_display.innerHTML = `
@@ -1735,6 +1741,9 @@ function update_displayed_enemies() {
  * updates displayed health and healthbars of enemies
  */
 function update_displayed_health_of_enemies() {
+	if(current_enemies === null){
+		return
+	}
     for(let i = 0; i < current_enemies.length; i++) {
         if(current_enemies[i].is_alive) {
             enemies_div.children[i].children[0].style.filter = "brightness(100%)";
@@ -3614,7 +3623,7 @@ function update_displayed_droprate() {
     data_entry_divs.droprate.innerHTML = `<span class="data_entry_name">Droprate:</span><span class="data_entry_value">${Math.round(skills["Salvaging"].get_coefficient("multiplicative")*1000)/1000 || 1}</span>`;
 }
 function update_displayed_party() {
-    data_entry_divs.droprate.innerHTML = `<span class="data_entry_name">Current Party</span><span class="data_entry_value">${Math.round(skills["Salvaging"].get_coefficient("multiplicative")*1000)/1000 || 1}</span>`;
+    data_entry_divs.droprate.innerHTML = `<span class="data_entry_name">Current Party</span><span class="data_entry_value"></span>`;
 }
 
 
