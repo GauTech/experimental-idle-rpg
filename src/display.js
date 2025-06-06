@@ -760,8 +760,8 @@ function log_message(message_to_add, message_type, is_priority = false) {
 
     // Remove old message if we're over the limit
     if (!is_priority && (
-        group_to_add === "message_combat" && message_count.message_combat > 80 ||
-        group_to_add === "message_loot" && message_count.message_loot > 40 ||
+        group_to_add === "message_combat" && message_count.message_combat > 40 ||
+        group_to_add === "message_loot" && message_count.message_loot > 20 ||
         group_to_add === "message_rare_loot" && message_count.message_rare_loot > 10 ||
         group_to_add === "message_unlocks" && message_count.message_unlocks > 40 ||
         group_to_add === "message_events" && message_count.message_events > 20 ||
@@ -1927,39 +1927,21 @@ function update_displayed_normal_location(location) {
     /////////////////////////////////
     //add butttons to change location
 
-			getMapDirectionVectors(current_location).then(vectors => {
-				if(current_location.parent_location){
-					return
-				}	
-			const vectorMap = new Map(vectors.map(v => [v.to, v]));
+		 //add butttons to change location
 
-			const available_locations = current_location.connected_locations.filter(loc => {
-				const target = loc.location;
-				return target.is_unlocked && !target.is_finished && !target.is_challenge;
-			});
+    const available_locations = location.connected_locations.filter(location => {if(location.location.is_unlocked && !location.location.is_finished && !location.location.is_challenge) return true});
 
-			if (available_locations.length > 0) {
-				const locationButtons = create_location_choices({ location: current_location, category: "travel" });
+    if(available_locations.length > 3 && (location.sleeping + available_trainings.length + available_jobs.length +  available_traders.length + available_dialogues.length) > 2) {
+        const locations_button = document.createElement("div");
+        locations_button.setAttribute("data-location", location.name);
+        locations_button.classList.add("location_choices");
+        locations_button.setAttribute("onclick", 'update_displayed_location_choices({location_name: this.getAttribute("data-location"), category: "travel"});');
+        locations_button.innerHTML = '<i class="material-icons">format_list_bulleted</i>  Move somewhere else';
+        action_div.appendChild(locations_button);
+    } else if(available_locations.length > 0) {
+        action_div.append(...create_location_choices({location: location, category: "travel"}));
+    }
 
-				locationButtons.forEach(button => {
-					const locName = button.getAttribute("data-location");
-					const vector = vectorMap.get(locName);
-					if (vector) {
-						const angle = Math.atan2(vector.dy, vector.dx) * 180 / Math.PI;
-
-						const arrow = document.createElement("span");
-						arrow.innerText = "➤";
-						arrow.style.display = "inline-block";
-						arrow.style.transform = `rotate(${angle}deg)`;
-						arrow.style.marginLeft = "0.5em";
-						arrow.style.transition = "transform 0.2s";
-						button.appendChild(arrow);
-					}
-				});
-
-				action_div.append(...locationButtons);
-			}
-		});
     location_name_span.innerText = current_location.name.replace(/\d$/, '');
     document.getElementById("location_description_div").innerText = current_location.getDescription();
 }

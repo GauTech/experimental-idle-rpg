@@ -4458,18 +4458,8 @@ function use_item(item_key) {
     const instant_heal = item.instant_health_recovery || 0;
     const elixir_bonus = item.elixir_bonus || {};
 
-    add_xp_to_skill({ skill: skills["Gluttony"], xp_to_add: gluttony_value });
-    add_xp_to_skill({ skill: skills["Mana Expansion"], xp_to_add: mana_value });
+  
 
-    if (id === "Dragon Heart") {
-        add_xp_to_skill({ skill: skills["Dragon Heart"], xp_to_add: 1.3, use_bonus: false });
-    }
-    if (id === "Symbiote") {
-        add_xp_to_skill({ skill: skills["Symbiote"], xp_to_add: 1.6, use_bonus: false });
-    }
-	if (id === "Grilled goo") {
-        grilled_goo_eaten++;
-    }
 
     let used = false;
 
@@ -4523,6 +4513,20 @@ function use_item(item_key) {
         update_character_stats();
         update_displayed_stats();
         remove_from_character_inventory([{ item_key }]);
+		add_xp_to_skill({ skill: skills["Gluttony"], xp_to_add: gluttony_value || 0 });
+		add_xp_to_skill({ skill: skills["Mana Expansion"], xp_to_add: mana_value || 0 });
+		
+		    if (id === "Dragon Heart") {
+        add_xp_to_skill({ skill: skills["Dragon Heart"], xp_to_add: 1.3, use_bonus: false });
+    }
+    if (id === "Symbiote") {
+        add_xp_to_skill({ skill: skills["Symbiote"], xp_to_add: 1.6, use_bonus: false });
+    }
+	if (id === "Grilled goo") {
+        grilled_goo_eaten++;
+    }
+
+		
     }
 }
 
@@ -5783,7 +5787,6 @@ if (save_data.current_party) {
             console.warn(`Couldn't find saved activity "${activity_id}"! It might have been removed`);
         }
     }
-	console.log(save_data.is_sleeping);
     if(save_data.is_sleeping) {
         start_sleeping();
     }
