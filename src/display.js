@@ -701,7 +701,7 @@ function log_message(message_to_add, message_type, is_priority = false) {
             }
             break;
         case "location_reward":
-            group_to_add = "message_loot";
+            group_to_add = "message_events";
             break;
         case "skill_raised":
             class_to_add = "message_skill_leveled_up";
@@ -760,7 +760,7 @@ function log_message(message_to_add, message_type, is_priority = false) {
 
     // Remove old message if we're over the limit
     if (!is_priority && (
-        group_to_add === "message_combat" && message_count.message_combat > 40 ||
+        group_to_add === "message_combat" && message_count.message_combat > 25 ||
         group_to_add === "message_loot" && message_count.message_loot > 20 ||
         group_to_add === "message_rare_loot" && message_count.message_rare_loot > 10 ||
         group_to_add === "message_unlocks" && message_count.message_unlocks > 40 ||
